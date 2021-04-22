@@ -8,12 +8,12 @@ import { readFile, writeFile } from "fs/promises";
 
 const pexec = promisify(exec);
 
-const logger = (message, br) => {
+const logger = (message) => {
     const date = new Date();
     const time = [date.getHours(), date.getMinutes(), date.getSeconds()]
         .map((value) => (value > 9 ? value : "0" + value))
         .join(":");
-    console.log(`${br ? "\n" : ""}[${time}] PKG.NAME ${message}`);
+    console.log(`[${time}] PKG.NAME ${message}`);
 };
 
 /**
@@ -21,14 +21,17 @@ const logger = (message, br) => {
  * @param {string} config.src
  * @param {string} config.dest
  * @param {boolean} config.types
- * @param {boolean} config.exports
  * @param {boolean} config.minify
+ * @param {boolean} config.watch
+ * @param {boolean} config.exports
  * @param {boolean} config.sourcemap
+ * @param {string[]} [config.target]
  * @param {(config:import("esbuild").BuildOptions)=>import("esbuild").BuildOptions} [config.preload]
  * @returns
  */
 export async function prepare(config) {
-    logger("Initializing...", true);
+    console.log("");
+    logger("Initializing...");
     //@ts-ignore
     const entryPoints = await glob(config.src);
 
@@ -37,6 +40,7 @@ export async function prepare(config) {
     } else {
         logger("Generating outputs with esbuild...");
     }
+
     /**
      * @type {import("esbuild").BuildOptions}
      */
@@ -47,8 +51,21 @@ export async function prepare(config) {
         sourcemap: config.sourcemap,
         metafile: true,
         minify: config.minify,
+        watch: config.watch
+            ? {
+                  onRebuild(error) {
+                      logger(
+                          error
+                              ? "watch build failed:"
+                              : "waiting for changes..."
+                      );
+                  },
+              }
+            : null,
         plugins: [jsxRuntime()],
     };
+
+    if (config.target) build.target = config.target;
 
     const { metafile } = await esbuild.build(
         config.preload ? config.preload(build) : build
@@ -56,34 +73,37 @@ export async function prepare(config) {
 
     logger("Esbuild completed...");
 
-    await Promise.all([
-        config.types &&
-            new Promise(async (resolve, reject) => {
-                try {
-                    logger("Preparing types...");
-                    await generateTypes(entryPoints);
-                    resolve();
-                    logger("Finished types!");
-                } catch (e) {
-                    console.error(e);
-                    reject();
-                }
-            }),
-        config.exports &&
-            new Promise((resolve, reject) => {
-                try {
-                    logger("Adding outputs to package.json#exports...");
-                    generateExports(metafile);
-                    resolve();
-                    logger("Added outputs!");
-                } catch (e) {
-                    console.error(e);
-                    reject();
-                }
-            }),
-    ]);
-
-    logger("completed!");
+    if (config.watch) {
+        logger("waiting for changes...");
+    } else {
+        await Promise.all([
+            config.types &&
+                new Promise(async (resolve, reject) => {
+                    try {
+                        logger("Preparing types...");
+                        await generateTypes(entryPoints);
+                        resolve();
+                        logger("Finished types!");
+                    } catch (e) {
+                        console.error(e);
+                        reject();
+                    }
+                }),
+            config.exports &&
+                new Promise((resolve, reject) => {
+                    try {
+                        logger("Adding outputs to package.json#exports...");
+                        generateExports(metafile);
+                        resolve();
+                        logger("Added outputs!");
+                    } catch (e) {
+                        console.error(e);
+                        reject();
+                    }
+                }),
+        ]);
+        logger("completed!");
+    }
 }
 /**
  *
