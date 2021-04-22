@@ -7,6 +7,7 @@ import { promisify } from "util";
 import { readFile, writeFile } from "fs/promises";
 
 const pexec = promisify(exec);
+
 const logger = (message, br) => {
     const date = new Date();
     const time = [date.getHours(), date.getMinutes(), date.getSeconds()]
@@ -26,7 +27,7 @@ const logger = (message, br) => {
  */
 export async function prepare(config) {
     logger("Initializing...", true);
-
+    //@ts-ignore
     const entryPoints = await glob(config.src);
 
     if (!entryPoints.length) {
