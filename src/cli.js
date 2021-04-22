@@ -15,10 +15,10 @@ cli.command("<...files>", "Build files")
         "Defines the target to associate for the output"
     )
     .option("--sourcemap", "generate the sourcemap")
-    .example("prepare components/*.jsx")
-    .example("prepare components/*.jsx --types")
-    .example("prepare components/*.jsx --exports")
-    .example("prepare components/*.jsx --types --exports")
+    .example("PKG.CLI components/*.jsx")
+    .example("PKG.CLI components/*.jsx --types")
+    .example("PKG.CLI components/*.jsx --exports")
+    .example("PKG.CLI components/*.jsx --types --exports")
     .action(
         (
             src,

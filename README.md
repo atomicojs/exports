@@ -31,8 +31,8 @@ Options:
   -h, --help         Display this message
 
 Examples:
-prepare components/*.jsx
-prepare components/*.jsx --types
-prepare components/*.jsx --exports
-prepare components/*.jsx --types --exports
+exports components/*.jsx
+exports components/*.jsx --types
+exports components/*.jsx --exports
+exports components/*.jsx --types --exports
 ```

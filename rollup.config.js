@@ -15,6 +15,7 @@ export default {
         replace({
             "PKG.NAME": pkg.name,
             "PKG.VERSION": pkg.version,
+            "PKG.CLI": Object.keys(pkg.bin).slice(0, 1).join(""),
         }),
     ],
 };
