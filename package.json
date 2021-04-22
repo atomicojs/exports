@@ -1,15 +1,15 @@
 {
-    "name": "pkg_name",
+    "name": "@atomico/prepare",
     "type": "module",
     "version": "0.0.0",
     "description": "Capture text fragments based on regular expressions that are executed for each line of the text",
-    "main": "./module.cjs",
-    "module": "./src/module.js",
-    "typings": "./types.d.ts",
+    "main": "./cli.cjs",
+    "module": "./src/cli.js",
+    "types": "./cli.d.ts",
     "exports": {
         ".": {
-            "import": "./src/module.js",
-            "require": "./module.cjs"
+            "import": "./src/cli.js",
+            "require": "./cli.cjs"
         }
     },
     "publishConfig": {
@@ -19,7 +19,7 @@
         "build": "rollup -c",
         "dev": "rollup -c -w",
         "test": "ava",
-        "prepare": "npm run build && npm test"
+        "prepare": "npm run build"
     },
     "repository": {
         "type": "git",
@@ -32,7 +32,7 @@
     },
     "homepage": "https://github.com/UpperCod/pkg_name#readme",
     "devDependencies": {
-        "@betit/rollup-plugin-rename-extensions": "^0.1.0",
+        "@rollup/plugin-replace": "^2.4.2",
         "ava": "^3.10.1",
         "builtin-modules": "^3.1.0",
         "rollup": "^2.21.0"
@@ -45,5 +45,14 @@
     "prettier": {
         "tabWidth": 4,
         "singleQuote": false
+    },
+    "dependencies": {
+        "@atomico/esbuild-jsx-runtime": "^1.0.0",
+        "cac": "^6.7.2",
+        "esbuild": "^0.11.12",
+        "fast-glob": "^3.2.5"
+    },
+    "bin": {
+        "prepare": "./cli.cjs"
     }
 }

@@ -1,4 +1,4 @@
-# pkg_name
+# @atomico/prepare
 
 bla bla....
 

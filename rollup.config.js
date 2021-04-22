@@ -1,21 +1,20 @@
 import builtins from "builtin-modules";
-import renameExtensions from "@betit/rollup-plugin-rename-extensions";
+import replace from "@rollup/plugin-replace";
 import pkg from "./package.json";
 
 export default {
-    input: ["./src/module.js"],
+    input: "./src/cli.js",
     external: Object.keys(pkg.dependencies || {}).concat(builtins),
     output: {
-        dir: "./",
+        file: "./cli.cjs",
         format: "cjs",
         sourcemap: true,
+        banner: "#!/usr/bin/env node",
     },
     plugins: [
-        renameExtensions({
-            include: ["**/*.js"],
-            mappings: {
-                ".js": ".cjs",
-            },
+        replace({
+            "PKG.NAME": pkg.name,
+            "PKG.VERSION": pkg.version,
         }),
     ],
 };
