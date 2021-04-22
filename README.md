@@ -1,16 +1,38 @@
-# @atomico/prepare
+# @atomico/exports
 
-**🧪experimental**
+**🧪Experimental.**
 
-It allows to generate an export to quickly publish components created with Atomico in NPM.
+Runs a series of repetitive processes when exporting packages to NPM.
+
+1. Generate the code export using expressions.
+2. Add the files to the exported codes to package.json#exports
+3. Generate the types of the exproted files, The `--types` flag requires the installation of Typescript.
+
+the files to export are generated thanks to [Esbuild](https://esbuild.github.io/).
 
 ```json
 {
-    "prepare": "prepare components/*.jsx --types --exports"
+    "exports": "exports components/*.jsx --types --exports"
 }
 ```
 
-The Command will find all the components that match the expecion and will send them to esbuild:
+### flags
 
-1. `--types`: generates the types, this flag requires the installation of Typescript.
-2. `--exports`: update the package.json#exports associating the exports.
+```
+Options:
+  --dest <dest>      Choose a project type
+  --types            Generate the .d.ts files in root using typescript
+  --exports          Add the output files to package.json#exports
+  --minify           minify the code output
+  --watch            Enable the use of watch in esbuild
+  --target <target>  Defines the target to associate for the output
+  --sourcemap        generate the sourcemap
+  -v, --version      Display version number
+  -h, --help         Display this message
+
+Examples:
+prepare components/*.jsx
+prepare components/*.jsx --types
+prepare components/*.jsx --exports
+prepare components/*.jsx --types --exports
+```

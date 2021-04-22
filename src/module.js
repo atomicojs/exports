@@ -13,7 +13,7 @@ const logger = (message) => {
     const time = [date.getHours(), date.getMinutes(), date.getSeconds()]
         .map((value) => (value > 9 ? value : "0" + value))
         .join(":");
-    console.log(`[${time}] PKG.NAME ${message}`);
+    console.log(`[${time}] ${message}`);
 };
 
 /**
@@ -30,7 +30,7 @@ const logger = (message) => {
  * @returns
  */
 export async function prepare(config) {
-    console.log("");
+    console.log("\nPKG.NAME");
     logger("Initializing...");
     //@ts-ignore
     const entryPoints = await glob(config.src);

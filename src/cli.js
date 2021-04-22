@@ -9,8 +9,11 @@ cli.command("<...files>", "Build files")
     .option("--types", "Generate the .d.ts files in root using typescript")
     .option("--exports", "Add the output files to package.json#exports")
     .option("--minify", "minify the code output")
-    .option("--watch", "minify the code output")
-    .option("--target <target>", "minify the code output")
+    .option("--watch", "Enable the use of watch in esbuild")
+    .option(
+        "--target <target>",
+        "Defines the target to associate for the output"
+    )
     .option("--sourcemap", "generate the sourcemap")
     .example("prepare components/*.jsx")
     .example("prepare components/*.jsx --types")
