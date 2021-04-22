@@ -22,6 +22,8 @@ const logger = (message, br) => {
  * @param {string} config.dest
  * @param {boolean} config.types
  * @param {boolean} config.exports
+ * @param {boolean} config.minify
+ * @param {boolean} config.sourcemap
  * @param {(config:import("esbuild").BuildOptions)=>import("esbuild").BuildOptions} [config.preload]
  * @returns
  */
@@ -35,13 +37,16 @@ export async function prepare(config) {
     } else {
         logger("Generating outputs with esbuild...");
     }
-
+    /**
+     * @type {import("esbuild").BuildOptions}
+     */
     const build = {
         entryPoints,
         outdir: config.dest,
         jsxFactory: "_jsx",
-        sourcemap: true,
+        sourcemap: config.sourcemap,
         metafile: true,
+        minify: config.minify,
         plugins: [jsxRuntime()],
     };
 
