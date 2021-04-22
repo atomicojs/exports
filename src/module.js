@@ -70,6 +70,7 @@ export async function prepare(config) {
         minify: config.minify,
         bundle: true,
         format: "esm",
+        splitting: true,
         watch: config.watch
             ? {
                   onRebuild(error) {
