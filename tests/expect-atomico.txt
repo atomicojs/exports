@@ -1,0 +1,7 @@
+// tests/atomico.jsx
+import {jsx as _jsx} from "atomico/jsx-runtime";
+import {c} from "atomico";
+function component() {
+  return /* @__PURE__ */ _jsx("host", null);
+}
+customElements.define("my-component", c(component));

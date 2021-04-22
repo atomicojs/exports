@@ -17,6 +17,22 @@ const logger = (message) => {
 };
 
 /**
+ *
+ * @returns {import("esbuild").Plugin}
+ */
+const pluginExternals = (externals) => ({
+    name: "PKG.NAME",
+    setup(build) {
+        const match = externals.map((name) => RegExp(`^${name}(/.+){0,1}$`));
+        build.onResolve({ filter: /^(@|\w+)/ }, (options) =>
+            match.some((reg) => reg.test(options.path))
+                ? { path: options.path, external: true }
+                : null
+        );
+    },
+});
+
+/**
  * @param {object} config
  * @param {string} config.src
  * @param {string} config.dest
@@ -34,6 +50,7 @@ export async function prepare(config) {
     logger("Initializing...");
     //@ts-ignore
     const entryPoints = await glob(config.src);
+    const pkg = await getPkg();
 
     if (!entryPoints.length) {
         return logger("No file input!");
@@ -51,6 +68,8 @@ export async function prepare(config) {
         sourcemap: config.sourcemap,
         metafile: true,
         minify: config.minify,
+        bundle: true,
+        format: "esm",
         watch: config.watch
             ? {
                   onRebuild(error) {
@@ -62,7 +81,7 @@ export async function prepare(config) {
                   },
               }
             : null,
-        plugins: [jsxRuntime()],
+        plugins: [jsxRuntime(), pluginExternals(Object.keys(pkg.dependencies))],
     };
 
     if (config.target) build.target = config.target;
@@ -93,7 +112,7 @@ export async function prepare(config) {
                 new Promise((resolve, reject) => {
                     try {
                         logger("Adding outputs to package.json#exports...");
-                        generateExports(metafile);
+                        generateExports(pkg, metafile);
                         resolve();
                         logger("Added outputs!");
                     } catch (e) {
@@ -105,15 +124,14 @@ export async function prepare(config) {
         logger("completed!");
     }
 }
+
+const getPkg = async () =>
+    JSON.parse(await readFile(process.cwd() + "/package.json", "utf-8"));
 /**
- *
+ * @param {object} pkg
  * @param {import("esbuild").Metafile} metafile
  */
-async function generateExports(metafile) {
-    const pkg = JSON.parse(
-        await readFile(process.cwd() + "/package.json", "utf-8")
-    );
-
+async function generateExports(pkg, metafile) {
     pkg.exports = Object.entries(metafile.outputs)
         .filter(([, { entryPoint = "" }]) => /\.[jt]s[x]*$/.test(entryPoint))
         .reduce(
