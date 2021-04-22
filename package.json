@@ -1,8 +1,8 @@
 {
     "name": "@atomico/prepare",
     "type": "module",
-    "version": "0.0.0",
-    "description": "Capture text fragments based on regular expressions that are executed for each line of the text",
+    "version": "0.0.1",
+    "description": "It allows to generate an export to quickly publish components created with Atomico in NPM",
     "main": "./cli.cjs",
     "module": "./src/cli.js",
     "types": "./cli.d.ts",
