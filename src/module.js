@@ -82,7 +82,10 @@ export async function prepare(config) {
                   },
               }
             : null,
-        plugins: [jsxRuntime(), pluginExternals(Object.keys(pkg.dependencies))],
+        plugins: [
+            jsxRuntime(),
+            pluginExternals(Object.keys(pkg.dependencies || {})),
+        ],
     };
 
     if (config.target) build.target = config.target;
