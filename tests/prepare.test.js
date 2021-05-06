@@ -17,6 +17,7 @@ test("simple build jsx", async (t) => {
     await prepare({
         src: "tests/atomico.jsx",
         dest: "tests/dest",
+        metaUrl: ["css"],
     });
     t.is(
         await readFile("./tests/dest/atomico.js", "utf-8"),

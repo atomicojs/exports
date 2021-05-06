@@ -1,7 +1,15 @@
 // tests/atomico.jsx
 import {jsx as _jsx} from "atomico/jsx-runtime";
 import {c} from "atomico";
+
+// tests/style.css
+var style_default = new URL("./style-597-60a-596.css", import.meta.url);
+
+// tests/atomico.jsx
 function component() {
-  return /* @__PURE__ */ _jsx("host", null);
+  console.log(style_default);
+  return /* @__PURE__ */ _jsx("host", {
+    class: "button"
+  }, '"ea"');
 }
 customElements.define("my-component", c(component));

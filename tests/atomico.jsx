@@ -1,7 +1,9 @@
 import { c } from "atomico";
+import style from "./style.css";
 
 function component() {
-    return <host></host>;
+    console.log(style);
+    return <host class="button">"ea"</host>;
 }
 
 customElements.define("my-component", c(component));

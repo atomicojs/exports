@@ -1,12 +1,35 @@
 import glob from "fast-glob";
 import esbuild from "esbuild";
-import jsxRuntime from "@atomico/esbuild-jsx-runtime";
+import jsxRuntime from "@uppercod/esbuild-jsx-runtime";
 import path from "path";
 import { exec } from "child_process";
 import { promisify } from "util";
 import { readFile, writeFile } from "fs/promises";
+import { pluginExternals } from "./plugin-externals.js";
+import pluginMetaUrl from "@uppercod/esbuild-meta-url";
 
 const pexec = promisify(exec);
+
+const assets = [
+    "jpg",
+    "svg",
+    "png",
+    "gif",
+    "mp4",
+    "webp",
+    "jpeg",
+    "ico",
+    "mp3",
+    "eot",
+    "woff2",
+    "woff",
+    "ttf",
+    "pdf",
+    "ogg",
+    "ogv",
+    "ogm",
+    "md",
+];
 
 const logger = (message) => {
     const date = new Date();
@@ -17,31 +40,17 @@ const logger = (message) => {
 };
 
 /**
- *
- * @returns {import("esbuild").Plugin}
- */
-const pluginExternals = (externals) => ({
-    name: "PKG.NAME",
-    setup(build) {
-        const match = externals.map((name) => RegExp(`^${name}(/.+){0,1}$`));
-        build.onResolve({ filter: /^(@|\w+)/ }, (options) =>
-            match.some((reg) => reg.test(options.path))
-                ? { path: options.path, external: true }
-                : null
-        );
-    },
-});
-
-/**
  * @param {object} config
  * @param {string} config.src
  * @param {string} config.dest
- * @param {boolean} config.types
- * @param {boolean} config.minify
- * @param {boolean} config.watch
- * @param {boolean} config.exports
- * @param {boolean} config.sourcemap
+ * @param {boolean} [config.types]
+ * @param {boolean} [config.minify]
+ * @param {boolean} [config.watch]
+ * @param {boolean} [config.exports]
+ * @param {boolean} [config.sourcemap]
+ * @param {boolean} [config.format]
  * @param {string[]} [config.target]
+ * @param {string[]} [config.metaUrl]
  * @param {(config:import("esbuild").BuildOptions)=>import("esbuild").BuildOptions} [config.preload]
  * @returns
  */
@@ -51,6 +60,13 @@ export async function prepare(config) {
     //@ts-ignore
     const entryPoints = await glob(config.src);
     const pkg = await getPkg();
+
+    const metaUrl = (config.metaUrl || [])
+        .concat(assets)
+        .reduce((metaUrl, key) => {
+            metaUrl[key] = true;
+            return metaUrl;
+        }, {});
 
     if (!entryPoints.length) {
         return logger("No file input!");
@@ -69,7 +85,7 @@ export async function prepare(config) {
         metafile: true,
         minify: config.minify,
         bundle: true,
-        format: "esm",
+        format: config.format || "esm",
         splitting: true,
         watch: config.watch
             ? {
@@ -82,7 +98,9 @@ export async function prepare(config) {
                   },
               }
             : null,
+        loader: metaUrl.css ? {} : { ".css": "text" },
         plugins: [
+            pluginMetaUrl(metaUrl),
             jsxRuntime(),
             pluginExternals(Object.keys(pkg.dependencies || {})),
         ],

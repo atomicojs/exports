@@ -1,7 +1,7 @@
 {
     "name": "@atomico/exports",
     "type": "module",
-    "version": "0.2.1",
+    "version": "0.4.0",
     "description": "It allows to generate an export to quickly publish components created with Atomico in NPM",
     "main": "./cli.cjs",
     "module": "./src/cli.js",
@@ -33,15 +33,17 @@
     },
     "homepage": "https://github.com/UpperCod/pkg_name#readme",
     "dependencies": {
-        "atomico": "latest",
-        "@atomico/esbuild-jsx-runtime": "^1.0.0",
         "@types/node": "^14.14.41",
+        "@uppercod/esbuild-jsx-runtime": "latest",
+        "@uppercod/esbuild-meta-url": "latest",
+        "atomico": "latest",
         "cac": "^6.7.2",
         "esbuild": "^0.11.12",
         "fast-glob": "^3.2.5"
     },
     "devDependencies": {
         "@rollup/plugin-replace": "^2.4.2",
+        "@uppercod/hash": "^1.1.1",
         "ava": "^3.10.1",
         "builtin-modules": "^3.1.0",
         "rollup": "^2.21.0",

@@ -2,6 +2,8 @@ import cac from "cac";
 import { prepare } from "./module.js";
 export { prepare } from "./module.js";
 
+const toArray = (value) => value.split(/ *, */);
+
 const cli = cac("devserver").version("PKG.VERSION");
 
 cli.command("<...files>", "Build files")
@@ -10,6 +12,8 @@ cli.command("<...files>", "Build files")
     .option("--exports", "Add the output files to package.json#exports")
     .option("--minify", "minify the code output")
     .option("--watch", "Enable the use of watch in esbuild")
+    .option("--meta-url <files>", "resolve files as meta-url")
+    .option("--format <format>", "output type, default esm")
     .option(
         "--target <target>",
         "Defines the target to associate for the output"
@@ -22,17 +26,29 @@ cli.command("<...files>", "Build files")
     .action(
         (
             src,
-            { dest = "dest", types, exports, minify, sourcemap, watch, target }
+            {
+                dest = "dest",
+                types,
+                exports,
+                minify,
+                sourcemap,
+                watch,
+                target,
+                format,
+                metaUrl,
+            }
         ) => {
             prepare({
                 src,
                 dest,
                 types,
                 watch,
+                format,
                 minify,
                 exports,
                 sourcemap,
-                target: target ? target.split(/ *, */) : null,
+                metaUrl: metaUrl ? toArray(target) : [],
+                target: target ? toArray(target) : null,
             });
         }
     );
