@@ -1,5 +1,6 @@
 /node_modules
 /tests
 /jsconfig.json
+/package-lock.json
 /rollup.config.js
 /dest

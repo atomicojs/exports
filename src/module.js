@@ -5,6 +5,7 @@ import path from "path";
 import { exec } from "child_process";
 import { promisify } from "util";
 import { readFile, writeFile } from "fs/promises";
+import { getValueIndentation } from "@uppercod/indentation";
 import { pluginExternals } from "./plugin-externals.js";
 import pluginMetaUrl from "@uppercod/esbuild-meta-url";
 
@@ -31,13 +32,13 @@ const assets = [
     "md",
 ];
 
-const logger = (message) => {
+function logger(message) {
     const date = new Date();
     const time = [date.getHours(), date.getMinutes(), date.getSeconds()]
         .map((value) => (value > 9 ? value : "0" + value))
         .join(":");
     console.log(`[${time}] ${message}`);
-};
+}
 
 /**
  * @param {object} config
@@ -49,6 +50,7 @@ const logger = (message) => {
  * @param {boolean} [config.exports]
  * @param {boolean} [config.sourcemap]
  * @param {boolean} [config.format]
+ * @param {string} [config.workspace]
  * @param {string[]} [config.target]
  * @param {string[]} [config.metaUrl]
  * @param {(config:import("esbuild").BuildOptions)=>import("esbuild").BuildOptions} [config.preload]
@@ -59,7 +61,18 @@ export async function prepare(config) {
     logger("Initializing...");
     //@ts-ignore
     const entryPoints = await glob(config.src);
-    const pkg = await getPkg();
+    const pkgRootSrc = process.cwd() + "/package.json";
+    const [pkg, pkgText] = await getJson(pkgRootSrc);
+
+    const external = getExternal(pkg);
+
+    if (config.workspace) {
+        (
+            await Promise.all(
+                (await glob(config.workspace)).map((file) => getJson(file))
+            )
+        ).forEach(([pkg]) => getExternal(pkg, external));
+    }
 
     const metaUrl = (config.metaUrl || [])
         .concat(assets)
@@ -74,6 +87,7 @@ export async function prepare(config) {
         logger("Generating outputs with esbuild...");
     }
 
+    const externalKeys = Object.keys(external);
     /**
      * @type {import("esbuild").BuildOptions}
      */
@@ -87,6 +101,7 @@ export async function prepare(config) {
         bundle: true,
         format: config.format || "esm",
         splitting: true,
+        external: externalKeys,
         watch: config.watch
             ? {
                   onRebuild(error) {
@@ -102,7 +117,7 @@ export async function prepare(config) {
         plugins: [
             pluginMetaUrl(metaUrl),
             jsxRuntime(),
-            pluginExternals(Object.keys(pkg.dependencies || {})),
+            pluginExternals(externalKeys),
         ],
     };
 
@@ -117,43 +132,78 @@ export async function prepare(config) {
     if (config.watch) {
         logger("waiting for changes...");
     } else {
-        await Promise.all([
-            config.types &&
-                new Promise(async (resolve, reject) => {
-                    try {
-                        logger("Preparing types...");
-                        await generateTypes(entryPoints);
-                        resolve();
-                        logger("Finished types!");
-                    } catch (e) {
-                        console.error(e);
-                        reject();
-                    }
-                }),
-            config.exports &&
-                new Promise((resolve, reject) => {
-                    try {
-                        logger("Adding outputs to package.json#exports...");
-                        generateExports(pkg, metafile);
-                        resolve();
-                        logger("Added outputs!");
-                    } catch (e) {
-                        console.error(e);
-                        reject();
-                    }
-                }),
-        ]);
+        if (config.exports || config.workspace) {
+            config.exports && setPkgExports(pkg, metafile);
+            config.workspace && setPkgDependencies(pkg);
+
+            logger("Preparing package.json...");
+
+            const [, space] = pkgText.match(/^(\s+)"/m);
+
+            await writeFile(
+                pkgRootSrc,
+                JSON.stringify(
+                    pkg,
+                    null,
+                    getValueIndentation(space) / getValueIndentation(" ")
+                )
+            );
+
+            logger("Finished package.json!");
+        }
+
+        if (config.types) {
+            logger("Preparing types...");
+
+            await generateTypes(entryPoints);
+
+            logger("Finished types!");
+        }
+
         logger("completed!");
     }
 }
 
-const getPkg = async () =>
-    JSON.parse(await readFile(process.cwd() + "/package.json", "utf-8"));
+/**
+ * Read a json document
+ * @param {string} file
+ * @returns {Promise<{[prop:string]:any}>}
+ */
+async function getJson(file) {
+    const text = await readFile(file, "utf-8");
+    return [JSON.parse(text), text];
+}
+
+/**
+ * Get external files not to be included in the build
+ * @param {{[prop:string]:any}} pkg
+ * @param {{[prop:string]:Set<string>}} external
+ * @returns {{[prop:string]:Set<string>}}
+ */
+function getExternal(pkg, external = {}) {
+    const { dependencies } = pkg;
+    for (const prop in dependencies) {
+        external[prop] = external[prop] || new Set();
+        external[prop].add(dependencies[prop]);
+    }
+    return external;
+}
+
+function setPkgDependencies(pkg, external) {
+    const { dependencies = {} } = pkg;
+    for (const prop in external) {
+        if (!dependencies[prop]) {
+            const [first] = [...external[prop]];
+            dependencies[prop] = first;
+        }
+    }
+    pkg.dependencies = dependencies;
+}
 /**
  * @param {object} pkg
  * @param {import("esbuild").Metafile} metafile
  */
-async function generateExports(pkg, metafile) {
+async function setPkgExports(pkg, metafile) {
     pkg.exports = Object.entries(metafile.outputs)
         .filter(([, { entryPoint = "" }]) => /\.[jt]s[x]*$/.test(entryPoint))
         .reduce(
@@ -165,11 +215,6 @@ async function generateExports(pkg, metafile) {
                 ...pkg.exports,
             }
         );
-
-    await writeFile(
-        process.cwd() + "/package.json",
-        JSON.stringify(pkg, null, pkg?.prettier?.tabWidth || 2)
-    );
 }
 /**
  *

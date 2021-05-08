@@ -3,7 +3,7 @@ import {jsx as _jsx} from "atomico/jsx-runtime";
 import {c} from "atomico";
 
 // tests/style.css
-var style_default = new URL("./style-597-60a-596.css", import.meta.url);
+var style_default = new URL("./style-597-60a-596.css", import.meta.url).href;
 
 // tests/atomico.jsx
 function component() {

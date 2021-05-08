@@ -1,7 +1,7 @@
 {
     "name": "@atomico/exports",
     "type": "module",
-    "version": "0.4.0",
+    "version": "0.5.0",
     "description": "It allows to generate an export to quickly publish components created with Atomico in NPM",
     "main": "./cli.cjs",
     "module": "./src/cli.js",
@@ -35,7 +35,8 @@
     "dependencies": {
         "@types/node": "^14.14.41",
         "@uppercod/esbuild-jsx-runtime": "latest",
-        "@uppercod/esbuild-meta-url": "latest",
+        "@uppercod/esbuild-meta-url": "^1.1.0",
+        "@uppercod/indentation": "^1.0.0",
         "atomico": "latest",
         "cac": "^6.7.2",
         "esbuild": "^0.11.12",

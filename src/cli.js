@@ -18,6 +18,10 @@ cli.command("<...files>", "Build files")
         "--target <target>",
         "Defines the target to associate for the output"
     )
+    .option(
+        "--workspace <packages>",
+        "associate the workspace dependencies to the root package.json"
+    )
     .option("--sourcemap", "generate the sourcemap")
     .example("PKG.CLI components/*.jsx")
     .example("PKG.CLI components/*.jsx --types")
@@ -36,6 +40,7 @@ cli.command("<...files>", "Build files")
                 target,
                 format,
                 metaUrl,
+                workspace,
             }
         ) => {
             prepare({
@@ -47,6 +52,7 @@ cli.command("<...files>", "Build files")
                 minify,
                 exports,
                 sourcemap,
+                workspace,
                 metaUrl: metaUrl ? toArray(target) : [],
                 target: target ? toArray(target) : null,
             });
