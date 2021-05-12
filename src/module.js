@@ -132,13 +132,21 @@ export async function prepare(config) {
     if (config.watch) {
         logger("waiting for changes...");
     } else {
-        if (config.exports || config.workspace) {
+        if (config.exports || config.workspace || config.types) {
             config.exports && setPkgExports(pkg, metafile);
             config.workspace && setPkgDependencies(pkg);
 
             logger("Preparing package.json...");
 
             const [, space] = pkgText.match(/^(\s+)"/m);
+
+            if (config.types) {
+                logger("Preparing types...");
+
+                await generateTypes(entryPoints, pkg);
+
+                logger("Finished types!");
+            }
 
             await writeFile(
                 pkgRootSrc,
@@ -150,14 +158,6 @@ export async function prepare(config) {
             );
 
             logger("Finished package.json!");
-        }
-
-        if (config.types) {
-            logger("Preparing types...");
-
-            await generateTypes(entryPoints);
-
-            logger("Finished types!");
         }
 
         logger("completed!");
@@ -220,8 +220,11 @@ async function setPkgExports(pkg, metafile) {
  *
  * @param {string[]} entryPoints
  */
-async function generateTypes(entryPoints) {
+async function generateTypes(entryPoints, pkg) {
     const serialieCommand = Object.entries({
+        moduleResolution: "Node",
+        target: "ESNext",
+        listEmittedFiles: true,
         strict: true,
         jsx: "react-jsx",
         jsxImportSource: "atomico",
@@ -235,5 +238,30 @@ async function generateTypes(entryPoints) {
         ""
     );
 
-    await pexec(`npx tsc ${entryPoints.join(" ")} ${serialieCommand}`);
+    const expectTsd = entryPoints.map((entry) => path.parse(entry).name);
+
+    const { stdout } = await pexec(
+        `npx tsc ${entryPoints.join(" ")} ${serialieCommand}`
+    );
+
+    const { typesVersions = {} } = pkg;
+
+    const prevAll = typesVersions["*"] || {};
+
+    typesVersions["*"] = stdout
+        .split(/\n/)
+        .filter((file) => file.startsWith("TSFILE:"))
+        .map((line) => {
+            const file = path
+                .relative(process.cwd(), line.replace(/^TSFILE:\s+/, "").trim())
+                .replace(/\\/g, "/");
+            return [file, path.parse(file).name.replace(/\.d$/, "")];
+        })
+        .filter(([, name]) => expectTsd.includes(name))
+        .reduce((exp, [file, name]) => {
+            exp[name] = [file];
+            return exp;
+        }, prevAll);
+
+    pkg.typesVersions = typesVersions;
 }

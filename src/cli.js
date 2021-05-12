@@ -4,7 +4,7 @@ export { prepare } from "./module.js";
 
 const toArray = (value) => value.split(/ *, */);
 
-const cli = cac("devserver").version("PKG.VERSION");
+const cli = cac("devserver").version("0.6.0");
 
 cli.command("<...files>", "Build files")
     .option("--dest <dest>", "Choose a project type")
@@ -23,10 +23,10 @@ cli.command("<...files>", "Build files")
         "associate the workspace dependencies to the root package.json"
     )
     .option("--sourcemap", "generate the sourcemap")
-    .example("PKG.CLI components/*.jsx")
-    .example("PKG.CLI components/*.jsx --types")
-    .example("PKG.CLI components/*.jsx --exports")
-    .example("PKG.CLI components/*.jsx --types --exports")
+    .example("exports components/*.jsx")
+    .example("exports components/*.jsx --types")
+    .example("exports components/*.jsx --exports")
+    .example("exports components/*.jsx --types --exports")
     .action(
         (
             src,
