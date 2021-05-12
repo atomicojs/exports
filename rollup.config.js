@@ -1,5 +1,4 @@
 import builtins from "builtin-modules";
-import replace from "@rollup/plugin-replace";
 import pkg from "./package.json";
 
 export default {
@@ -11,11 +10,4 @@ export default {
         sourcemap: true,
         banner: "#!/usr/bin/env node",
     },
-    plugins: [
-        replace({
-            "PKG.NAME": pkg.name,
-            "PKG.VERSION": pkg.version,
-            "PKG.CLI": Object.keys(pkg.bin).slice(0, 1).join(""),
-        }),
-    ],
 };
