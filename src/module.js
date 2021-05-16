@@ -236,7 +236,7 @@ async function generateTypes(entryPoints, pkg, main) {
         allowJs: true,
         declaration: true,
         emitDeclarationOnly: true,
-        outDir: "./",
+        outDir: "./types",
         lib: ["ESNext", "DOM", "DOM.Iterable"],
     }).reduce(
         (command, [index, value]) => command + ` --${index} ${value}`,
