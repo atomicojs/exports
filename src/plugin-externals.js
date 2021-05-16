@@ -3,7 +3,7 @@
  * @returns {import("esbuild").Plugin}
  */
 export const pluginExternals = (externals) => ({
-    name: "PKG.NAME",
+    name: "exports",
     setup(build) {
         const match = externals.map((name) => RegExp(`^${name}(/.+){0,1}$`));
         build.onResolve({ filter: /^(@|\w+)/ }, (options) =>

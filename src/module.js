@@ -50,7 +50,7 @@ function logger(message) {
  * @param {boolean} [config.exports]
  * @param {boolean} [config.sourcemap]
  * @param {boolean} [config.format]
- * @param {string} [config.index]
+ * @param {string} [config.main]
  * @param {string} [config.workspace]
  * @param {string[]} [config.target]
  * @param {string[]} [config.metaUrl]
@@ -58,7 +58,7 @@ function logger(message) {
  * @returns
  */
 export async function prepare(config) {
-    console.log("\nPKG.NAME");
+    console.log("\nExports");
     logger("Initializing...");
     //@ts-ignore
     const entryPoints = await glob(config.src);
@@ -134,7 +134,7 @@ export async function prepare(config) {
         logger("waiting for changes...");
     } else {
         if (config.exports || config.workspace || config.types) {
-            config.exports && setPkgExports(pkg, metafile, config.index);
+            config.exports && setPkgExports(pkg, metafile, config.main);
             config.workspace && setPkgDependencies(pkg);
 
             logger("Preparing package.json...");
@@ -204,13 +204,13 @@ function setPkgDependencies(pkg, external) {
  * @param {object} pkg
  * @param {import("esbuild").Metafile} metafile
  */
-async function setPkgExports(pkg, metafile, index) {
+async function setPkgExports(pkg, metafile, main) {
     pkg.exports = Object.entries(metafile.outputs)
         .filter(([, { entryPoint = "" }]) => /\.[jt]s[x]*$/.test(entryPoint))
         .reduce(
             (exports, [output]) => {
                 const { name } = path.parse(output);
-                const prop = name == index ? "." : "./" + name;
+                const prop = name == main ? "." : "./" + name;
                 return {
                     ...exports,
                     [prop]: "./" + output,
