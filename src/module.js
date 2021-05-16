@@ -144,7 +144,7 @@ export async function prepare(config) {
             if (config.types) {
                 logger("Preparing types...");
 
-                await generateTypes(entryPoints, pkg);
+                await generateTypes(entryPoints, pkg, config.main);
 
                 logger("Finished types!");
             }
@@ -225,7 +225,7 @@ async function setPkgExports(pkg, metafile, main) {
  *
  * @param {string[]} entryPoints
  */
-async function generateTypes(entryPoints, pkg, index) {
+async function generateTypes(entryPoints, pkg, main) {
     const serialieCommand = Object.entries({
         moduleResolution: "Node",
         target: "ESNext",
@@ -265,7 +265,7 @@ async function generateTypes(entryPoints, pkg, index) {
         .filter(([, name]) => expectTsd.includes(name))
         .reduce((exp, [file, name]) => {
             // associate the type as the root of the project
-            if (name == index) pkg.types = file;
+            if (name == main) pkg.types = file;
             // create the type export
             exp[name] = [file];
             return exp;
