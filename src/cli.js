@@ -15,6 +15,10 @@ cli.command("<...files>", "Build files")
     .option("--meta-url <files>", "resolve files as meta-url")
     .option("--format <format>", "output type, default esm")
     .option(
+        "--index <export>",
+        "define si una exportacion debe ser asociada como root del package"
+    )
+    .option(
         "--target <target>",
         "Defines the target to associate for the output"
     )
@@ -37,6 +41,7 @@ cli.command("<...files>", "Build files")
                 minify,
                 sourcemap,
                 watch,
+                index,
                 target,
                 format,
                 metaUrl,
@@ -48,6 +53,7 @@ cli.command("<...files>", "Build files")
                 dest,
                 types,
                 watch,
+                index,
                 format,
                 minify,
                 exports,

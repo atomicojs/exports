@@ -50,6 +50,7 @@ function logger(message) {
  * @param {boolean} [config.exports]
  * @param {boolean} [config.sourcemap]
  * @param {boolean} [config.format]
+ * @param {string} [config.index]
  * @param {string} [config.workspace]
  * @param {string[]} [config.target]
  * @param {string[]} [config.metaUrl]
@@ -133,7 +134,7 @@ export async function prepare(config) {
         logger("waiting for changes...");
     } else {
         if (config.exports || config.workspace || config.types) {
-            config.exports && setPkgExports(pkg, metafile);
+            config.exports && setPkgExports(pkg, metafile, config.index);
             config.workspace && setPkgDependencies(pkg);
 
             logger("Preparing package.json...");
@@ -203,14 +204,18 @@ function setPkgDependencies(pkg, external) {
  * @param {object} pkg
  * @param {import("esbuild").Metafile} metafile
  */
-async function setPkgExports(pkg, metafile) {
+async function setPkgExports(pkg, metafile, index) {
     pkg.exports = Object.entries(metafile.outputs)
         .filter(([, { entryPoint = "" }]) => /\.[jt]s[x]*$/.test(entryPoint))
         .reduce(
-            (exports, [output]) => ({
-                ...exports,
-                ["./" + path.parse(output).name]: "./" + output,
-            }),
+            (exports, [output]) => {
+                const { name } = path.parse(output);
+                const prop = name == index ? "." : "./" + name;
+                return {
+                    ...exports,
+                    [prop]: "./" + output,
+                };
+            },
             {
                 ...pkg.exports,
             }
@@ -220,7 +225,7 @@ async function setPkgExports(pkg, metafile) {
  *
  * @param {string[]} entryPoints
  */
-async function generateTypes(entryPoints, pkg) {
+async function generateTypes(entryPoints, pkg, index) {
     const serialieCommand = Object.entries({
         moduleResolution: "Node",
         target: "ESNext",
@@ -259,6 +264,9 @@ async function generateTypes(entryPoints, pkg) {
         })
         .filter(([, name]) => expectTsd.includes(name))
         .reduce((exp, [file, name]) => {
+            // associate the type as the root of the project
+            if (name == index) pkg.types = file;
+            // create the type export
             exp[name] = [file];
             return exp;
         }, prevAll);
