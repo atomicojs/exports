@@ -8,8 +8,8 @@ test("simple build", async (t) => {
         dest: "tests/dest",
     });
     t.is(
-        await readFile("./tests/dest/example.js", "utf-8"),
-        await readFile("./tests/expect-example.txt", "utf-8")
+        (await readFile("./tests/dest/example.js", "utf-8")).trim(),
+        (await readFile("./tests/expect-example.txt", "utf-8")).trim()
     );
 });
 
@@ -19,7 +19,7 @@ test("simple build jsx", async (t) => {
         dest: "tests/dest",
     });
     t.is(
-        await readFile("./tests/dest/atomico.js", "utf-8"),
-        await readFile("./tests/expect-atomico.txt", "utf-8")
+        (await readFile("./tests/dest/atomico.js", "utf-8")).trim(),
+        (await readFile("./tests/expect-atomico.txt", "utf-8")).trim()
     );
 });
