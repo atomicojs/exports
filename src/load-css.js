@@ -14,7 +14,7 @@ export async function loadCss({ share, src, dest }) {
 
     return {
         inline: [
-            `import { css } from "atomico";`,
+            `import { css } from "atomico"`,
             `export default css\`${new TextDecoder("utf-8").decode(
                 contents
             )}\``,
