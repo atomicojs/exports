@@ -6,6 +6,7 @@ test("simple build", async (t) => {
     await prepare({
         src: "tests/example.js",
         dest: "tests/dest",
+        minify: true,
     });
     t.is(
         await readFile("./tests/dest/example.js", "utf-8"),
@@ -17,7 +18,7 @@ test("simple build jsx", async (t) => {
     await prepare({
         src: "tests/atomico.jsx",
         dest: "tests/dest",
-        metaUrl: ["css"],
+        minify: true,
     });
     t.is(
         await readFile("./tests/dest/atomico.js", "utf-8"),

@@ -6,8 +6,9 @@ import { exec } from "child_process";
 import { promisify } from "util";
 import { readFile, writeFile } from "fs/promises";
 import { getValueIndentation } from "@uppercod/indentation";
-import { pluginExternals } from "./plugin-externals.js";
 import pluginMetaUrl from "@uppercod/esbuild-meta-url";
+import { pluginExternals } from "./plugin-externals.js";
+import { loadCss } from "./load-css.js";
 
 const pexec = promisify(exec);
 
@@ -84,6 +85,8 @@ export async function prepare(config) {
             return metaUrl;
         }, {});
 
+    metaUrl.css = loadCss;
+
     if (!entryPoints.length) {
         return logger("No file input!");
     } else {
@@ -116,10 +119,13 @@ export async function prepare(config) {
                   },
               }
             : null,
-        loader: metaUrl.css ? {} : { ".css": "text" },
+        loader: {},
         plugins: [
             pluginMetaUrl(metaUrl),
-            jsxRuntime(),
+            jsxRuntime({
+                jsxFragment: `"host"`,
+                inject: `import { h as _jsx } from "atomico";`,
+            }),
             pluginExternals(externalKeys),
         ],
     };
