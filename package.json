@@ -39,7 +39,7 @@
         "@uppercod/indentation": "latest",
         "atomico": "latest",
         "cac": "^6.7.2",
-        "esbuild": "latest",
+        "esbuild": "^0.12.1",
         "fast-glob": "^3.2.5"
     },
     "devDependencies": {

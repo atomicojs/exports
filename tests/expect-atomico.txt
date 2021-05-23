@@ -1,9 +1,9 @@
 // tests/atomico.jsx
-import {h as _jsx} from "atomico";
-import {c} from "atomico";
+import { h as _jsx } from "atomico";
+import { c } from "atomico";
 
 // tests/style.css
-import {css} from "atomico";
+import { css } from "atomico";
 var style_default = css`/* tests/style.css */
 .button {
   width: 200px;
