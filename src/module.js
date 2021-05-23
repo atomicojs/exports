@@ -61,7 +61,9 @@ export async function prepare(config) {
     console.log("\nExports");
     logger("Initializing...");
     //@ts-ignore
-    const entryPoints = await glob(config.src);
+    const entryPoints = await glob(config.src, {
+        ignore: ["**/*.{test,spec}.{js,jsx,ts,tsx}"],
+    });
     const pkgRootSrc = process.cwd() + "/package.json";
     const [pkg, pkgText] = await getJson(pkgRootSrc);
 
