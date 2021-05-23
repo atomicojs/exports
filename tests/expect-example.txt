@@ -1,1 +1,5 @@
-var a=10;export{a as data};
+// tests/example.js
+var data = 10;
+export {
+  data
+};
