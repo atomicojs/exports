@@ -11,6 +11,7 @@ cli.command("<...files>", "Build files")
     .option("--types", "Generate the .d.ts files in root using typescript")
     .option("--exports", "Add the output files to package.json#exports")
     .option("--minify", "minify the code output")
+    .option("--ignore-build", "ignore the use of esbuild")
     .option("--watch", "Enable the use of watch in esbuild")
     .option("--meta-url <files>", "resolve files as meta-url")
     .option("--format <format>", "output type, default esm")
@@ -46,6 +47,7 @@ cli.command("<...files>", "Build files")
                 format,
                 metaUrl,
                 workspace,
+                ignoreBuild,
             }
         ) => {
             prepare({
@@ -61,6 +63,7 @@ cli.command("<...files>", "Build files")
                 workspace,
                 metaUrl: metaUrl ? toArray(target) : [],
                 target: target ? toArray(target) : null,
+                ignoreBuild,
             });
         }
     );

@@ -51,6 +51,7 @@ function logger(message) {
  * @param {boolean} [config.exports]
  * @param {boolean} [config.sourcemap]
  * @param {boolean} [config.format]
+ * @param {boolean} [config.ignoreBuild]
  * @param {string} [config.main]
  * @param {string} [config.workspace]
  * @param {string[]} [config.target]
@@ -89,8 +90,6 @@ export async function prepare(config) {
 
     if (!entryPoints.length) {
         return logger("No file input!");
-    } else {
-        logger("Generating outputs with esbuild...");
     }
 
     const externalKeys = Object.keys(external);
@@ -132,17 +131,23 @@ export async function prepare(config) {
 
     if (config.target) build.target = config.target;
 
-    const { metafile } = await esbuild.build(
-        config.preload ? config.preload(build) : build
-    );
+    /**@type {string[]} */
+    let outputs = entryPoints;
 
-    logger("Esbuild completed...");
+    if (!config.ignoreBuild) {
+        logger("Generating outputs with esbuild...");
+        const { metafile } = await esbuild.build(
+            config.preload ? config.preload(build) : build
+        );
+        outputs = metafile.outputs;
+        logger("Esbuild completed...");
+    }
 
     if (config.watch) {
         logger("waiting for changes...");
     } else {
         if (config.exports || config.workspace || config.types) {
-            config.exports && setPkgExports(pkg, metafile, config.main);
+            config.exports && setPkgExports(pkg, outputs, config.main);
             config.workspace && setPkgDependencies(pkg, external);
 
             logger("Preparing package.json...");
@@ -210,10 +215,10 @@ function setPkgDependencies(pkg, external) {
 }
 /**
  * @param {object} pkg
- * @param {import("esbuild").Metafile} metafile
+ * @param {string[]} outputs
  */
-async function setPkgExports(pkg, metafile, main) {
-    pkg.exports = Object.entries(metafile.outputs)
+async function setPkgExports(pkg, outputs, main) {
+    pkg.exports = outputs
         .filter(([, { entryPoint = "" }]) => /\.[jt]s[x]*$/.test(entryPoint))
         .reduce(
             (exports, [output]) => {
