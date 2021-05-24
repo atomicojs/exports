@@ -219,7 +219,7 @@ function setPkgDependencies(pkg, external) {
  */
 async function setPkgExports(pkg, outputs, main) {
     pkg.exports = outputs
-        .filter(([, { entryPoint = "" }]) => /\.[jt]s[x]*$/.test(entryPoint))
+        .filter((output) => /\.[jt]sx{0,1}$/.test(output))
         .reduce(
             (exports, [output]) => {
                 const { name } = path.parse(output);
