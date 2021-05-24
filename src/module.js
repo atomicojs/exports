@@ -221,7 +221,7 @@ async function setPkgExports(pkg, outputs, main) {
     pkg.exports = outputs
         .filter((output) => /\.[jt]sx{0,1}$/.test(output))
         .reduce(
-            (exports, [output]) => {
+            (exports, output) => {
                 const { name } = path.parse(output);
                 const prop = name == main ? "." : "./" + name;
                 return {
