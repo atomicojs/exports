@@ -143,7 +143,7 @@ export async function prepare(config) {
     } else {
         if (config.exports || config.workspace || config.types) {
             config.exports && setPkgExports(pkg, metafile, config.main);
-            config.workspace && setPkgDependencies(pkg);
+            config.workspace && setPkgDependencies(pkg, external);
 
             logger("Preparing package.json...");
 
