@@ -139,7 +139,9 @@ export async function prepare(config) {
         const { metafile } = await esbuild.build(
             config.preload ? config.preload(build) : build
         );
-        outputs = metafile.outputs;
+        outputs = Object.keys(metafile.outputs).filter(
+            (output) => !/chunk-(\S+)\.js$/.test(output)
+        );
         logger("Esbuild completed...");
     }
 
