@@ -2,9 +2,11 @@ import { c } from "atomico";
 import style from "./style.css";
 
 function component() {
-    return <>ea</>;
+    return <host>ea</host>;
 }
 
 component.styles = style;
 
-customElements.define("my-component", c(component));
+export const Component = c(component);
+
+customElements.define("my-component", Component);
