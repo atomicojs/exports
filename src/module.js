@@ -156,7 +156,7 @@ export async function prepare(config) {
         if (config.reactWrapper) {
             const outputsReactWrapper = await analize(outputs);
             outputs = [...outputs, ...outputsReactWrapper];
-            entryPoints = [...entryPoints, outputsReactWrapper];
+            entryPoints = [...entryPoints, ...outputsReactWrapper];
         }
 
         logger("Esbuild completed...");
