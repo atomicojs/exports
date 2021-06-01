@@ -53,7 +53,6 @@ function logger(message) {
  * @param {boolean} [config.sourcemap]
  * @param {boolean} [config.format]
  * @param {boolean} [config.ignoreBuild]
- * @param {boolean} [config.reactWrapper]
  * @param {string} [config.main]
  * @param {string} [config.workspace]
  * @param {string[]} [config.target]
@@ -66,7 +65,7 @@ export async function prepare(config) {
     logger("Initializing...");
     //@ts-ignore
     let entryPoints = await glob(config.src, {
-        ignore: ["**/*.{test,spec}.{js,jsx,ts,tsx}"],
+        ignore: ["**/*.{test,spec}.{js,jsx,ts,tsx,mjs}"],
     });
 
     const pkgRootSrc = process.cwd() + "/package.json";
@@ -77,7 +76,15 @@ export async function prepare(config) {
     if (config.workspace) {
         (
             await Promise.all(
-                (await glob(config.workspace)).map((file) => getJson(file))
+                (
+                    await glob(
+                        config.workspace +
+                            (config.workspace.endsWith("package.json")
+                                ? ""
+                                : (config.workspace.endsWith("/") ? "" : "/") +
+                                  "package.json")
+                    )
+                ).map((file) => getJson(file))
             )
         ).forEach(([pkg]) => getExternal(pkg, external));
     }
@@ -153,14 +160,12 @@ export async function prepare(config) {
             (output) => !/chunk-(\S+)\.js$/.test(output)
         );
 
-        if (config.reactWrapper) {
-            const outputsReactWrapper = await analize(outputs);
-            outputs = [...outputs, ...outputsReactWrapper];
-            entryPoints = [...entryPoints, ...outputsReactWrapper];
-        }
-
         logger("Esbuild completed...");
     }
+
+    const [outputsReactWrapper, outputsCssVisibility] = await analize(outputs);
+    outputs = [...outputs, ...outputsReactWrapper];
+    entryPoints = [...entryPoints, ...outputsReactWrapper];
 
     if (config.watch) {
         logger("waiting for changes...");
@@ -173,10 +178,12 @@ export async function prepare(config) {
 
             const [, space] = pkgText.match(/^(\s+)"/m);
 
-            if (config.types) {
+            const entriesJs = entryPoints.filter((file) => /\.[jtm]sx{0,1}$/);
+
+            if (config.types && entriesJs.length) {
                 logger("Preparing types...");
 
-                await generateTypes(entryPoints, pkg, config.main);
+                await generateTypes(entriesJs, pkg, config.main);
 
                 logger("Finished types!");
             }
@@ -238,7 +245,7 @@ function setPkgDependencies(pkg, external) {
  */
 async function setPkgExports(pkg, outputs, main) {
     pkg.exports = outputs
-        .filter((output) => /\.[jt]sx{0,1}$/.test(output))
+        .filter((output) => /\.(css|js|mjs)$/.test(output))
         .reduce(
             (exports, output) => {
                 const { name } = path.parse(output);
