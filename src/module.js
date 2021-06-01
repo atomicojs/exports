@@ -65,9 +65,10 @@ export async function prepare(config) {
     console.log("\nExports");
     logger("Initializing...");
     //@ts-ignore
-    const entryPoints = await glob(config.src, {
+    let entryPoints = await glob(config.src, {
         ignore: ["**/*.{test,spec}.{js,jsx,ts,tsx}"],
     });
+
     const pkgRootSrc = process.cwd() + "/package.json";
     const [pkg, pkgText] = await getJson(pkgRootSrc);
 
@@ -153,7 +154,9 @@ export async function prepare(config) {
         );
 
         if (config.reactWrapper) {
-            outputs = await analize(outputs);
+            const outputsReactWrapper = await analize(outputs);
+            outputs = [...outputs, ...outputsReactWrapper];
+            entryPoints = [...entryPoints, outputsReactWrapper];
         }
 
         logger("Esbuild completed...");
