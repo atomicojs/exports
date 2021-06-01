@@ -37,6 +37,8 @@
         "@uppercod/esbuild-jsx-runtime": "latest",
         "@uppercod/esbuild-meta-url": "latest",
         "@uppercod/indentation": "latest",
+        "acorn": "^8.3.0",
+        "acorn-walk": "^8.1.0",
         "atomico": "latest",
         "cac": "^6.7.2",
         "esbuild": "^0.12.1",

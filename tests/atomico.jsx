@@ -8,5 +8,4 @@ function component() {
 component.styles = style;
 
 export const Component = c(component);
-
 customElements.define("my-component", Component);

@@ -9,6 +9,7 @@ import { getValueIndentation } from "@uppercod/indentation";
 import pluginMetaUrl from "@uppercod/esbuild-meta-url";
 import { pluginExternals } from "./plugin-externals.js";
 import { loadCss } from "./load-css.js";
+import { analize } from "./analize.js";
 
 const pexec = promisify(exec);
 
@@ -52,6 +53,7 @@ function logger(message) {
  * @param {boolean} [config.sourcemap]
  * @param {boolean} [config.format]
  * @param {boolean} [config.ignoreBuild]
+ * @param {boolean} [config.reactWrapper]
  * @param {string} [config.main]
  * @param {string} [config.workspace]
  * @param {string[]} [config.target]
@@ -137,6 +139,11 @@ export async function prepare(config) {
     if (!config.ignoreBuild) {
         logger("Generating outputs with esbuild...");
 
+        // build.entryPoints.map(async (entry) => {
+        //     const content = await readFile(entry, "utf-8");
+
+        // });
+
         const { metafile } = await esbuild.build(
             config.preload ? config.preload(build) : build
         );
@@ -144,6 +151,10 @@ export async function prepare(config) {
         outputs = Object.keys(metafile.outputs).filter(
             (output) => !/chunk-(\S+)\.js$/.test(output)
         );
+
+        if (config.reactWrapper) {
+            outputs = await analize(outputs);
+        }
 
         logger("Esbuild completed...");
     }

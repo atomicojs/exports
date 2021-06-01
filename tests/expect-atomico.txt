@@ -16,4 +16,8 @@ function component() {
   return /* @__PURE__ */ _jsx("host", null, "ea");
 }
 component.styles = style_default;
-customElements.define("my-component", c(component));
+var Component = c(component);
+customElements.define("my-component", Component);
+export {
+  Component
+};
