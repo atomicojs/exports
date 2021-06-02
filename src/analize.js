@@ -29,9 +29,17 @@ export async function analize(outputs) {
                         CallExpression(node) {
                             const { object } = node.callee;
                             if (object && object.name == "customElements") {
-                                const [literal, identifier] = node.arguments;
+                                const [literal, identifier, options] =
+                                    node.arguments;
+
                                 customElements.set(identifier.name, {
                                     tagName: literal.value,
+                                    is:
+                                        options &&
+                                        options.properties[0] &&
+                                        options.properties[0].key.name ==
+                                            "extends" &&
+                                        options.properties[0].value.value,
                                 });
                             }
                         },
@@ -47,8 +55,10 @@ export async function analize(outputs) {
                                 ([name]) => `${name} as _${name}`
                             )} } from "./${base}";`,
                             ...items.map(
-                                ([name, { tagName }]) =>
-                                    `export const ${name} = wrapper("${tagName}", _${name});`
+                                ([name, { tagName, is }]) =>
+                                    `export const ${name} = wrapper("${tagName}", _${name}${
+                                        is ? `, { extends: "${is}" }` : ""
+                                    });`
                             ),
                         ];
 
