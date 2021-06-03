@@ -74,14 +74,13 @@ export async function analyzer({ pkgName, dest, entryPoints, ...options }) {
                         ),
                     ];
 
-                    const codeTs = items
-                        .map(([component]) => [
+                    const codeTs = items.map(([component]) =>
+                        [
                             `export const ${component}: import("@atomico/react").Component<`,
-                            `import("${pkgName}/${name}").${component},`,
-                            `import("${pkgName}/${name}").${component}`,
+                            `typeof import("${pkgName}/${name}").${component}`,
                             `>`,
-                        ])
-                        .flat();
+                        ].join("")
+                    );
 
                     const codeCss = `${items.map(
                         ([, { tagName }]) => `${tagName}:not(:defined)`
@@ -99,7 +98,7 @@ export async function analyzer({ pkgName, dest, entryPoints, ...options }) {
 
                     if (exportCss) await write(exportCss, codeCss);
 
-                    if (exportTs) await write(exportTs, codeTs.join(""));
+                    if (exportTs) await write(exportTs, codeTs.join(";"));
 
                     return [exportJs, exportCss, exportTs];
                 }
