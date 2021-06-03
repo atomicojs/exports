@@ -1,19 +1,18 @@
 import * as acorn from "acorn";
 import * as acornWalk from "acorn-walk";
 import path from "path";
-import { readFile } from "fs/promises";
 import esbuild from "esbuild";
+import { readFile } from "fs/promises";
 import { isJs, write } from "./utils.js";
 import { TS_CONFIG } from "./constants.js";
 
-const nodeModules = path.join(process.cwd(), "node_modules", "@atomico/");
 /**
  * @param {Object} options
  * @param {string} options.pkgName
  * @param {string} options.dest
  * @param {string[]} options.entryPoints
  */
-export async function analize({ pkgName, dest, entryPoints }) {
+export async function analyzer({ pkgName, dest, entryPoints }) {
     return (
         await Promise.all(
             entryPoints.filter(isJs).map(async (file) => {
@@ -86,8 +85,8 @@ export async function analize({ pkgName, dest, entryPoints }) {
                         ([, { tagName }]) => `${tagName}:not(:defined)`
                     )}{ visibility: hidden }`;
 
-                    const exportJs = `./${dest}/${name}.react.js`;
-                    const exportCss = `./${dest}/${name}.visibility.css`;
+                    const exportJs = `${dest}/${name}.react.js`;
+                    const exportCss = `${dest}/${name}.visibility.css`;
                     const exportTs = `${TS_CONFIG.outDir}/${name}.react.d.ts`;
 
                     write(exportJs, codeJs.join(""));

@@ -12,11 +12,14 @@ export async function write(dest, content) {
     }
 }
 
+export const addDotRelative = (file) =>
+    file.startsWith("./") ? file : "./" + file;
+
 /**
  * @param {object} pkg
  * @param {string[]} outputs
  */
-function setPkgExports(pkg, outputs, main) {
+export function setPkgExports(pkg, outputs, main) {
     pkg.exports = outputs
         .filter((output) => /\.(css|js|mjs)$/.test(output))
         .reduce(
@@ -25,7 +28,7 @@ function setPkgExports(pkg, outputs, main) {
                 const prop = name == main ? "." : "./" + name;
                 return {
                     ...exports,
-                    [prop]: "./" + output,
+                    [prop]: addDotRelative(output),
                 };
             },
             {
@@ -34,7 +37,7 @@ function setPkgExports(pkg, outputs, main) {
         );
 }
 
-function setPkgTypesVersions(pkg, outputs, main) {
+export function setPkgTypesVersions(pkg, outputs, main) {
     const { typesVersions = {} } = pkg;
 
     const prevAll = typesVersions["*"] || {};
@@ -47,9 +50,20 @@ function setPkgTypesVersions(pkg, outputs, main) {
             if (id == main) {
                 pkg.types = output;
             }
-            all[id] = [output];
+            all[id] = [addDotRelative(output)];
             return all;
         }, prevAll);
 
     pkg.typesVersions = typesVersions;
+}
+
+export function setPkgDependencies(pkg, external) {
+    const { dependencies = {} } = pkg;
+    for (const prop in external) {
+        if (!dependencies[prop]) {
+            const [first] = [...external[prop]];
+            dependencies[prop] = first;
+        }
+    }
+    pkg.dependencies = dependencies;
 }

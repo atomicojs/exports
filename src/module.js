@@ -9,8 +9,13 @@ import { getValueIndentation } from "@uppercod/indentation";
 import pluginMetaUrl from "@uppercod/esbuild-meta-url";
 import { pluginExternals } from "./plugin-externals.js";
 import { loadCss } from "./load-css.js";
-import { analize } from "./analize.js";
-import { isJs } from "./utils.js";
+import { analyzer } from "./analyzer.js";
+import {
+    isJs,
+    setPkgExports,
+    setPkgDependencies,
+    setPkgTypesVersions,
+} from "./utils.js";
 import { TS_CONFIG } from "./constants.js";
 
 const pexec = promisify(exec);
@@ -106,12 +111,15 @@ export async function prepare(config) {
 
     const externalKeys = Object.keys(external);
 
-    const [exportsJs, exportsCss, exportsTs] = await analize({
+    const [exportsJs, exportsCss, exportsTs] = await analyzer({
         pkgName: pkg.name,
         dest: config.dest,
         entryPoints,
     });
 
+    setPkgExports(pkg, exportsJs);
+    setPkgExports(pkg, exportsCss);
+    setPkgTypesVersions(pkg, exportsTs);
     /**
      * @type {import("esbuild").BuildOptions}
      */
@@ -184,8 +192,6 @@ export async function prepare(config) {
 
             logger("Preparing package.json...");
 
-            const [, space] = pkgText.match(/^(\s+)"/m);
-
             const entriesJs = entryPoints.filter(isJs);
 
             if (config.types && entriesJs.length) {
@@ -196,20 +202,22 @@ export async function prepare(config) {
                 logger("Finished types!");
             }
 
-            await writeFile(
-                pkgRootSrc,
-                JSON.stringify(
-                    pkg,
-                    null,
-                    getValueIndentation(space) / getValueIndentation(" ")
-                )
-            );
-
             logger("Finished package.json!");
         }
 
         logger("completed!");
     }
+
+    const [, space] = pkgText.match(/^(\s+)"/m);
+
+    await writeFile(
+        pkgRootSrc,
+        JSON.stringify(
+            pkg,
+            null,
+            getValueIndentation(space) / getValueIndentation(" ")
+        )
+    );
 }
 
 /**
@@ -237,17 +245,6 @@ function getExternal(pkg, external = {}) {
     return external;
 }
 
-function setPkgDependencies(pkg, external) {
-    const { dependencies = {} } = pkg;
-    for (const prop in external) {
-        if (!dependencies[prop]) {
-            const [first] = [...external[prop]];
-            dependencies[prop] = first;
-        }
-    }
-    pkg.dependencies = dependencies;
-}
-
 /**
  *
  * @param {string[]} entryPoints
@@ -273,7 +270,8 @@ async function generateTypes(entryPoints, pkg, main) {
                 .replace(/\\/g, "/");
             return [file, path.parse(file).name.replace(/\.d$/, "")];
         })
-        .filter(([, name]) => expectTsd.includes(name));
+        .filter(([, name]) => expectTsd.includes(name))
+        .map(([file]) => file);
 
-    console.log(exportsTs);
+    setPkgTypesVersions(pkg, exportsTs, main);
 }
