@@ -1,86 +1,110 @@
 import * as acorn from "acorn";
 import * as acornWalk from "acorn-walk";
 import path from "path";
-import { readFile, writeFile } from "fs/promises";
+import { readFile } from "fs/promises";
+import esbuild from "esbuild";
+import { isJs, write } from "./utils.js";
+import { TS_CONFIG } from "./constants.js";
+
+const nodeModules = path.join(process.cwd(), "node_modules", "@atomico/");
 /**
- * @param {string[]} outputs
+ * @param {Object} options
+ * @param {string} options.pkgName
+ * @param {string} options.dest
+ * @param {string[]} options.entryPoints
  */
-export async function analize(outputs) {
+export async function analize({ pkgName, dest, entryPoints }) {
     return (
         await Promise.all(
-            outputs
-                .filter((output) => /\.(js|mjs)$/.test(output))
-                .map(async (file) => {
-                    const content = await readFile(file, "utf-8");
-                    const ast = acorn.parse(content, {
-                        ecmaVersion: "latest",
-                        sourceType: "module",
-                    });
+            entryPoints.filter(isJs).map(async (file) => {
+                const { base, ext, name } = path.parse(file);
 
-                    const customElements = new Map();
+                const { code } = await esbuild.transform(
+                    await readFile(file, "utf-8"),
+                    { format: "esm", loader: ext.slice(1) }
+                );
 
-                    acornWalk.ancestor(ast, {
-                        ExportNamedDeclaration(node) {
-                            const { specifiers } = node;
-                            const [{ exported }] = specifiers;
-                            const ref = customElements.get(exported.name);
-                            if (ref) ref.export = true;
-                        },
-                        CallExpression(node) {
-                            const { object } = node.callee;
-                            if (object && object.name == "customElements") {
-                                const [literal, identifier, options] =
-                                    node.arguments;
+                const ast = acorn.parse(code, {
+                    ecmaVersion: "latest",
+                    sourceType: "module",
+                });
 
-                                customElements.set(identifier.name, {
-                                    tagName: literal.value,
-                                    is:
-                                        options &&
-                                        options.properties[0] &&
-                                        options.properties[0].key.name ==
-                                            "extends" &&
-                                        options.properties[0].value.value,
-                                });
-                            }
-                        },
-                    });
+                const customElements = new Map();
 
-                    if (customElements.size) {
-                        const items = [...customElements];
-                        const { base } = path.parse(file);
+                acornWalk.ancestor(ast, {
+                    ExportNamedDeclaration(node) {
+                        const { specifiers } = node;
+                        const [{ exported }] = specifiers;
+                        const ref = customElements.get(exported.name);
+                        if (ref) ref.export = true;
+                    },
+                    CallExpression(node) {
+                        const { object } = node.callee;
+                        if (object && object.name == "customElements") {
+                            const [literal, identifier, options] =
+                                node.arguments;
 
-                        const codeJs = [
-                            `import { wrapper } from "@atomico/react";`,
-                            `import { ${items.map(
-                                ([name]) => `${name} as _${name}`
-                            )} } from "./${base}";`,
-                            ...items.map(
-                                ([name, { tagName, is }]) =>
-                                    `export const ${name} = wrapper("${tagName}", _${name}${
-                                        is ? `, { extends: "${is}" }` : ""
-                                    });`
-                            ),
-                        ];
+                            customElements.set(identifier.name, {
+                                tagName: literal.value,
+                                is:
+                                    options &&
+                                    options.properties[0] &&
+                                    options.properties[0].key.name ==
+                                        "extends" &&
+                                    options.properties[0].value.value,
+                            });
+                        }
+                    },
+                });
 
-                        const outFileReact = file.replace(
-                            /\.(\w+)$/,
-                            ".react.$1"
-                        );
-                        const outFileCss = file.replace(
-                            /\.(\w+)$/,
-                            ".visibility.css"
-                        );
+                if (customElements.size) {
+                    const items = [...customElements];
 
-                        const codeCss = `${items.map(
-                            ([, { tagName }]) => `${tagName}:not(:defined)`
-                        )}{ visibility: hidden }`;
+                    const codeJs = [
+                        `import { wrapper } from "@atomico/react";`,
+                        `import { ${items.map(
+                            ([component]) => `${component} as _${component}`
+                        )} } from "${pkgName}/${name}";`,
+                        ...items.map(
+                            ([component, { tagName, is }]) =>
+                                `export const ${component} = wrapper("${tagName}", _${component}${
+                                    is ? `, { extends: "${is}" }` : ""
+                                });`
+                        ),
+                    ];
 
-                        writeFile(outFileReact, codeJs.join("\n"));
-                        writeFile(outFileCss, codeCss);
+                    const codeTs = items
+                        .map(([component]) => [
+                            `export const ${component}: import("@atomico/react").Component<`,
+                            `import("${pkgName}/${name}").${component},`,
+                            `import("${pkgName}/${name}").${component}`,
+                            `>`,
+                        ])
+                        .flat();
 
-                        return [outFileReact, outFileCss];
-                    }
-                })
+                    const entryReact =
+                        nodeModules + base.replace(/\.(\w+)$/, ".react.$1");
+
+                    const entryCss =
+                        nodeModules +
+                        base.replace(/\.(\w+)$/, ".visibility.css");
+
+                    const codeCss = `${items.map(
+                        ([, { tagName }]) => `${tagName}:not(:defined)`
+                    )}{ visibility: hidden }`;
+
+                    write(`${dest}/react/${name}.js`, codeJs.join("\n"));
+
+                    write(`${dest}/visibility/${name}.css`, codeCss);
+
+                    write(
+                        `${TS_CONFIG.outDir}/react/${name}.d.ts`,
+                        codeTs.join("")
+                    );
+
+                    return [entryReact, entryCss];
+                }
+            })
         )
     )
         .filter((outFile) => outFile)

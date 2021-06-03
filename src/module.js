@@ -10,6 +10,8 @@ import pluginMetaUrl from "@uppercod/esbuild-meta-url";
 import { pluginExternals } from "./plugin-externals.js";
 import { loadCss } from "./load-css.js";
 import { analize } from "./analize.js";
+import { isJs } from "./utils.js";
+import { TS_CONFIG } from "./constants.js";
 
 const pexec = promisify(exec);
 
@@ -103,6 +105,15 @@ export async function prepare(config) {
     }
 
     const externalKeys = Object.keys(external);
+
+    const [entryReact, entryCss] = await analize({
+        pkgName: pkg.name,
+        dest: config.dest,
+        entryPoints,
+    });
+
+    //entryPoints.push(...entryReact, ...entryCss);
+
     /**
      * @type {import("esbuild").BuildOptions}
      */
@@ -163,9 +174,8 @@ export async function prepare(config) {
         logger("Esbuild completed...");
     }
 
-    const [outputsReactWrapper, outputsCssVisibility] = await analize(outputs);
-    outputs = [...outputs, ...outputsReactWrapper];
-    entryPoints = [...entryPoints, ...outputsReactWrapper];
+    // outputs = [...outputs, ...outputsReactWrapper, ...outputsCssVisibility];
+    // entryPoints = [...entryPoints, ...outputsReactWrapper];
 
     if (config.watch) {
         logger("waiting for changes...");
@@ -178,7 +188,7 @@ export async function prepare(config) {
 
             const [, space] = pkgText.match(/^(\s+)"/m);
 
-            const entriesJs = entryPoints.filter((file) => /\.[jtm]sx{0,1}$/);
+            const entriesJs = entryPoints.filter(isJs);
 
             if (config.types && entriesJs.length) {
                 logger("Preparing types...");
@@ -265,19 +275,7 @@ async function setPkgExports(pkg, outputs, main) {
  * @param {string[]} entryPoints
  */
 async function generateTypes(entryPoints, pkg, main) {
-    const serialieCommand = Object.entries({
-        moduleResolution: "Node",
-        target: "ESNext",
-        listEmittedFiles: true,
-        strict: true,
-        jsx: "react-jsx",
-        jsxImportSource: "atomico",
-        allowJs: true,
-        declaration: true,
-        emitDeclarationOnly: true,
-        outDir: "./types",
-        lib: ["ESNext", "DOM", "DOM.Iterable"],
-    }).reduce(
+    const serialieCommand = Object.entries(TS_CONFIG).reduce(
         (command, [index, value]) => command + ` --${index} ${value}`,
         ""
     );
