@@ -82,37 +82,35 @@ export async function analize({ pkgName, dest, entryPoints }) {
                         ])
                         .flat();
 
-                    const entryReact =
-                        nodeModules + base.replace(/\.(\w+)$/, ".react.$1");
-
-                    const entryCss =
-                        nodeModules +
-                        base.replace(/\.(\w+)$/, ".visibility.css");
-
                     const codeCss = `${items.map(
                         ([, { tagName }]) => `${tagName}:not(:defined)`
                     )}{ visibility: hidden }`;
 
-                    write(`${dest}/react/${name}.js`, codeJs.join("\n"));
+                    const exportJs = `./${dest}/${name}.react.js`;
+                    const exportCss = `./${dest}/${name}.visibility.css`;
+                    const exportTs = `${TS_CONFIG.outDir}/${name}.react.d.ts`;
 
-                    write(`${dest}/visibility/${name}.css`, codeCss);
+                    write(exportJs, codeJs.join(""));
 
-                    write(
-                        `${TS_CONFIG.outDir}/react/${name}.d.ts`,
-                        codeTs.join("")
-                    );
+                    write(exportCss, codeCss);
 
-                    return [entryReact, entryCss];
+                    write(exportTs, codeTs.join(""));
+
+                    return [exportJs, exportCss, exportTs];
                 }
             })
         )
     )
         .filter((outFile) => outFile)
         .reduce(
-            ([outFilesReact, outFilesCss], [outFileReact, outFileCss]) => [
-                [...outFilesReact, outFileReact],
-                [...outFilesCss, outFileCss],
+            (
+                [exportsJs, exportsCss, exportsTs],
+                [exportJs, exportCss, exportTs]
+            ) => [
+                [...exportsJs, exportJs],
+                [...exportsCss, exportCss],
+                [...exportsTs, exportTs],
             ],
-            [[], []]
+            [[], [], []]
         );
 }

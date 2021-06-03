@@ -106,13 +106,11 @@ export async function prepare(config) {
 
     const externalKeys = Object.keys(external);
 
-    const [entryReact, entryCss] = await analize({
+    const [exportsJs, exportsCss, exportsTs] = await analize({
         pkgName: pkg.name,
         dest: config.dest,
         entryPoints,
     });
-
-    //entryPoints.push(...entryReact, ...entryCss);
 
     /**
      * @type {import("esbuild").BuildOptions}
@@ -249,27 +247,7 @@ function setPkgDependencies(pkg, external) {
     }
     pkg.dependencies = dependencies;
 }
-/**
- * @param {object} pkg
- * @param {string[]} outputs
- */
-async function setPkgExports(pkg, outputs, main) {
-    pkg.exports = outputs
-        .filter((output) => /\.(css|js|mjs)$/.test(output))
-        .reduce(
-            (exports, output) => {
-                const { name } = path.parse(output);
-                const prop = name == main ? "." : "./" + name;
-                return {
-                    ...exports,
-                    [prop]: "./" + output,
-                };
-            },
-            {
-                ...pkg.exports,
-            }
-        );
-}
+
 /**
  *
  * @param {string[]} entryPoints
@@ -286,11 +264,7 @@ async function generateTypes(entryPoints, pkg, main) {
         `npx tsc ${entryPoints.join(" ")} ${serialieCommand}`
     );
 
-    const { typesVersions = {} } = pkg;
-
-    const prevAll = typesVersions["*"] || {};
-
-    typesVersions["*"] = stdout
+    const exportsTs = stdout
         .split(/\n/)
         .filter((file) => file.startsWith("TSFILE:"))
         .map((line) => {
@@ -299,14 +273,7 @@ async function generateTypes(entryPoints, pkg, main) {
                 .replace(/\\/g, "/");
             return [file, path.parse(file).name.replace(/\.d$/, "")];
         })
-        .filter(([, name]) => expectTsd.includes(name))
-        .reduce((exp, [file, name]) => {
-            // associate the type as the root of the project
-            if (name == main) pkg.types = file;
-            // create the type export
-            exp[name] = [file];
-            return exp;
-        }, prevAll);
+        .filter(([, name]) => expectTsd.includes(name));
 
-    pkg.typesVersions = typesVersions;
+    console.log(exportsTs);
 }
