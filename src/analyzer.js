@@ -11,8 +11,10 @@ import { TS_CONFIG } from "./constants.js";
  * @param {string} options.pkgName
  * @param {string} options.dest
  * @param {string[]} options.entryPoints
+ * @param {boolean} options.types
+ * @param {boolean} options.exports
  */
-export async function analyzer({ pkgName, dest, entryPoints }) {
+export async function analyzer({ pkgName, dest, entryPoints, ...options }) {
     return (
         await Promise.all(
             entryPoints.filter(isJs).map(async (file) => {
@@ -85,15 +87,19 @@ export async function analyzer({ pkgName, dest, entryPoints }) {
                         ([, { tagName }]) => `${tagName}:not(:defined)`
                     )}{ visibility: hidden }`;
 
-                    const exportJs = `${dest}/${name}.react.js`;
-                    const exportCss = `${dest}/${name}.visibility.css`;
-                    const exportTs = `${TS_CONFIG.outDir}/${name}.react.d.ts`;
+                    const exportJs =
+                        options.exports && `${dest}/${name}.react.js`;
+                    const exportCss =
+                        options.exports && `${dest}/${name}.visibility.css`;
+                    const exportTs =
+                        options.types &&
+                        `${TS_CONFIG.outDir}/${name}.react.d.ts`;
 
-                    write(exportJs, codeJs.join(""));
+                    if (exportJs) await write(exportJs, codeJs.join(""));
 
-                    write(exportCss, codeCss);
+                    if (exportCss) await write(exportCss, codeCss);
 
-                    write(exportTs, codeTs.join(""));
+                    if (exportTs) await write(exportTs, codeTs.join(""));
 
                     return [exportJs, exportCss, exportTs];
                 }
@@ -106,9 +112,9 @@ export async function analyzer({ pkgName, dest, entryPoints }) {
                 [exportsJs, exportsCss, exportsTs],
                 [exportJs, exportCss, exportTs]
             ) => [
-                [...exportsJs, exportJs],
-                [...exportsCss, exportCss],
-                [...exportsTs, exportTs],
+                exportJs ? [...exportsJs, exportJs] : exportsJs,
+                exportCss ? [...exportsCss, exportCss] : exportsCss,
+                exportTs ? [...exportsTs, exportTs] : exportsTs,
             ],
             [[], [], []]
         );

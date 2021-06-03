@@ -111,15 +111,19 @@ export async function prepare(config) {
 
     const externalKeys = Object.keys(external);
 
-    const [exportsJs, exportsCss, exportsTs] = await analyzer({
-        pkgName: pkg.name,
-        dest: config.dest,
-        entryPoints,
-    });
+    if (config.exports || config.types) {
+        const [exportsJs, exportsCss, exportsTs] = await analyzer({
+            pkgName: pkg.name,
+            dest: config.dest,
+            entryPoints,
+            types: config.types,
+            exports: config.exports,
+        });
 
-    setPkgExports(pkg, exportsJs);
-    setPkgExports(pkg, exportsCss);
-    setPkgTypesVersions(pkg, exportsTs);
+        setPkgExports(pkg, exportsJs);
+        setPkgExports(pkg, exportsCss);
+        setPkgTypesVersions(pkg, exportsTs);
+    }
     /**
      * @type {import("esbuild").BuildOptions}
      */

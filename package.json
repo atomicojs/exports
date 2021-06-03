@@ -10,9 +10,7 @@
         ".": {
             "import": "./src/cli.js",
             "require": "./cli.cjs"
-        },
-        "./atomico.react": "./tests/dest/atomico.react.js",
-        "./atomico.visibility": "./tests/dest/atomico.visibility.css"
+        }
     },
     "publishConfig": {
         "access": "public"
@@ -57,6 +55,11 @@
     "peerDependencies": {
         "@atomico/react": "latest"
     },
+    "peerDependenciesMeta": {
+        "@atomico/react": {
+            "optional": true
+        }
+    },
     "ava": {
         "files": [
             "tests/**/*.test.js"
@@ -69,12 +72,5 @@
     },
     "bin": {
         "exports": "./cli.cjs"
-    },
-    "typesVersions": {
-        "*": {
-            "atomico.react": [
-                "./types/atomico.react.d.ts"
-            ]
-        }
     }
 }
