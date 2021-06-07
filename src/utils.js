@@ -63,12 +63,12 @@ export function setPkgTypesVersions(pkg, outputs, main) {
  * @param {"dependencies"|"devDependencies"|"peerDependencies"|"peerDependenciesMeta"} [type]
  */
 export function setPkgDependencies(pkg, external, type = "dependencies") {
-    const deps = pkg[type];
+    const deps = pkg[type] || {};
     for (const prop in external) {
         if (!deps[prop]) {
             const [first] = [].concat(external[prop]);
             deps[prop] = first;
         }
     }
-    pkg.deps = deps;
+    pkg[type] = deps;
 }
