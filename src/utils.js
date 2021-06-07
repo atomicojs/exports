@@ -56,14 +56,19 @@ export function setPkgTypesVersions(pkg, outputs, main) {
 
     pkg.typesVersions = typesVersions;
 }
-
-export function setPkgDependencies(pkg, external) {
-    const { dependencies = {} } = pkg;
+/**
+ *
+ * @param {Object<string,any>} pkg
+ * @param {Object<string,any>} external
+ * @param {"dependencies"|"devDependencies"|"peerDependencies"|"peerDependenciesMeta"} [type]
+ */
+export function setPkgDependencies(pkg, external, type = "dependencies") {
+    const deps = pkg[type];
     for (const prop in external) {
-        if (!dependencies[prop]) {
-            const [first] = [...external[prop]];
-            dependencies[prop] = first;
+        if (!deps[prop]) {
+            const [first] = [].concat(external[prop]);
+            deps[prop] = first;
         }
     }
-    pkg.dependencies = dependencies;
+    pkg.deps = deps;
 }

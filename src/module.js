@@ -123,6 +123,22 @@ export async function prepare(config) {
         setPkgExports(pkg, exportsJs);
         setPkgExports(pkg, exportsCss);
         setPkgTypesVersions(pkg, exportsTs);
+        setPkgDependencies(
+            pkg,
+            {
+                "@atomico/react": "latest",
+            },
+            "peerDependencies"
+        );
+        setPkgDependencies(
+            pkg,
+            {
+                "@atomico/react": {
+                    optional: true,
+                },
+            },
+            "peerDependenciesMeta"
+        );
     }
     /**
      * @type {import("esbuild").BuildOptions}
