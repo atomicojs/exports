@@ -1,23 +1,38 @@
-import esbuild from "esbuild";
+import { readFile } from "fs/promises";
+import postcss from "postcss";
+import postcssImport from "postcss-import";
+import postcssLoadConfig from "postcss-load-config";
+import csso from "csso";
 
-export async function loadCss({ share, src, dest }) {
+let currentConfig;
+
+export async function loadCss({ share, src }) {
     const { outdir, ...config } = share;
 
-    const { outputFiles } = await esbuild.build({
-        ...config,
-        entryPoints: [src],
-        outfile: dest,
-        write: false,
-    });
+    const postcssConfig = {
+        from: src,
+        map: false,
+    };
 
-    const [{ contents }] = outputFiles;
+    currentConfig =
+        currentConfig ||
+        postcssLoadConfig(config).catch(() => ({
+            plugins: [],
+        }));
+
+    const { plugins } = await currentConfig;
+
+    const { css } = await postcss([postcssImport(), ...plugins]).process(
+        await readFile(src),
+        postcssConfig
+    );
 
     return {
         inline: [
             `import { css } from "atomico"`,
-            `export default css\`${new TextDecoder("utf-8").decode(
-                contents
-            )}\``,
+            `export default css\`${
+                config.minify ? csso.minify(css).css : css
+            }\``,
             "",
         ].join(";\n"),
     };

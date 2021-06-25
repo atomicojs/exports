@@ -4,10 +4,13 @@ import { c } from "atomico";
 
 // tests/style.css
 import { css } from "atomico";
-var style_default = css`/* tests/style.css */
+var style_default = css`:host {
+    --demo: tomato;
+}
+
 .button {
-  width: 200px;
-  height: 200px;
+    width: 200px;
+    height: 200px;
 }
 `;
 
