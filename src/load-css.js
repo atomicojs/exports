@@ -16,7 +16,7 @@ export async function loadCss({ share, src }) {
 
     currentConfig =
         currentConfig ||
-        postcssLoadConfig(config).catch(() => ({
+        postcssLoadConfig(postcssConfig).catch(() => ({
             plugins: [],
         }));
 
@@ -27,12 +27,12 @@ export async function loadCss({ share, src }) {
         postcssConfig
     );
 
+    const cssText = config.minify ? csso.minify(css).css : css;
+
     return {
         inline: [
             `import { css } from "atomico"`,
-            `export default css\`${
-                config.minify ? csso.minify(css).css : css
-            }\``,
+            `export default css\`${cssText}\``,
             "",
         ].join(";\n"),
     };
