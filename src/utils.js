@@ -29,7 +29,7 @@ export function setPkgExports(pkg, outputs, main) {
                 let prop = "./" + name;
                 if (name == main) {
                     prop = ".";
-                    package.module = relativeOutput;
+                    pkg.module = relativeOutput;
                 }
                 return {
                     ...exports,
