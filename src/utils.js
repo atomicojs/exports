@@ -25,10 +25,15 @@ export function setPkgExports(pkg, outputs, main) {
         .reduce(
             (exports, output) => {
                 const { name } = path.parse(output);
-                const prop = name == main ? "." : "./" + name;
+                const relativeOutput = addDotRelative(output);
+                let prop = "./" + name;
+                if (name == main) {
+                    prop = ".";
+                    package.module = relativeOutput;
+                }
                 return {
                     ...exports,
-                    [prop]: addDotRelative(output),
+                    [prop]: relativeOutput,
                 };
             },
             {
