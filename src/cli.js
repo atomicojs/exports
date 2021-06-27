@@ -15,6 +15,7 @@ cli.command("<...files>", "Build files")
     .option("--watch", "Enable the use of watch in esbuild")
     .option("--meta-url <files>", "resolve files as meta-url")
     .option("--format <format>", "output type, default esm")
+    .option("--bundle", "bundle")
     .option(
         "--main <export>",
         "define si una exportacion debe ser asociada como root del package"
@@ -49,6 +50,7 @@ cli.command("<...files>", "Build files")
                 workspace,
                 ignoreBuild,
                 reactWrapper,
+                bundle,
             }
         ) => {
             prepare({
@@ -66,6 +68,7 @@ cli.command("<...files>", "Build files")
                 target: target ? toArray(target) : null,
                 ignoreBuild,
                 reactWrapper,
+                bundle,
             });
         }
     );

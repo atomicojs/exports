@@ -60,6 +60,7 @@ function logger(message) {
  * @param {boolean} [config.sourcemap]
  * @param {boolean} [config.format]
  * @param {boolean} [config.ignoreBuild]
+ * @param {boolean} [config.bundle]
  * @param {string} [config.main]
  * @param {string} [config.workspace]
  * @param {string[]} [config.target]
@@ -153,7 +154,7 @@ export async function prepare(config) {
         bundle: true,
         format: config.format || "esm",
         splitting: true,
-        external: externalKeys,
+        external: config.bundle ? [] : externalKeys,
         watch: config.watch
             ? {
                   onRebuild(error) {
@@ -172,7 +173,7 @@ export async function prepare(config) {
                 jsxFragment: `"host"`,
                 inject: `import { h as _jsx } from "atomico";`,
             }),
-            pluginExternals(externalKeys),
+            pluginExternals(config.bundle ? [] : externalKeys),
         ],
     };
 
