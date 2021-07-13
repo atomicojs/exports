@@ -254,14 +254,16 @@ async function getJson(file) {
 /**
  * Get external files not to be included in the build
  * @param {{[prop:string]:any}} pkg
- * @param {{[prop:string]:Set<string>}} external
- * @returns {{[prop:string]:Set<string>}}
+ * @param {{[prop:string]:string[]}} external
+ * @returns {{[prop:string]:string[]}}
  */
 function getExternal(pkg, external = {}) {
     const { dependencies } = pkg;
     for (const prop in dependencies) {
-        external[prop] = external[prop] || new Set();
-        external[prop].add(dependencies[prop]);
+        external[prop] = external[prop] || [];
+        if (!external[prop].includes(dependencies[prop])) {
+            external[prop].push(dependencies[prop]);
+        }
     }
     return external;
 }
