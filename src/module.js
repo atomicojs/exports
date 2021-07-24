@@ -281,7 +281,9 @@ async function generateTypes(entryPoints, pkg, main) {
     const expectTsd = entryPoints.map((entry) => path.parse(entry).name);
 
     const { stdout } = await pexec(
-        `npx tsc ${entryPoints.join(" ")} ${serialieCommand}`
+        `npx tsc ./node_modules/@atomico/exports/assets.d.ts ${entryPoints.join(
+            " "
+        )} ${serialieCommand}`
     );
 
     const exportsTs = stdout
