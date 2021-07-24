@@ -9,12 +9,12 @@ import { TS_CONFIG } from "./constants.js";
 /**
  * @param {Object} options
  * @param {string} options.pkgName
- * @param {string} options.dest
+ * @param {string} options.dist
  * @param {string[]} options.entryPoints
  * @param {boolean} options.types
  * @param {boolean} options.exports
  */
-export async function analyzer({ pkgName, dest, entryPoints, ...options }) {
+export async function analyzer({ pkgName, dist, entryPoints, ...options }) {
     return (
         await Promise.all(
             entryPoints.filter(isJs).map(async (file) => {
@@ -87,9 +87,9 @@ export async function analyzer({ pkgName, dest, entryPoints, ...options }) {
                     )}{ visibility: hidden }`;
 
                     const exportJs =
-                        options.exports && `${dest}/${name}.react.js`;
+                        options.exports && `${dist}/${name}.react.js`;
                     const exportCss =
-                        options.exports && `${dest}/${name}.visibility.css`;
+                        options.exports && `${dist}/${name}.visibility.css`;
                     const exportTs =
                         options.types &&
                         `${TS_CONFIG.outDir}/${name}.react.d.ts`;

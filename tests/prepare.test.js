@@ -5,10 +5,10 @@ import { prepare } from "../src/module.js";
 test("simple build", async (t) => {
     await prepare({
         src: "tests/example.js",
-        dest: "tests/dest",
+        dist: "tests/dist",
     });
     t.is(
-        await readFile("./tests/dest/example.js", "utf-8"),
+        await readFile("./tests/dist/example.js", "utf-8"),
         await readFile("./tests/expect-example.txt", "utf-8")
     );
 });
@@ -16,10 +16,10 @@ test("simple build", async (t) => {
 test("simple build jsx", async (t) => {
     await prepare({
         src: "tests/atomico.jsx",
-        dest: "tests/dest",
+        dist: "tests/dist",
     });
     t.is(
-        await readFile("./tests/dest/atomico.js", "utf-8"),
+        await readFile("./tests/dist/atomico.js", "utf-8"),
         await readFile("./tests/expect-atomico.txt", "utf-8")
     );
 });

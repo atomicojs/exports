@@ -7,7 +7,7 @@ const toArray = (value) => value.split(/ *, */);
 const cli = cac("devserver").version("0.6.0");
 
 cli.command("<...files>", "Build files")
-    .option("--dest <dest>", "Choose a project type")
+    .option("--dist <dist>", "Choose a project type")
     .option("--types", "Generate the .d.ts files in root using typescript")
     .option("--exports", "Add the output files to package.json#exports")
     .option("--minify", "minify the code output")
@@ -37,7 +37,7 @@ cli.command("<...files>", "Build files")
         (
             src,
             {
-                dest = "dest",
+                dist = "dist",
                 main,
                 types,
                 exports,
@@ -55,7 +55,7 @@ cli.command("<...files>", "Build files")
         ) => {
             prepare({
                 src,
-                dest,
+                dist,
                 main,
                 types,
                 watch,

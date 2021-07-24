@@ -52,7 +52,7 @@ function logger(message) {
 /**
  * @param {object} config
  * @param {string} config.src
- * @param {string} config.dest
+ * @param {string} config.dist
  * @param {boolean} [config.types]
  * @param {boolean} [config.minify]
  * @param {boolean} [config.watch]
@@ -115,7 +115,7 @@ export async function prepare(config) {
     if (config.exports || config.types) {
         const [exportsJs, exportsCss, exportsTs] = await analyzer({
             pkgName: pkg.name,
-            dest: config.dest,
+            dist: config.dist,
             entryPoints,
             types: config.types,
             exports: config.exports,
@@ -146,7 +146,7 @@ export async function prepare(config) {
      */
     const build = {
         entryPoints,
-        outdir: config.dest,
+        outdir: config.dist,
         jsxFactory: "_jsx",
         sourcemap: config.sourcemap,
         metafile: true,
