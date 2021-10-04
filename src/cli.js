@@ -17,6 +17,10 @@ cli.command("<...files>", "Build files")
     .option("--format <format>", "output type, default esm")
     .option("--bundle", "bundle")
     .option(
+        "--analyzer",
+        "Automatically generates additional support for React and Css from the webcomponents"
+    )
+    .option(
         "--main <export>",
         "define si una exportacion debe ser asociada como root del package"
     )
@@ -51,6 +55,7 @@ cli.command("<...files>", "Build files")
                 ignoreBuild,
                 reactWrapper,
                 bundle,
+                analyzer,
             }
         ) => {
             prepare({
@@ -69,6 +74,7 @@ cli.command("<...files>", "Build files")
                 ignoreBuild,
                 reactWrapper,
                 bundle,
+                analyzer,
             });
         }
     );

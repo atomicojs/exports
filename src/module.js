@@ -41,6 +41,12 @@ const assets = [
     "md",
 ];
 
+const aliasDep = {
+    dep: "dependencies",
+    peerDep: "peerDependencies",
+    peerDepMeta: "peerDependenciesMeta",
+};
+
 function logger(message) {
     const date = new Date();
     const time = [date.getHours(), date.getMinutes(), date.getSeconds()]
@@ -61,6 +67,7 @@ function logger(message) {
  * @param {boolean} [config.format]
  * @param {boolean} [config.ignoreBuild]
  * @param {boolean} [config.bundle]
+ * @param {boolean} [config.analyzer]
  * @param {string} [config.main]
  * @param {string} [config.workspace]
  * @param {string[]} [config.target]
@@ -79,7 +86,9 @@ export async function prepare(config) {
     const pkgRootSrc = process.cwd() + "/package.json";
     const [pkg, pkgText] = await getJson(pkgRootSrc);
 
-    const external = getExternal(pkg);
+    const externalDependencies = getExternal(pkg);
+    const externalPeerDependencies = {};
+    const externalPeerDependenciesMeta = {};
 
     if (config.workspace) {
         (
@@ -94,7 +103,15 @@ export async function prepare(config) {
                     )
                 ).map((file) => getJson(file))
             )
-        ).forEach(([pkg]) => getExternal(pkg, external));
+        ).forEach(([pkg]) => {
+            getExternal(pkg, externalDependencies);
+            getExternal(pkg, externalPeerDependencies, aliasDep.peerDep);
+            getExternal(
+                pkg,
+                externalPeerDependenciesMeta,
+                aliasDep.peerDepMeta
+            );
+        });
     }
 
     const metaUrl = (config.metaUrl || [])
@@ -110,9 +127,9 @@ export async function prepare(config) {
         return logger("No file input!");
     }
 
-    const externalKeys = Object.keys(external);
+    const externalDependenciesKeys = Object.keys(externalDependencies);
 
-    if (config.exports || config.types) {
+    if (config.analyzer && (config.exports || config.types)) {
         const [exportsJs, exportsCss, exportsTs] = await analyzer({
             pkgName: pkg.name,
             dist: config.dist,
@@ -129,7 +146,7 @@ export async function prepare(config) {
             {
                 "@atomico/react": "latest",
             },
-            "peerDependencies"
+            aliasDep.peerDep
         );
         setPkgDependencies(
             pkg,
@@ -138,7 +155,7 @@ export async function prepare(config) {
                     optional: true,
                 },
             },
-            "peerDependenciesMeta"
+            aliasDep.peerDepMeta
         );
     }
     /**
@@ -154,7 +171,7 @@ export async function prepare(config) {
         bundle: true,
         format: config.format || "esm",
         splitting: true,
-        external: config.bundle ? [] : externalKeys,
+        external: config.bundle ? [] : externalDependenciesKeys,
         watch: config.watch
             ? {
                   onRebuild(error) {
@@ -173,7 +190,7 @@ export async function prepare(config) {
                 jsxFragment: `"host"`,
                 inject: `import { h as _jsx } from "atomico";`,
             }),
-            pluginExternals(config.bundle ? [] : externalKeys),
+            pluginExternals(config.bundle ? [] : externalDependenciesKeys),
         ],
     };
 
@@ -184,11 +201,6 @@ export async function prepare(config) {
 
     if (!config.ignoreBuild) {
         logger("Generating outputs with esbuild...");
-
-        // build.entryPoints.map(async (entry) => {
-        //     const content = await readFile(entry, "utf-8");
-
-        // });
 
         const { metafile } = await esbuild.build(
             config.preload ? config.preload(build) : build
@@ -201,15 +213,24 @@ export async function prepare(config) {
         logger("Esbuild completed...");
     }
 
-    // outputs = [...outputs, ...outputsReactWrapper, ...outputsCssVisibility];
-    // entryPoints = [...entryPoints, ...outputsReactWrapper];
-
     if (config.watch) {
         logger("waiting for changes...");
     } else {
         if (config.exports || config.workspace || config.types) {
             config.exports && setPkgExports(pkg, outputs, config.main);
-            config.workspace && setPkgDependencies(pkg, external);
+            if (config.workspace) {
+                setPkgDependencies(pkg, externalDependencies);
+                setPkgDependencies(
+                    pkg,
+                    externalPeerDependencies,
+                    aliasDep.peerDep
+                );
+                setPkgDependencies(
+                    pkg,
+                    externalPeerDependenciesMeta,
+                    aliasDep.peerDepMeta
+                );
+            }
 
             logger("Preparing package.json...");
 
@@ -257,8 +278,8 @@ async function getJson(file) {
  * @param {{[prop:string]:string[]}} external
  * @returns {{[prop:string]:string[]}}
  */
-function getExternal(pkg, external = {}) {
-    const { dependencies } = pkg;
+function getExternal(pkg, external = {}, type = aliasDep.dep) {
+    const dependencies = pkg[type];
     for (const prop in dependencies) {
         external[prop] = external[prop] || [];
         if (!external[prop].includes(dependencies[prop])) {
