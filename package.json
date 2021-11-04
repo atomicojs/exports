@@ -10,7 +10,10 @@
         ".": {
             "import": "./src/cli.js",
             "require": "./cli.cjs"
-        }
+        },
+        "./atomico.react": "./tests/dist/atomico.react.js",
+        "./atomico.visibility": "./tests/dist/atomico.visibility.css",
+        "./atomico": "./tests/dist/atomico.js"
     },
     "publishConfig": {
         "access": "public"
@@ -41,9 +44,9 @@
         "acorn-walk": "^8.1.0",
         "atomico": "latest",
         "cac": "^6.7.2",
+        "csso": "^4.2.0",
         "esbuild": "^0.12.1",
         "fast-glob": "^3.2.5",
-        "csso": "^4.2.0",
         "postcss": "^8.3.5",
         "postcss-import": "^14.0.2",
         "postcss-load-config": "^3.1.0"
@@ -80,5 +83,8 @@
     },
     "bin": {
         "exports": "./cli.cjs"
+    },
+    "typesVersions": {
+        "*": {}
     }
 }

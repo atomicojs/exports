@@ -18,7 +18,7 @@ export async function analyzer({ pkgName, dist, entryPoints, ...options }) {
     return (
         await Promise.all(
             entryPoints.filter(isJs).map(async (file) => {
-                const { base, ext, name } = path.parse(file);
+                const { ext, name } = path.parse(file);
 
                 const { code } = await esbuild.transform(
                     await readFile(file, "utf-8"),
@@ -62,15 +62,13 @@ export async function analyzer({ pkgName, dist, entryPoints, ...options }) {
                     const items = [...customElements];
 
                     const codeJs = [
-                        `import { wrapper } from "@atomico/react";`,
+                        `import { auto } from "@atomico/react/auto";`,
                         `import { ${items.map(
                             ([component]) => `${component} as _${component}`
                         )} } from "${pkgName}/${name}";`,
                         ...items.map(
-                            ([component, { tagName, is }]) =>
-                                `export const ${component} = wrapper("${tagName}", _${component}${
-                                    is ? `, { extends: "${is}" }` : ""
-                                });`
+                            ([component]) =>
+                                `export const ${component} = auto(_${component});`
                         ),
                     ];
 
