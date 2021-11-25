@@ -24,7 +24,14 @@ export function setPkgExports(pkg, outputs, main) {
         .filter((output) => /\.(css|js|mjs)$/.test(output))
         .reduce(
             (exports, output) => {
-                const { name } = path.parse(output);
+                const outputParts = output.split("/");
+                const parsedPath = path.parse(output);
+                const { name } =
+                    outputParts.length > 2
+                        ? { name: outputParts.at(-2) }
+                        : parsedPath.name == "index"
+                        ? { name: main }
+                        : parsedPath;
                 const relativeOutput = addDotRelative(output);
                 let prop = "./" + name;
                 if (name == main) {
