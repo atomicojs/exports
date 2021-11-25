@@ -57,7 +57,14 @@ export function setPkgTypesVersions(pkg, outputs, main) {
     typesVersions["*"] = outputs
         .filter((output) => /\.d\.ts$/.test(output))
         .reduce((all, output) => {
-            const { name } = path.parse(output);
+            const outputParts = output.split("/");
+            const parsedPath = path.parse(output);
+            const { name } =
+                outputParts.length > 2
+                    ? { name: outputParts.at(-2) }
+                    : parsedPath.name == "index"
+                    ? { name: main }
+                    : parsedPath;
             const id = name.replace(/\.d$/, "");
             if (id == main) {
                 pkg.types = output;
