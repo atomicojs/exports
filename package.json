@@ -10,10 +10,7 @@
         ".": {
             "import": "./src/cli.js",
             "require": "./cli.cjs"
-        },
-        "./atomico.react": "./tests/dist/atomico.react.js",
-        "./atomico.visibility": "./tests/dist/atomico.visibility.css",
-        "./atomico": "./tests/dist/atomico.js"
+        }
     },
     "publishConfig": {
         "access": "public"
