@@ -121,7 +121,7 @@ export async function prepare(config) {
             return metaUrl;
         }, {});
 
-    metaUrl.css = loadCss;
+    metaUrl.scss = metaUrl.css = loadCss;
 
     if (!entryPoints.length) {
         return logger("No file input!");
