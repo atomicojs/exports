@@ -32,7 +32,9 @@ export async function loadCss({ share, src }) {
     return {
         inline: [
             `import { css } from "atomico"`,
-            `export default css\`${cssText}\``,
+            `export default css\`${cssText
+                .replace(/`/g, "\\`")
+                .replace(/\${/g, "\\${")}\``,
             "",
         ].join(";\n"),
     };
