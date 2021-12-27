@@ -131,7 +131,7 @@ export async function prepare(config) {
     const externalDependenciesKeys = Object.keys(
         getExternal(
             pkg,
-            Object.entries(externalPeerDependencies).reduce(
+            Object.entries(externalDependencies).reduce(
                 (copy, [prop, value]) => ({
                     ...copy,
                     [prop]: [...value],
