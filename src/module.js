@@ -127,7 +127,20 @@ export async function prepare(config) {
         return logger("No file input!");
     }
 
-    const externalDependenciesKeys = Object.keys(externalDependencies);
+    // generate a copy to get the external dependencies
+    const externalDependenciesKeys = Object.keys(
+        getExternal(
+            pkg,
+            Object.entries(externalPeerDependencies).reduce(
+                (copy, [prop, value]) => ({
+                    ...copy,
+                    [prop]: [...value],
+                }),
+                {}
+            ),
+            aliasDep.peerDep
+        )
+    );
 
     if (config.analyzer && (config.exports || config.types)) {
         const [exportsJs, exportsCss, exportsTs] = await analyzer({
