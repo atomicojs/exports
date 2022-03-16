@@ -7,4 +7,6 @@ function component() {
 
 component.styles = style;
 
-customElements.define("my-component", c(component));
+export const Component = c(component);
+
+customElements.define("my-component", Component);

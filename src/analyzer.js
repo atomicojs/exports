@@ -118,6 +118,24 @@ export async function analyzer({ pkgName, dist, entryPoints, ...options }) {
         );
 
     if (exportsJs.length) {
+        const item = exportsJs.map(
+            (item) =>
+                `export * from "${pkgName}${item
+                    .replace(dist, "")
+                    .replace(/\.js$/, "")}";`
+        );
+
+        const distAllReact = dist + "/react.js";
+        const distTypesReact = dist + "/react.d.ts";
+
+        await write(distAllReact, item.join("/n"));
+
+        exportsJs.push(distAllReact);
+
+        if (options.types) {
+            await write(distTypesReact, item.join("/n"));
+            exportsTs.push(distAllReact);
+        }
     }
 
     return [exportsJs, exportsCss, exportsTs];
