@@ -70,6 +70,7 @@ function logger(message) {
  * @param {boolean} [config.analyzer]
  * @param {string} [config.main]
  * @param {string} [config.workspace]
+ * @param {string} [config.customElements]
  * @param {string[]} [config.target]
  * @param {string[]} [config.metaUrl]
  * @param {(config:import("esbuild").BuildOptions)=>import("esbuild").BuildOptions} [config.preload]
@@ -147,6 +148,7 @@ export async function prepare(config) {
             pkgName: pkg.name,
             dist: config.dist,
             main: config.main,
+            customElements: config.customElements,
             entryPoints,
             types: config.types,
             exports: config.exports,

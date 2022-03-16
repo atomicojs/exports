@@ -11,7 +11,9 @@ import { TS_CONFIG } from "./constants.js";
  * @param {string} options.pkgName
  * @param {string} options.dist
  * @param {string} options.main
+ * @param {string} options.customElements
  * @param {string[]} options.entryPoints
+ * @param {boolean} options.types
  * @param {boolean} options.types
  * @param {boolean} options.exports
  */
@@ -42,7 +44,11 @@ export async function analyzer({ pkgName, dist, entryPoints, ...options }) {
                     },
                     CallExpression(node) {
                         const { object } = node.callee;
-                        if (object && object.name == "customElements") {
+                        if (
+                            object &&
+                            object.name ==
+                                (options.customElements || "customElements")
+                        ) {
                             const [literal, identifier, options] =
                                 node.arguments;
 

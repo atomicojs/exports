@@ -14,6 +14,7 @@ cli.command("<...files>", "Build files")
     .option("--ignore-build", "ignore the use of esbuild")
     .option("--watch", "Enable the use of watch in esbuild")
     .option("--meta-url <files>", "resolve files as meta-url")
+    .option("--custom-elements <alias>", "define an alias for custom-elements")
     .option("--format <format>", "output type, default esm")
     .option("--bundle", "bundle")
     .option(
@@ -56,6 +57,7 @@ cli.command("<...files>", "Build files")
                 reactWrapper,
                 bundle,
                 analyzer,
+                customElements,
             }
         ) => {
             prepare({
@@ -75,6 +77,7 @@ cli.command("<...files>", "Build files")
                 reactWrapper,
                 bundle,
                 analyzer,
+                customElements,
             });
         }
     );
