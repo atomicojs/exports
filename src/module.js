@@ -146,6 +146,7 @@ export async function prepare(config) {
         const [exportsJs, exportsCss, exportsTs] = await analyzer({
             pkgName: pkg.name,
             dist: config.dist,
+            main: config.main,
             entryPoints,
             types: config.types,
             exports: config.exports,

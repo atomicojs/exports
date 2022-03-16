@@ -10,6 +10,7 @@ import { TS_CONFIG } from "./constants.js";
  * @param {Object} options
  * @param {string} options.pkgName
  * @param {string} options.dist
+ * @param {string} options.main
  * @param {string[]} options.entryPoints
  * @param {boolean} options.types
  * @param {boolean} options.exports
