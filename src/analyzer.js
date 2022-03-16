@@ -16,7 +16,7 @@ import { TS_CONFIG } from "./constants.js";
  * @param {boolean} options.exports
  */
 export async function analyzer({ pkgName, dist, entryPoints, ...options }) {
-    return (
+    const [exportsJs, exportsCss, exportsTs] = (
         await Promise.all(
             entryPoints.filter(isJs).map(async (file) => {
                 const { ext, name } = path.parse(file);
@@ -116,4 +116,9 @@ export async function analyzer({ pkgName, dist, entryPoints, ...options }) {
             ],
             [[], [], []]
         );
+
+    if (exportsJs.length) {
+    }
+
+    return [exportsJs, exportsCss, exportsTs];
 }
