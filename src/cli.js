@@ -34,6 +34,7 @@ cli.command("<...files>", "Build files")
         "associate the workspace dependencies to the root package.json"
     )
     .option("--sourcemap", "generate the sourcemap")
+    .option("--global-name <name>", "globalName for export in iife format")
     .example("exports components/*.jsx")
     .example("exports components/*.jsx --types")
     .example("exports components/*.jsx --exports")
@@ -58,6 +59,7 @@ cli.command("<...files>", "Build files")
                 bundle,
                 analyzer,
                 customElements,
+                globalName,
             }
         ) => {
             prepare({
@@ -71,13 +73,14 @@ cli.command("<...files>", "Build files")
                 exports,
                 sourcemap,
                 workspace,
-                metaUrl: metaUrl ? toArray(target) : [],
+                metaUrl: metaUrl ? toArray(metaUrl) : [],
                 target: target ? toArray(target) : null,
                 ignoreBuild,
                 reactWrapper,
                 bundle,
                 analyzer,
                 customElements,
+                globalName,
             });
         }
     );

@@ -73,6 +73,7 @@ function logger(message) {
  * @param {string} [config.customElements]
  * @param {string[]} [config.target]
  * @param {string[]} [config.metaUrl]
+ * @param {string} [config.globalName]
  * @param {(config:import("esbuild").BuildOptions)=>import("esbuild").BuildOptions} [config.preload]
  * @returns
  */
@@ -122,7 +123,11 @@ export async function prepare(config) {
             return metaUrl;
         }, {});
 
-    metaUrl.scss = metaUrl.css = loadCss;
+    if (!metaUrl.css) {
+        metaUrl.scss = metaUrl.css = loadCss;
+    } else {
+        metaUrl.scss = metaUrl.css;
+    }
 
     if (!entryPoints.length) {
         return logger("No file input!");
@@ -186,7 +191,8 @@ export async function prepare(config) {
         minify: config.minify,
         bundle: true,
         format: config.format || "esm",
-        splitting: true,
+        splitting: config.format === "iife" ? false : true,
+        globalName: config.globalName,
         external: config.bundle ? [] : externalDependenciesKeys,
         watch: config.watch
             ? {
