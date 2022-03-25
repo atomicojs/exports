@@ -1,7 +1,7 @@
 {
     "name": "@atomico/exports",
     "type": "module",
-    "version": "0.24.0",
+    "version": "0.25.0",
     "description": "It allows to generate an export to quickly publish components created with Atomico in NPM",
     "main": "./cli.cjs",
     "module": "./src/cli.js",
