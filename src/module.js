@@ -16,7 +16,7 @@ import {
     setPkgDependencies,
     setPkgTypesVersions,
 } from "./utils.js";
-import { TS_CONFIG } from "./constants.js";
+import { TS_CONFIG, TS_CONFIG_FIXED } from "./constants.js";
 
 const pexec = promisify(exec);
 
@@ -86,7 +86,10 @@ export async function prepare(config) {
     });
 
     const pkgRootSrc = process.cwd() + "/package.json";
+    const tsconfigSrc = process.cwd() + "/tsconfig.json";
+
     const [pkg, pkgText] = await getJson(pkgRootSrc);
+    const [tsconfig] = await getJson(tsconfigSrc);
 
     const externalDependencies = getExternal(pkg);
     const externalPeerDependencies = {};
@@ -260,8 +263,18 @@ export async function prepare(config) {
 
             if (config.types && entriesJs.length) {
                 logger("Preparing types...");
-
-                await generateTypes(entriesJs, pkg, config.main);
+                try {
+                    await generateTypes(
+                        entriesJs,
+                        pkg,
+                        config.main,
+                        tsconfig?.compilerOptions
+                    );
+                } catch (e) {
+                    logger("Type generation error:\n\n" + e.stdout);
+                    logger("Type generation failed");
+                    process.exit(1);
+                }
 
                 logger("Finished types!");
             }
@@ -314,9 +327,14 @@ function getExternal(pkg, external = {}, type = aliasDep.dep) {
 /**
  *
  * @param {string[]} entryPoints
+ * @param {Object<string,any>} pkg
+ * @param {string} main
+ * @param {Object<string,any> & {}} tsconfig
  */
-async function generateTypes(entryPoints, pkg, main) {
-    const serialieCommand = Object.entries(TS_CONFIG).reduce(
+async function generateTypes(entryPoints, pkg, main, tsconfig = TS_CONFIG) {
+    const { outFile, ...config } = { ...tsconfig, ...TS_CONFIG_FIXED };
+
+    const serialieCommand = Object.entries(config).reduce(
         (command, [index, value]) => command + ` --${index} ${value}`,
         ""
     );

@@ -1,3 +1,9 @@
+export const TS_CONFIG_FIXED = {
+    declaration: true,
+    emitDeclarationOnly: true,
+    outDir: "./types",
+};
+
 export const TS_CONFIG = {
     moduleResolution: "Node",
     target: "ESNext",
@@ -6,8 +12,5 @@ export const TS_CONFIG = {
     jsx: "react-jsx",
     jsxImportSource: "atomico",
     allowJs: true,
-    declaration: true,
-    emitDeclarationOnly: true,
-    outDir: "./types",
     lib: ["ESNext", "DOM", "DOM.Iterable"],
 };
