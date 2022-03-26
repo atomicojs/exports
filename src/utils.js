@@ -27,13 +27,14 @@ export function setPkgExports(pkg, outputs, main) {
                 const { name } = path.parse(output);
                 const relativeOutput = addDotRelative(output);
                 let prop = "./" + name;
+                const nextExport = { [prop]: relativeOutput };
                 if (name == main) {
-                    prop = ".";
+                    nextExport["."] = relativeOutput;
                     pkg.module = relativeOutput;
                 }
                 return {
                     ...exports,
-                    [prop]: relativeOutput,
+                    ...nextExport,
                 };
             },
             {
