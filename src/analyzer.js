@@ -140,13 +140,13 @@ export async function analyzer({ pkgName, dist, entryPoints, ...options }) {
                                 .replace(dist, "")
                                 .replace(/\.js$/, "")}";`
                     );
-                const distAllReact = `${dist}/${wrapper}.js`;
-                const distTypesReact = `${dist}/${wrapper}.d.ts`;
-                await write(distAllReact, item.join("\n"));
-                exportsJs.push(distAllReact);
+                const distAll = `${dist}/${wrapper}.js`;
+                const distTypes = `${TS_CONFIG_FIXED.outDir}/${wrapper}.d.ts`;
+                await write(distAll, item.join("\n"));
+                exportsJs.push(distAll);
                 if (options.types) {
-                    await write(distTypesReact, item.join("\n"));
-                    exportsTs.push(distAllReact);
+                    await write(distTypes, item.join("\n"));
+                    exportsTs.push(distTypes);
                 }
             })
         );
