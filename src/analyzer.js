@@ -4,7 +4,7 @@ import path from "path";
 import esbuild from "esbuild";
 import { readFile } from "fs/promises";
 import { isJs, write } from "./utils.js";
-import { TS_CONFIG } from "./constants.js";
+import { TS_CONFIG_FIXED } from "./constants.js";
 
 /**
  * @param {Object} options
@@ -18,6 +18,8 @@ import { TS_CONFIG } from "./constants.js";
  * @param {boolean} options.exports
  */
 export async function analyzer({ pkgName, dist, entryPoints, ...options }) {
+    const wrappers = ["react", "preact"];
+
     const [exportsJs, exportsTs] = (
         await Promise.all(
             entryPoints.filter(isJs).map(async (file) => {
@@ -68,11 +70,10 @@ export async function analyzer({ pkgName, dist, entryPoints, ...options }) {
                 if (customElements.size) {
                     const items = [...customElements];
 
-                    const wrappers = ["react", "preact"];
                     const exportsJs = [];
                     const exportsTs = [];
 
-                    Promise.all(
+                    await Promise.all(
                         wrappers.map(async (wrapper) => {
                             const codeJs = [
                                 `import "@atomico/react/proxy";`,
@@ -101,10 +102,10 @@ export async function analyzer({ pkgName, dist, entryPoints, ...options }) {
 
                             const exportTs =
                                 options.types &&
-                                `${TS_CONFIG.outDir}/${name}.${wrapper}.d.ts`;
+                                `${TS_CONFIG_FIXED.outDir}/${name}.${wrapper}.d.ts`;
 
                             if (exportJs)
-                                await write(exportJs, codeJs.join(""));
+                                await write(exportJs, codeJs.join("\n"));
 
                             if (exportTs)
                                 await write(exportTs, codeTs.join(";"));
@@ -122,31 +123,33 @@ export async function analyzer({ pkgName, dist, entryPoints, ...options }) {
         .filter((outFile) => outFile)
         .reduce(
             ([exportsJs, exportsTs], [exportJs, exportTs]) => [
-                exportJs ? [...exportsJs, exportJs] : exportsJs,
-                exportTs ? [...exportsTs, exportTs] : exportsTs,
+                exportJs ? [...exportsJs, ...exportJs] : exportsJs,
+                exportTs ? [...exportsTs, ...exportTs] : exportsTs,
             ],
             [[], []]
         );
 
     if (exportsJs.length) {
-        const item = exportsJs.map(
-            (item) =>
-                `export * from "${pkgName}${item
-                    .replace(dist, "")
-                    .replace(/\.js$/, "")}";`
+        await Promise.all(
+            wrappers.map(async (wrapper) => {
+                const item = exportsJs
+                    .filter((file) => file.endsWith(`.${wrapper}.js`))
+                    .map(
+                        (item) =>
+                            `\nexport * from "${pkgName}${item
+                                .replace(dist, "")
+                                .replace(/\.js$/, "")}";`
+                    );
+                const distAllReact = `${dist}/${wrapper}.js`;
+                const distTypesReact = `${dist}/${wrapper}.d.ts`;
+                await write(distAllReact, item.join("\n"));
+                exportsJs.push(distAllReact);
+                if (options.types) {
+                    await write(distTypesReact, item.join("\n"));
+                    exportsTs.push(distAllReact);
+                }
+            })
         );
-
-        const distAllReact = dist + "/react.js";
-        const distTypesReact = dist + "/react.d.ts";
-
-        await write(distAllReact, item.join("/n"));
-
-        exportsJs.push(distAllReact);
-
-        if (options.types) {
-            await write(distTypesReact, item.join("/n"));
-            exportsTs.push(distAllReact);
-        }
     }
 
     return [exportsJs, exportsTs];

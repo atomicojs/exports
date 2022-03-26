@@ -80,8 +80,5 @@
     },
     "bin": {
         "exports": "./cli.cjs"
-    },
-    "typesVersions": {
-        "*": {}
     }
 }
