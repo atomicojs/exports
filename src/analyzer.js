@@ -18,7 +18,7 @@ import { TS_CONFIG } from "./constants.js";
  * @param {boolean} options.exports
  */
 export async function analyzer({ pkgName, dist, entryPoints, ...options }) {
-    const [exportsJs, exportsCss, exportsTs] = (
+    const [exportsJs, exportsTs] = (
         await Promise.all(
             entryPoints.filter(isJs).map(async (file) => {
                 const { ext, name } = path.parse(file);
@@ -68,59 +68,64 @@ export async function analyzer({ pkgName, dist, entryPoints, ...options }) {
                 if (customElements.size) {
                     const items = [...customElements];
 
-                    const codeJs = [
-                        `import { auto } from "@atomico/react/auto";`,
-                        `import { ${items.map(
-                            ([component]) => `${component} as _${component}`
-                        )} } from "${pkgName}/${name}";`,
-                        ...items.map(
-                            ([component]) =>
-                                `export const ${component} = auto(_${component});`
-                        ),
-                    ];
+                    const wrappers = ["react", "preact"];
+                    const exportsJs = [];
+                    const exportsTs = [];
 
-                    const codeTs = items.map(([component]) =>
-                        [
-                            `export const ${component}: import("@atomico/react").Component<`,
-                            `typeof import("${pkgName}/${name}").${component}`,
-                            `>`,
-                        ].join("")
+                    Promise.all(
+                        wrappers.map(async (wrapper) => {
+                            const codeJs = [
+                                `import "@atomico/react/proxy";`,
+                                `import { auto } from "@atomico/react/${wrapper}";`,
+                                `import { ${items.map(
+                                    ([component]) =>
+                                        `${component} as _${component}`
+                                )} } from "${pkgName}/${name}";`,
+                                ...items.map(
+                                    ([component]) =>
+                                        `export const ${component} = auto(_${component});`
+                                ),
+                            ];
+
+                            const codeTs = items.map(([component]) =>
+                                [
+                                    `export const ${component}: import("@atomico/react/types/core/create-wrapper").Component<`,
+                                    `typeof import("${pkgName}/${name}").${component}`,
+                                    `>`,
+                                ].join("")
+                            );
+
+                            const exportJs =
+                                options.exports &&
+                                `${dist}/${name}.${wrapper}.js`;
+
+                            const exportTs =
+                                options.types &&
+                                `${TS_CONFIG.outDir}/${name}.${wrapper}.d.ts`;
+
+                            if (exportJs)
+                                await write(exportJs, codeJs.join(""));
+
+                            if (exportTs)
+                                await write(exportTs, codeTs.join(";"));
+
+                            exportsJs.push(exportJs);
+                            exportsTs.push(exportTs);
+                        })
                     );
 
-                    const codeCss = `${items.map(
-                        ([, { tagName }]) => `${tagName}:not(:defined)`
-                    )}{ visibility: hidden }`;
-
-                    const exportJs =
-                        options.exports && `${dist}/${name}.react.js`;
-                    const exportCss =
-                        options.exports && `${dist}/${name}.visibility.css`;
-                    const exportTs =
-                        options.types &&
-                        `${TS_CONFIG.outDir}/${name}.react.d.ts`;
-
-                    if (exportJs) await write(exportJs, codeJs.join(""));
-
-                    if (exportCss) await write(exportCss, codeCss);
-
-                    if (exportTs) await write(exportTs, codeTs.join(";"));
-
-                    return [exportJs, exportCss, exportTs];
+                    return [exportsJs, exportsTs];
                 }
             })
         )
     )
         .filter((outFile) => outFile)
         .reduce(
-            (
-                [exportsJs, exportsCss, exportsTs],
-                [exportJs, exportCss, exportTs]
-            ) => [
+            ([exportsJs, exportsTs], [exportJs, exportTs]) => [
                 exportJs ? [...exportsJs, exportJs] : exportsJs,
-                exportCss ? [...exportsCss, exportCss] : exportsCss,
                 exportTs ? [...exportsTs, exportTs] : exportsTs,
             ],
-            [[], [], []]
+            [[], []]
         );
 
     if (exportsJs.length) {
@@ -144,5 +149,5 @@ export async function analyzer({ pkgName, dist, entryPoints, ...options }) {
         }
     }
 
-    return [exportsJs, exportsCss, exportsTs];
+    return [exportsJs, exportsTs];
 }

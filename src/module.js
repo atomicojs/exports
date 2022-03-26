@@ -153,7 +153,7 @@ export async function prepare(config) {
     );
 
     if (config.analyzer && (config.exports || config.types)) {
-        const [exportsJs, exportsCss, exportsTs] = await analyzer({
+        const [exportsJs, exportsTs] = await analyzer({
             pkgName: pkg.name,
             dist: config.dist,
             main: config.main,
@@ -164,7 +164,6 @@ export async function prepare(config) {
         });
 
         setPkgExports(pkg, exportsJs);
-        setPkgExports(pkg, exportsCss);
         setPkgTypesVersions(pkg, exportsTs);
         setPkgDependencies(
             pkg,
