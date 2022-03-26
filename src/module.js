@@ -133,7 +133,8 @@ export async function prepare(config) {
     }
 
     if (!entryPoints.length) {
-        return logger("No file input!");
+        logger("No file input!");
+        process.exit(1);
     }
 
     // generate a copy to get the external dependencies
