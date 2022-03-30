@@ -82,7 +82,11 @@ export async function prepare(config) {
     logger("Initializing...");
     //@ts-ignore
     let entryPoints = await glob(config.src, {
-        ignore: ["**/*.{test,spec}.{js,jsx,ts,tsx,mjs}"],
+        ignore: [
+            "**/_*/*",
+            "**/*.*.{js,jsx,ts,tsx,mjs}",
+            "**/_*.{js,jsx,ts,tsx,mjs}",
+        ],
     });
 
     const pkgRootSrc = process.cwd() + "/package.json";

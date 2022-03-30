@@ -54,6 +54,8 @@ export async function analyzer({ pkgName, dist, entryPoints, ...options }) {
                             const [literal, identifier, options] =
                                 node.arguments;
 
+                            if (!identifier?.name) return;
+
                             customElements.set(identifier.name, {
                                 tagName: literal.value,
                                 is:
