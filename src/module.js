@@ -1,6 +1,7 @@
 import glob from "fast-glob";
 import esbuild from "esbuild";
 import jsxRuntime from "@uppercod/esbuild-jsx-runtime";
+import cssLiterals from "@uppercod/esbuild-css-literals";
 import path from "path";
 import { exec } from "child_process";
 import { promisify } from "util";
@@ -75,6 +76,7 @@ function logger(message) {
  * @param {string[]} [config.metaUrl]
  * @param {string} [config.globalName]
  * @param {(config:import("esbuild").BuildOptions)=>import("esbuild").BuildOptions} [config.preload]
+ * @param {boolean} [config.cssLiteralsPostcss]
  * @returns
  */
 export async function prepare(config) {
@@ -186,6 +188,7 @@ export async function prepare(config) {
             aliasDep.peerDepMeta
         );
     }
+
     /**
      * @type {import("esbuild").BuildOptions}
      */
@@ -214,6 +217,10 @@ export async function prepare(config) {
             : null,
         loader: {},
         plugins: [
+            cssLiterals({
+                minify: config.minify,
+                postcss: config.cssLiteralsPostcss,
+            }),
             pluginMetaUrl(metaUrl),
             jsxRuntime({
                 jsxFragment: `"host"`,

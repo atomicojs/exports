@@ -16,6 +16,7 @@ cli.command("<...files>", "Build files")
     .option("--meta-url <files>", "resolve files as meta-url")
     .option("--custom-elements <alias>", "define an alias for custom-elements")
     .option("--format <format>", "output type, default esm")
+    .option("--css-literals-postcss", "parse css literals with postcss")
     .option("--bundle", "bundle")
     .option(
         "--analyzer",
@@ -60,6 +61,7 @@ cli.command("<...files>", "Build files")
                 analyzer,
                 customElements,
                 globalName,
+                cssLiteralsPostcss,
             }
         ) => {
             prepare({
@@ -81,6 +83,7 @@ cli.command("<...files>", "Build files")
                 analyzer,
                 customElements,
                 globalName,
+                cssLiteralsPostcss,
             });
         }
     );

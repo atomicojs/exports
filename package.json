@@ -34,6 +34,7 @@
     "homepage": "https://github.com/UpperCod/pkg_name#readme",
     "dependencies": {
         "@types/node": "^14.14.41",
+        "@uppercod/esbuild-css-literals": "^1.1.0",
         "@uppercod/esbuild-jsx-runtime": "latest",
         "@uppercod/esbuild-meta-url": "latest",
         "@uppercod/indentation": "latest",
