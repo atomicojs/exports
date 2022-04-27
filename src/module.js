@@ -81,6 +81,12 @@ function logger(message) {
  */
 export async function prepare(config) {
     console.log("\nExports");
+
+    config = {
+        format: "esm",
+        ...config,
+    };
+
     logger("Initializing...");
     //@ts-ignore
     let entryPoints = await glob(config.src, {
@@ -200,8 +206,8 @@ export async function prepare(config) {
         metafile: true,
         minify: config.minify,
         bundle: true,
-        format: config.format || "esm",
-        splitting: config.format === "iife" ? false : true,
+        format: config.format,
+        splitting: config.format !== "esm" ? false : true,
         globalName: config.globalName,
         external: config.bundle ? [] : externalDependenciesKeys,
         watch: config.watch
