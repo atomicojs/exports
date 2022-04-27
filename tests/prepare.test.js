@@ -17,6 +17,7 @@ test("simple build jsx", async (t) => {
     await prepare({
         src: "tests/atomico.jsx",
         dist: "tests/dist",
+        minify: true,
     });
     t.is(
         await readFile("./tests/dist/atomico.js", "utf-8"),
