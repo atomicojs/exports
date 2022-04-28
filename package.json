@@ -35,8 +35,6 @@
     "dependencies": {
         "@atomico/pipeline": "^0.0.1",
         "@types/node": "^14.14.41",
-        "@uppercod/esbuild-css-literals": "^1.1.0",
-        "@uppercod/esbuild-jsx-runtime": "latest",
         "@uppercod/esbuild-meta-url": "latest",
         "@uppercod/indentation": "latest",
         "acorn": "^8.3.0",
