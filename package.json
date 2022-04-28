@@ -5,7 +5,7 @@
     "description": "It allows to generate an export to quickly publish components created with Atomico in NPM",
     "main": "./src/cli.js",
     "module": "./src/cli.js",
-    "types": "./cli.d.ts",
+    "types": "./types/cli.d.ts",
     "exports": {
         ".": "./src/cli.js"
     },
