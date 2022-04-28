@@ -1,3 +1,4 @@
+#!/usr/bin/env node
 import cac from "cac";
 import { prepare } from "./module.js";
 export { prepare } from "./module.js";
