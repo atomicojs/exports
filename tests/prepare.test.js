@@ -18,6 +18,7 @@ test("simple build jsx", async (t) => {
         src: "tests/atomico.jsx",
         dist: "tests/dist",
         minify: true,
+        cssLiteralsPostcss: true,
     });
     t.is(
         await readFile("./tests/dist/atomico.js", "utf-8"),

@@ -1,13 +1,12 @@
 import glob from "fast-glob";
 import esbuild from "esbuild";
-import jsxRuntime from "@uppercod/esbuild-jsx-runtime";
-import cssLiterals from "@uppercod/esbuild-css-literals";
 import path from "path";
 import { exec } from "child_process";
 import { promisify } from "util";
 import { readFile, writeFile } from "fs/promises";
 import { getValueIndentation } from "@uppercod/indentation";
 import pluginMetaUrl from "@uppercod/esbuild-meta-url";
+import { pluginPipeline } from "./plugin-pipeline.js";
 import { pluginExternals } from "./plugin-externals.js";
 import { loadCss } from "./load-css.js";
 import { analyzer } from "./analyzer.js";
@@ -83,9 +82,10 @@ export async function prepare(config) {
     console.log("\nExports");
 
     config = {
-        format: "esm",
         ...config,
     };
+
+    config.format = config.format || "esm";
 
     logger("Initializing...");
     //@ts-ignore
@@ -202,6 +202,7 @@ export async function prepare(config) {
         entryPoints,
         outdir: config.dist,
         jsxFactory: "_jsx",
+        jsxFragment: "host",
         sourcemap: config.sourcemap,
         metafile: true,
         minify: config.minify,
@@ -223,15 +224,8 @@ export async function prepare(config) {
             : null,
         loader: {},
         plugins: [
-            cssLiterals({
-                minify: config.minify,
-                postcss: config.cssLiteralsPostcss,
-            }),
+            pluginPipeline({ minify: config.minify }),
             pluginMetaUrl(metaUrl),
-            jsxRuntime({
-                jsxFragment: `"host"`,
-                inject: `import { h as _jsx } from "atomico";`,
-            }),
             pluginExternals(config.bundle ? [] : externalDependenciesKeys),
         ],
     };

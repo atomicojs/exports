@@ -33,6 +33,7 @@
     },
     "homepage": "https://github.com/UpperCod/pkg_name#readme",
     "dependencies": {
+        "@atomico/pipeline": "^0.0.1",
         "@types/node": "^14.14.41",
         "@uppercod/esbuild-css-literals": "^1.1.0",
         "@uppercod/esbuild-jsx-runtime": "latest",
@@ -43,7 +44,7 @@
         "atomico": "latest",
         "cac": "^6.7.2",
         "csso": "^4.2.0",
-        "esbuild": "^0.12.1",
+        "esbuild": "^0.14.38",
         "fast-glob": "^3.2.5",
         "postcss": "^8.3.5",
         "postcss-import": "^14.0.2",
@@ -55,6 +56,7 @@
         "ava": "^3.10.1",
         "builtin-modules": "^3.1.0",
         "csso": "^4.2.0",
+        "normalize.css": "^8.0.1",
         "postcss": "^8.3.5",
         "postcss-import": "^14.0.2",
         "postcss-load-config": "^3.1.0",
@@ -62,7 +64,12 @@
         "typescript": "^4.2.4"
     },
     "peerDependencies": {
-        "@atomico/react": "latest"
+        "csso": "^4.2.0",
+        "esbuild": "^0.14.38",
+        "@atomico/react": "latest",
+        "postcss": "^8.3.5",
+        "postcss-import": "^14.0.2",
+        "postcss-load-config": "^3.1.0"
     },
     "peerDependenciesMeta": {
         "@atomico/react": {
@@ -81,5 +88,10 @@
     },
     "bin": {
         "exports": "./cli.cjs"
+    },
+    "postcss": {
+        "plugins": {
+            "postcss-import": {}
+        }
     }
 }
