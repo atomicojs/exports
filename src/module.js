@@ -3,7 +3,7 @@ import esbuild from "esbuild";
 import path from "path";
 import { exec } from "child_process";
 import { promisify } from "util";
-import { readFile, writeFile } from "fs/promises";
+import { readFile, writeFile, lstat } from "fs/promises";
 import { getValueIndentation } from "@uppercod/indentation";
 import pluginMetaUrl from "@uppercod/esbuild-meta-url";
 import { pluginPipeline } from "./plugin-pipeline.js";
@@ -100,8 +100,13 @@ export async function prepare(config) {
     const pkgRootSrc = process.cwd() + "/package.json";
     const tsconfigSrc = process.cwd() + "/tsconfig.json";
 
+    if (entryPoints.length === 1 && !config.main) {
+        const [first] = entryPoints;
+        config.main = path.parse(first).name;
+    }
+
     const [pkg, pkgText] = await getJson(pkgRootSrc);
-    const [tsconfig] = await getJson(tsconfigSrc);
+    const [tsconfig] = await getJson(tsconfigSrc).catch(() => [{}, ""]);
 
     const externalDependencies = getExternal(pkg);
     const externalPeerDependencies = {};
@@ -175,8 +180,8 @@ export async function prepare(config) {
             exports: config.exports,
         });
 
-        setPkgExports(pkg, exportsJs);
-        setPkgTypesVersions(pkg, exportsTs);
+        setPkgExports(pkg, exportsJs, config.main);
+        setPkgTypesVersions(pkg, exportsTs, config.main);
         setPkgDependencies(
             pkg,
             {
@@ -352,10 +357,14 @@ async function generateTypes(entryPoints, pkg, main, tsconfig = TS_CONFIG) {
 
     const expectTsd = entryPoints.map((entry) => path.parse(entry).name);
 
+    const assetsNpn = "./node_modules/@atomico/exports/assets.d.ts";
+    let assetsTs = await lstat(assetsNpn).then(
+        () => assetsNpn,
+        () => "./assets.d.ts"
+    );
+
     const { stdout } = await pexec(
-        `npx tsc ./node_modules/@atomico/exports/assets.d.ts ${entryPoints.join(
-            " "
-        )} ${serialieCommand}`
+        `npx tsc ${assetsTs} ${entryPoints.join(" ")} ${serialieCommand}`
     );
 
     const exportsTs = stdout
