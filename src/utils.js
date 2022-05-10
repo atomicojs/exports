@@ -26,7 +26,13 @@ export function setPkgExports(pkg, outputs, main) {
             (exports, output) => {
                 const { name } = path.parse(output);
                 const relativeOutput = addDotRelative(output);
-                let prop = "./" + name;
+                let prop =
+                    "./" +
+                    name.replace(
+                        /(.+)\.(.+)/g,
+                        (all, before, after) =>
+                            (before == main ? "" : before + "/") + after
+                    );
                 const nextExport = { [prop]: relativeOutput };
                 if (name == main) {
                     nextExport["."] = relativeOutput;
@@ -52,7 +58,13 @@ export function setPkgTypesVersions(pkg, outputs, main) {
         .filter((output) => /\.d\.ts$/.test(output))
         .reduce((all, output) => {
             const { name } = path.parse(output);
-            const id = name.replace(/\.d$/, "");
+            const id = name
+                .replace(/\.d$/, "")
+                .replace(
+                    /(.+)\.(.+)/g,
+                    (all, before, after) =>
+                        (before == main ? "" : before + "/") + after
+                );
             if (id == main) {
                 pkg.types = output;
             }
