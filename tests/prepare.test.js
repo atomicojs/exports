@@ -25,3 +25,17 @@ test("simple build jsx", async (t) => {
         await readFile("./tests/expect-atomico.txt", "utf-8")
     );
 });
+
+test("simple build group jsx", async (t) => {
+    await prepare({
+        src: "tests/group.js",
+        dist: "tests/dist",
+        minify: true,
+        cssLiteralsPostcss: true,
+    });
+
+    t.is(
+        await readFile("./tests/dist/group.js", "utf-8"),
+        await readFile("./tests/expect-group.txt", "utf-8")
+    );
+});
