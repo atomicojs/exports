@@ -256,50 +256,47 @@ export async function prepare(config) {
 
     if (config.watch) {
         logger("waiting for changes...");
-    } else {
-        if (config.exports || config.workspace || config.types) {
-            config.exports && setPkgExports(pkg, outputs, config.main);
-            if (config.workspace) {
-                setPkgDependencies(pkg, externalDependencies);
-                setPkgDependencies(
-                    pkg,
-                    externalPeerDependencies,
-                    aliasDep.peerDep
-                );
-                setPkgDependencies(
-                    pkg,
-                    externalPeerDependenciesMeta,
-                    aliasDep.peerDepMeta
-                );
-            }
+    }
 
-            logger("Preparing package.json...");
-
-            const entriesJs = entryPoints.filter(isJs);
-
-            if (config.types && entriesJs.length) {
-                logger("Preparing types...");
-                try {
-                    await generateTypes(
-                        entriesJs,
-                        pkg,
-                        config.main,
-                        tsconfig?.compilerOptions
-                    );
-                } catch (e) {
-                    logger("Type generation error:\n\n" + e.stdout);
-                    logger("Type generation failed");
-                    process.exit(1);
-                }
-
-                logger("Finished types!");
-            }
-
-            logger("Finished package.json!");
+    if (config.exports || config.workspace || config.types) {
+        config.exports && setPkgExports(pkg, outputs, config.main);
+        if (config.workspace) {
+            setPkgDependencies(pkg, externalDependencies);
+            setPkgDependencies(pkg, externalPeerDependencies, aliasDep.peerDep);
+            setPkgDependencies(
+                pkg,
+                externalPeerDependenciesMeta,
+                aliasDep.peerDepMeta
+            );
         }
 
-        logger("completed!");
+        logger("Preparing package.json...");
+
+        const entriesJs = entryPoints.filter(isJs);
+
+        if (config.types && entriesJs.length) {
+            logger(`${config.watch ? "Waiting" : "Preparing"} types...`);
+            try {
+                await generateTypes(
+                    entriesJs,
+                    pkg,
+                    config.main,
+                    tsconfig?.compilerOptions,
+                    config.watch
+                );
+            } catch (e) {
+                logger("Type generation error:\n\n" + e.stdout);
+                logger("Type generation failed");
+                process.exit(1);
+            }
+
+            logger("Finished types!");
+        }
+
+        logger("Finished package.json!");
     }
+
+    logger("completed!");
 
     const [, space] = pkgText.match(/^(\s+)"/m);
 
@@ -346,8 +343,15 @@ function getExternal(pkg, external = {}, type = aliasDep.dep) {
  * @param {Object<string,any>} pkg
  * @param {string} main
  * @param {Object<string,any> & {}} tsconfig
+ * @param {boolean} watch
  */
-async function generateTypes(entryPoints, pkg, main, tsconfig = TS_CONFIG) {
+async function generateTypes(
+    entryPoints,
+    pkg,
+    main,
+    tsconfig = TS_CONFIG,
+    watch
+) {
     const { outFile, ...config } = { ...tsconfig, ...TS_CONFIG_FIXED };
 
     const serialieCommand = Object.entries(config).reduce(
@@ -364,7 +368,9 @@ async function generateTypes(entryPoints, pkg, main, tsconfig = TS_CONFIG) {
     );
 
     const { stdout } = await pexec(
-        `npx tsc ${assetsTs} ${entryPoints.join(" ")} ${serialieCommand}`
+        `npx tsc ${assetsTs} ${entryPoints.join(" ")} ${serialieCommand} ${
+            watch ? "--watch" : ""
+        }`
     );
 
     const exportsTs = stdout
