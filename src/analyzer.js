@@ -131,7 +131,7 @@ export async function analyzer({ pkgName, dist, entryPoints, ...options }) {
             [[], []]
         );
 
-    if (exportsJs.length > 1) {
+    if (entryPoints.length > 1 && exportsJs.length) {
         await Promise.all(
             wrappers.map(async (wrapper) => {
                 const item = exportsJs
