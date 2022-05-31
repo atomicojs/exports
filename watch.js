@@ -6,5 +6,5 @@ prepare({
     watch: true,
     analyzer: true,
     exports: true,
-    type: true,
+    types: true,
 });
