@@ -45,8 +45,9 @@ export async function createPackageService(src, main) {
             /**
              *
              * @param {import("./utils").Package} pkg
+             * @param {boolean} root
              */
-            const explorer = (pkg) => {
+            const explorer = (pkg, root) => {
                 const externalProps = [
                     "dependencies",
                     "peerDependencies",
@@ -59,25 +60,33 @@ export async function createPackageService(src, main) {
                             if (externalProp !== "peerDependenciesMeta") {
                                 externals[prop] = value;
                             }
-                            setSubPackageExternal(externalProp, prop, value);
+
+                            if (!root)
+                                setSubPackageExternal(
+                                    externalProp,
+                                    prop,
+                                    value
+                                );
                         }
                     );
                 });
             };
 
-            explorer(pkg);
+            explorer(pkg, true);
 
             if (globPkgs.length) {
                 const packages = await glob(globPkgs, {
                     ignore: ["node_modules"],
                 });
 
-                packages
-                    .map(async (file) => {
-                        const [pkg] = await getPackage(file);
-                        return pkg;
-                    })
-                    .map(explorer);
+                (
+                    await Promise.all(
+                        packages.map(async (file) => {
+                            const [pkg] = await getPackage(file);
+                            return pkg;
+                        })
+                    )
+                ).map((pkg) => explorer(pkg));
             }
 
             return [externals, subpackages];
