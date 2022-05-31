@@ -45,7 +45,10 @@ export async function createPackageService(src, main) {
          * @param {Object<string,string>} dependencies
          */
         async set(type, value) {
+            if (!value) return;
+
             const [pkg] = await getPackage(src);
+
             const { [type]: currentValue = {} } = pkg;
 
             switch (type) {

@@ -256,8 +256,8 @@ export async function prepare(config) {
 
         await processExports(exportsJs.map(addDotRelative));
 
-        if (config.types && outfilesDTs.length) {
-            packageService.set("types", outfilesDTs);
+        if (config.types && exportsTs.length) {
+            packageService.set("types", exportsTs);
         }
     };
 
