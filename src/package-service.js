@@ -17,6 +17,10 @@ export async function createPackageService(src, main) {
         writeFile(src, JSON.stringify(pkg, null, indent));
 
     return {
+        async get() {
+            const [pkg] = await getPackage(src);
+            return pkg;
+        },
         async getExternals() {
             const [
                 { workspaces = [], dependencies = {}, peerDependencies = {} },

@@ -4,5 +4,4 @@ prepare({
     src: "./tests/atomico.jsx",
     dist: "./dist",
     watch: true,
-    types: true,
 });
