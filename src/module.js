@@ -10,7 +10,7 @@ import { pluginPipeline } from "./plugin-pipeline.js";
 import { pluginExternals } from "./plugin-externals.js";
 import { loadCss } from "./load-css.js";
 import { analyzer } from "./analyzer.js";
-import { isJs, setPkgTypesVersions } from "./utils.js";
+import { isJs } from "./utils.js";
 import { TS_CONFIG, TS_CONFIG_FIXED } from "./constants.js";
 import { createPackageService } from "./package-service.js";
 
@@ -338,70 +338,70 @@ export async function prepare(config) {
 /**
 
 
-/**
- * Get external files not to be included in the build
- * @param {{[prop:string]:any}} pkg
- * @param {{[prop:string]:string[]}} external
- * @returns {{[prop:string]:string[]}}
- */
-function getExternal(pkg, external = {}, type = aliasDep.dep) {
-    const dependencies = pkg[type];
-    for (const prop in dependencies) {
-        external[prop] = external[prop] || [];
-        if (!external[prop].includes(dependencies[prop])) {
-            external[prop].push(dependencies[prop]);
-        }
-    }
-    return external;
-}
+// /**
+//  * Get external files not to be included in the build
+//  * @param {{[prop:string]:any}} pkg
+//  * @param {{[prop:string]:string[]}} external
+//  * @returns {{[prop:string]:string[]}}
+//  */
+// function getExternal(pkg, external = {}, type = aliasDep.dep) {
+//     const dependencies = pkg[type];
+//     for (const prop in dependencies) {
+//         external[prop] = external[prop] || [];
+//         if (!external[prop].includes(dependencies[prop])) {
+//             external[prop].push(dependencies[prop]);
+//         }
+//     }
+//     return external;
+// }
 
-/**
- *
- * @param {string[]} entryPoints
- * @param {Object<string,any>} pkg
- * @param {string} main
- * @param {Object<string,any> & {}} tsconfig
- * @param {boolean} watch
- */
-async function generateTypes(
-    entryPoints,
-    pkg,
-    main,
-    tsconfig = TS_CONFIG,
-    watch
-) {
-    const { outFile, ...config } = { ...tsconfig, ...TS_CONFIG_FIXED };
+// /**
+//  *
+//  * @param {string[]} entryPoints
+//  * @param {Object<string,any>} pkg
+//  * @param {string} main
+//  * @param {Object<string,any> & {}} tsconfig
+//  * @param {boolean} watch
+//  */
+// async function generateTypes(
+//     entryPoints,
+//     pkg,
+//     main,
+//     tsconfig = TS_CONFIG,
+//     watch
+// ) {
+//     const { outFile, ...config } = { ...tsconfig, ...TS_CONFIG_FIXED };
 
-    const serialieCommand = Object.entries(config).reduce(
-        (command, [index, value]) => command + ` --${index} ${value}`,
-        ""
-    );
+//     const serialieCommand = Object.entries(config).reduce(
+//         (command, [index, value]) => command + ` --${index} ${value}`,
+//         ""
+//     );
 
-    const expectTsd = entryPoints.map((entry) => path.parse(entry).name);
+//     const expectTsd = entryPoints.map((entry) => path.parse(entry).name);
 
-    const assetsNpn = "./node_modules/@atomico/exports/assets.d.ts";
-    let assetsTs = await lstat(assetsNpn).then(
-        () => assetsNpn,
-        () => "./assets.d.ts"
-    );
+//     const assetsNpn = "./node_modules/@atomico/exports/assets.d.ts";
+//     let assetsTs = await lstat(assetsNpn).then(
+//         () => assetsNpn,
+//         () => "./assets.d.ts"
+//     );
 
-    const { stdout } = await pexec(
-        `npx tsc ${assetsTs} ${entryPoints.join(" ")} ${serialieCommand} ${
-            watch ? "--watch" : ""
-        }`
-    );
+//     const { stdout } = await pexec(
+//         `npx tsc ${assetsTs} ${entryPoints.join(" ")} ${serialieCommand} ${
+//             watch ? "--watch" : ""
+//         }`
+//     );
 
-    const exportsTs = stdout
-        .split(/\n/)
-        .filter((file) => file.startsWith("TSFILE:"))
-        .map((line) => {
-            const file = path
-                .relative(process.cwd(), line.replace(/^TSFILE:\s+/, "").trim())
-                .replace(/\\/g, "/");
-            return [file, path.parse(file).name.replace(/\.d$/, "")];
-        })
-        .filter(([, name]) => expectTsd.includes(name))
-        .map(([file]) => file);
+//     const exportsTs = stdout
+//         .split(/\n/)
+//         .filter((file) => file.startsWith("TSFILE:"))
+//         .map((line) => {
+//             const file = path
+//                 .relative(process.cwd(), line.replace(/^TSFILE:\s+/, "").trim())
+//                 .replace(/\\/g, "/");
+//             return [file, path.parse(file).name.replace(/\.d$/, "")];
+//         })
+//         .filter(([, name]) => expectTsd.includes(name))
+//         .map(([file]) => file);
 
-    setPkgTypesVersions(pkg, exportsTs, main);
-}
+//     setPkgTypesVersions(pkg, exportsTs, main);
+// }
