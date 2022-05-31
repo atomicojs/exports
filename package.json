@@ -6,6 +6,9 @@
     "main": "./src/cli.js",
     "module": "./src/cli.js",
     "types": "./types/cli.d.ts",
+    "workspaces": [
+        "tests/*"
+    ],
     "exports": {
         ".": "./src/cli.js"
     },

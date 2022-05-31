@@ -1,3 +1,4 @@
+import glob from "fast-glob";
 import { writeFile } from "fs/promises";
 import {
     getPackage,
@@ -22,22 +23,64 @@ export async function createPackageService(src, main) {
             return pkg;
         },
         async getExternals() {
-            const [
-                { workspaces = [], dependencies = {}, peerDependencies = {} },
-            ] = await getPackage(src);
+            const [{ workspaces = [], ...pkg }] = await getPackage(src);
 
-            const externals = [
-                ...Object.keys(dependencies),
-                ...Object.keys(peerDependencies),
-            ].reduce(
-                (external, prop) => ({
-                    ...external,
-                    [prop]: dependencies[prop] || peerDependencies[prop],
-                }),
-                {}
-            );
+            const subpackages = {};
+            const externals = {};
 
-            return externals;
+            const globPkgs = workspaces
+                .map((path) => path.replace(/\/\*$/, "/"))
+                .map(
+                    (path) =>
+                        path +
+                        (path.endsWith("/") ? "" : "/") +
+                        "**/package.json"
+                );
+
+            const setSubPackageExternal = (externalProp, prop, value) => {
+                subpackages[externalProp] = subpackages[externalProp] || {};
+                subpackages[externalProp][prop] = value;
+            };
+
+            /**
+             *
+             * @param {import("./utils").Package} pkg
+             */
+            const explorer = (pkg) => {
+                const externalProps = [
+                    "dependencies",
+                    "peerDependencies",
+                    "peerDependenciesMeta",
+                ];
+
+                externalProps.forEach((externalProp) => {
+                    Object.entries(pkg[externalProp] || {}).map(
+                        ([prop, value]) => {
+                            if (externalProp !== "peerDependenciesMeta") {
+                                externals[prop] = value;
+                            }
+                            setSubPackageExternal(externalProp, prop, value);
+                        }
+                    );
+                });
+            };
+
+            explorer(pkg);
+
+            if (globPkgs.length) {
+                const packages = await glob(globPkgs, {
+                    ignore: ["node_modules"],
+                });
+
+                packages
+                    .map(async (file) => {
+                        const [pkg] = await getPackage(file);
+                        return pkg;
+                    })
+                    .map(explorer);
+            }
+
+            return [externals, subpackages];
         },
         /**
          *
