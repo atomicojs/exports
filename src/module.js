@@ -150,9 +150,11 @@ export async function prepare(config) {
     }
 
     // generate a copy to get the external dependencies
-    const externalDependenciesKeys = Object.keys(
-        await packageService.getExternals()
-    );
+    const [externals, subpackages] = await packageService.getExternals();
+
+    console.log(subpackages);
+
+    const externalDependenciesKeys = Object.keys(externals);
 
     /**
      * @type {import("esbuild").BuildOptions}
