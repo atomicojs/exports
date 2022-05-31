@@ -100,8 +100,7 @@ export async function createPackageService(src, main) {
          */
         async set(type, value) {
             if (!value) return;
-
-            await currentTask();
+            await currentTask;
 
             const [pkg] = await getPackage(src);
 

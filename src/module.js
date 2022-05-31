@@ -123,10 +123,10 @@ export async function prepare(config) {
 
     const externalDependenciesKeys = Object.keys(externals);
 
-    Promise.all(
-        Object.entries(subpackages).map((externalProps, value) =>
-            packageService.set(externalProps, value)
-        )
+    await Promise.all(
+        Object.entries(subpackages).map(([externalProp, value]) => {
+            packageService.set(externalProp, value);
+        })
     );
 
     /**
