@@ -3,15 +3,12 @@ import esbuild from "esbuild";
 import path from "path";
 import { exec } from "child_process";
 import { promisify } from "util";
-import { writeFile, lstat } from "fs/promises";
-import { getValueIndentation } from "@uppercod/indentation";
 import pluginMetaUrl from "@uppercod/esbuild-meta-url";
 import { pluginPipeline } from "./plugin-pipeline.js";
 import { pluginExternals } from "./plugin-externals.js";
+import { addDotRelative } from "./utils.js";
 import { loadCss } from "./load-css.js";
 import { analyzer } from "./analyzer.js";
-import { isJs } from "./utils.js";
-import { TS_CONFIG, TS_CONFIG_FIXED } from "./constants.js";
 import { createPackageService } from "./package-service.js";
 
 const pexec = promisify(exec);
@@ -207,10 +204,12 @@ export async function prepare(config) {
         watch: config.watch
             ? {
                   onRebuild(error, { metafile: { outputs } }) {
-                      processExports(outputs);
+                      processExports(Object.keys(outputs).map(addDotRelative));
                       processTypes(
                           Object.values(outputs)
-                              .map(({ entryPoint }) => "./" + entryPoint)
+                              .map(({ entryPoint }) =>
+                                  addDotRelative(entryPoint)
+                              )
                               .flat(2)
                       );
                       logger(
@@ -241,7 +240,7 @@ export async function prepare(config) {
      * @param {string[]} outpus
      */
     const processExports = async (outpus) => {
-        const outputsFromEntries = Object.keys(outpus).filter(
+        const outputsFromEntries = outpus.filter(
             (output) => !/chunk-(\S+)\.js$/.test(output)
         );
         if (config.exports) {
@@ -281,8 +280,8 @@ export async function prepare(config) {
             dist: config.dist,
             entryPoints: entries,
         });
-        processExports(exportsJs);
-        processTypes(exportsTs);
+        processExports(exportsJs.map(addDotRelative));
+        processTypes(exportsTs.map(addDotRelative));
     };
 
     if (!config.ignoreBuild) {
@@ -292,7 +291,7 @@ export async function prepare(config) {
             config.preload ? config.preload(build) : build
         );
 
-        await processExports(metafile.outputs);
+        await processExports(Object.keys(metafile.outputs));
         await processTypes(build.entryPoints);
         await processAnalyzer(build.entryPoints);
 

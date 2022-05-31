@@ -129,7 +129,8 @@ export async function analyzer({ pkgName, dist, entryPoints, ...options }) {
                 exportTs ? [...exportsTs, ...exportTs] : exportsTs,
             ],
             [[], []]
-        );
+        )
+        .map((group) => group.filter((value) => value));
 
     if (entryPoints.length > 1 && exportsJs.length) {
         await Promise.all(
