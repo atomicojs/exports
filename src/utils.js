@@ -1,4 +1,5 @@
-import { writeFile, mkdir } from "fs/promises";
+import { getValueIndentation } from "@uppercod/indentation";
+import { readFile, writeFile, mkdir } from "fs/promises";
 import path from "path";
 
 export const isJs = (file) => /\.(js|jsx|mjs|ts|tsx)$/.test(file);
@@ -47,6 +48,30 @@ export function setPkgExports(pkg, outputs, main) {
                 ...pkg.exports,
             }
         );
+}
+
+/**
+ * @typedef {Object} Package
+ * @property {Object<string,string>} [dependencies]
+ * @property {Object<string,string>} [peerDependencies]
+ * @property {Object<string,string>} [devDependencies]
+ */
+
+/**
+ * Read a json document
+ * @param {string} file
+ * @returns {Promise<[Package, string, number]>}
+ */
+export async function getPackage(file) {
+    const text = await readFile(file, "utf-8");
+
+    const [, indent] = text.match(/^(\s+)"/m);
+
+    return [
+        JSON.parse(text),
+        text,
+        indgetValueIndentation(indent) / getValueIndentation(" "),
+    ];
 }
 
 export function setPkgTypesVersions(pkg, outputs, main) {

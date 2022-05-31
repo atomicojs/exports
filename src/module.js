@@ -3,7 +3,7 @@ import esbuild from "esbuild";
 import path from "path";
 import { exec } from "child_process";
 import { promisify } from "util";
-import { readFile, writeFile, lstat } from "fs/promises";
+import { writeFile, lstat } from "fs/promises";
 import { getValueIndentation } from "@uppercod/indentation";
 import pluginMetaUrl from "@uppercod/esbuild-meta-url";
 import { pluginPipeline } from "./plugin-pipeline.js";
@@ -13,6 +13,7 @@ import { analyzer } from "./analyzer.js";
 import {
     isJs,
     setPkgExports,
+    getJson,
     setPkgDependencies,
     setPkgTypesVersions,
 } from "./utils.js";
@@ -311,14 +312,7 @@ export async function prepare(config) {
 }
 
 /**
- * Read a json document
- * @param {string} file
- * @returns {Promise<{[prop:string]:any}>}
- */
-async function getJson(file) {
-    const text = await readFile(file, "utf-8");
-    return [JSON.parse(text), text];
-}
+
 
 /**
  * Get external files not to be included in the build
