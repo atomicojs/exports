@@ -203,15 +203,18 @@ export async function prepare(config) {
         external: config.bundle ? [] : externalDependenciesKeys,
         watch: config.watch
             ? {
-                  onRebuild(error, { metafile: { outputs } }) {
-                      processExports(Object.keys(outputs).map(addDotRelative));
+                  async onRebuild(error, { metafile: { outputs } }) {
+                      await processExports(
+                          Object.keys(outputs).map(addDotRelative)
+                      );
 
                       const entries = Object.values(outputs)
                           .map(({ entryPoint }) => addDotRelative(entryPoint))
                           .flat(2);
 
-                      processTypes(entries);
-                      processAnalyzer(entries);
+                      await processTypes(entries);
+
+                      await processAnalyzer(entries);
 
                       logger(
                           error
