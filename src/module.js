@@ -237,8 +237,8 @@ export async function prepare(config) {
         const outputsFromEntries = Object.keys(outpus).filter(
             (output) => !/chunk-(\S+)\.js$/.test(output)
         );
-        if (config.external) {
-            await packageService.set("externals", outputsFromEntries);
+        if (config.exports) {
+            await packageService.set("exports", outputsFromEntries);
         }
     };
 
