@@ -1,8 +1,6 @@
 import glob from "fast-glob";
 import esbuild from "esbuild";
 import path from "path";
-import { exec } from "child_process";
-import { promisify } from "util";
 import pluginMetaUrl from "@uppercod/esbuild-meta-url";
 import { pluginPipeline } from "./plugin-pipeline.js";
 import { pluginExternals } from "./plugin-externals.js";
@@ -10,8 +8,6 @@ import { addDotRelative } from "./utils.js";
 import { loadCss } from "./load-css.js";
 import { analyzer } from "./analyzer.js";
 import { createPackageService } from "./package-service.js";
-
-const pexec = promisify(exec);
 
 const assets = [
     "jpg",
