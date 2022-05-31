@@ -8,6 +8,7 @@ import { addDotRelative } from "./utils.js";
 import { loadCss } from "./load-css.js";
 import { analyzer } from "./analyzer.js";
 import { createPackageService } from "./package-service.js";
+import { TEXT } from "./constants.js";
 
 const assets = [
     "jpg",
@@ -68,7 +69,7 @@ function logger(message) {
  * @returns
  */
 export async function prepare(config) {
-    console.log("\nExports");
+    console.log(TEXT.start);
 
     config = {
         ...config,
@@ -76,7 +77,7 @@ export async function prepare(config) {
 
     config.format = config.format || "esm";
 
-    logger("Initializing...");
+    logger(TEXT.preparing);
 
     let entryPoints = await glob(config.src, {
         ignore: [
@@ -109,7 +110,7 @@ export async function prepare(config) {
     }
 
     if (!entryPoints.length) {
-        logger("No file input!");
+        logger(TEXT.noFiles);
         process.exit(1);
     }
 
@@ -155,11 +156,7 @@ export async function prepare(config) {
 
                       await processAnalyzer(entries);
 
-                      logger(
-                          error
-                              ? "watch build failed:"
-                              : "waiting for changes..."
-                      );
+                      logger(error ? TEXT.waitingError : TEXT.waiting);
                   },
               }
             : null,
@@ -232,7 +229,7 @@ export async function prepare(config) {
     };
 
     if (!config.ignoreBuild) {
-        logger("Generating outputs with esbuild...");
+        logger(TEXT.startEsbuild);
 
         const { metafile } = await esbuild.build(
             config.preload ? config.preload(build) : build
@@ -242,6 +239,6 @@ export async function prepare(config) {
         await processTypes(build.entryPoints);
         await processAnalyzer(build.entryPoints);
 
-        logger("Esbuild completed...");
+        logger(TEXT.finishEsbuild);
     }
 }
