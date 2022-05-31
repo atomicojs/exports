@@ -1,21 +1,22 @@
 import { writeFile } from "fs/promises";
-import { getPackage } from "./utils";
-
+import { getPackage, setPackageExports } from "./utils.js";
 /**
  *
  * @param {string} src
+ * @param {string} main
  */
-export async function createPackageService(src) {
+export async function createPackageService(src, main) {
     const firstPackage = await getPackage(src);
     const [, , indent] = firstPackage;
 
-    const writePackage = (json) =>
-        writeFile(src, JSON.stringify(json, null, indent));
+    const writePackage = (pkg) =>
+        writeFile(src, JSON.stringify(pkg, null, indent));
 
     return {
         async getExternals() {
-            const [{ dependencies = {}, peerDependencies = {} }] =
-                await getPackage(src);
+            const [
+                { workspaces = [], dependencies = {}, peerDependencies = {} },
+            ] = await getPackage(src);
 
             const externals = [
                 ...Object.keys(dependencies),
@@ -36,18 +37,24 @@ export async function createPackageService(src) {
          * @param {Object<string,string>} dependencies
          */
         async set(type, value) {
-            const [json] = await getPackage(src);
-            const { [type]: currentValue = {} } = json;
+            const [pkg] = await getPackage(src);
+            const { [type]: currentValue = {} } = pkg;
 
-            json[mode] = Object.entries(value).reduce(
-                (currentValue, [prop, value]) => ({
-                    ...currentValue,
-                    [prop]: value,
-                }),
-                currentValue
-            );
+            switch (type) {
+                case "exports":
+                    setPackageExports(pkg, value, main);
+                    break;
+                default:
+                    pkg[mode] = Object.entries(value).reduce(
+                        (currentValue, [prop, value]) => ({
+                            ...currentValue,
+                            [prop]: value,
+                        }),
+                        currentValue
+                    );
+            }
 
-            writePackage(json);
+            writePackage(pkg);
         },
     };
 }

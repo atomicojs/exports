@@ -20,7 +20,7 @@ export const addDotRelative = (file) =>
  * @param {object} pkg
  * @param {string[]} outputs
  */
-export function setPkgExports(pkg, outputs, main) {
+export function setPackageExports(pkg, outputs, main) {
     pkg.exports = outputs
         .filter((output) => /\.(css|js|mjs)$/.test(output))
         .reduce(
@@ -70,7 +70,7 @@ export async function getPackage(file) {
     return [
         JSON.parse(text),
         text,
-        indgetValueIndentation(indent) / getValueIndentation(" "),
+        getValueIndentation(indent) / getValueIndentation(" "),
     ];
 }
 

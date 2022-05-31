@@ -10,14 +10,9 @@ import { pluginPipeline } from "./plugin-pipeline.js";
 import { pluginExternals } from "./plugin-externals.js";
 import { loadCss } from "./load-css.js";
 import { analyzer } from "./analyzer.js";
-import {
-    isJs,
-    setPkgExports,
-    getJson,
-    setPkgDependencies,
-    setPkgTypesVersions,
-} from "./utils.js";
+import { isJs, setPkgTypesVersions } from "./utils.js";
 import { TS_CONFIG, TS_CONFIG_FIXED } from "./constants.js";
+import { createPackageService } from "./package-service.js";
 
 const pexec = promisify(exec);
 
@@ -98,44 +93,46 @@ export async function prepare(config) {
         ],
     });
 
-    const pkgRootSrc = process.cwd() + "/package.json";
-    const tsconfigSrc = process.cwd() + "/tsconfig.json";
+    const packageSrc = process.cwd() + "/package.json";
+    // const tsconfigSrc = process.cwd() + "/tsconfig.json";
 
     if (entryPoints.length === 1 && !config.main) {
         const [first] = entryPoints;
         config.main = path.parse(first).name;
     }
 
-    const [pkg, pkgText] = await getJson(pkgRootSrc);
-    const [tsconfig] = await getJson(tsconfigSrc).catch(() => [{}, ""]);
+    const packageService = await createPackageService(packageSrc, config.main);
 
-    const externalDependencies = getExternal(pkg);
-    const externalPeerDependencies = {};
-    const externalPeerDependenciesMeta = {};
+    // const [pkg, pkgText] = await getJson(pkgRootSrc);
+    // const [tsconfig] = await getJson(tsconfigSrc).catch(() => [{}, ""]);
 
-    if (config.workspace) {
-        (
-            await Promise.all(
-                (
-                    await glob(
-                        config.workspace +
-                            (config.workspace.endsWith("package.json")
-                                ? ""
-                                : (config.workspace.endsWith("/") ? "" : "/") +
-                                  "package.json")
-                    )
-                ).map((file) => getJson(file))
-            )
-        ).forEach(([pkg]) => {
-            getExternal(pkg, externalDependencies);
-            getExternal(pkg, externalPeerDependencies, aliasDep.peerDep);
-            getExternal(
-                pkg,
-                externalPeerDependenciesMeta,
-                aliasDep.peerDepMeta
-            );
-        });
-    }
+    // const externalDependencies = getExternal(pkg);
+    // const externalPeerDependencies = {};
+    // const externalPeerDependenciesMeta = {};
+
+    // if (config.workspace) {
+    //     (
+    //         await Promise.all(
+    //             (
+    //                 await glob(
+    //                     config.workspace +
+    //                         (config.workspace.endsWith("package.json")
+    //                             ? ""
+    //                             : (config.workspace.endsWith("/") ? "" : "/") +
+    //                               "package.json")
+    //                 )
+    //             ).map((file) => getJson(file))
+    //         )
+    //     ).forEach(([pkg]) => {
+    //         getExternal(pkg, externalDependencies);
+    //         getExternal(pkg, externalPeerDependencies, aliasDep.peerDep);
+    //         getExternal(
+    //             pkg,
+    //             externalPeerDependenciesMeta,
+    //             aliasDep.peerDepMeta
+    //         );
+    //     });
+    // }
 
     const metaUrl = (config.metaUrl || [])
         .concat(assets)
@@ -157,49 +154,39 @@ export async function prepare(config) {
 
     // generate a copy to get the external dependencies
     const externalDependenciesKeys = Object.keys(
-        getExternal(
-            pkg,
-            Object.entries(externalDependencies).reduce(
-                (copy, [prop, value]) => ({
-                    ...copy,
-                    [prop]: [...value],
-                }),
-                {}
-            ),
-            aliasDep.peerDep
-        )
+        await packageService.getExternals()
     );
 
-    if (config.analyzer && (config.exports || config.types)) {
-        const [exportsJs, exportsTs] = await analyzer({
-            pkgName: pkg.name,
-            dist: config.dist,
-            main: config.main,
-            customElements: config.customElements,
-            entryPoints,
-            types: config.types,
-            exports: config.exports,
-        });
+    // if (config.analyzer && (config.exports || config.types)) {
+    //     const [exportsJs, exportsTs] = await analyzer({
+    //         pkgName: pkg.name,
+    //         dist: config.dist,
+    //         main: config.main,
+    //         customElements: config.customElements,
+    //         entryPoints,
+    //         types: config.types,
+    //         exports: config.exports,
+    //     });
 
-        setPkgExports(pkg, exportsJs, config.main);
-        setPkgTypesVersions(pkg, exportsTs, config.main);
-        setPkgDependencies(
-            pkg,
-            {
-                "@atomico/react": "latest",
-            },
-            aliasDep.peerDep
-        );
-        setPkgDependencies(
-            pkg,
-            {
-                "@atomico/react": {
-                    optional: true,
-                },
-            },
-            aliasDep.peerDepMeta
-        );
-    }
+    //     setPkgExports(pkg, exportsJs, config.main);
+    //     setPkgTypesVersions(pkg, exportsTs, config.main);
+    //     setPkgDependencies(
+    //         pkg,
+    //         {
+    //             "@atomico/react": "latest",
+    //         },
+    //         aliasDep.peerDep
+    //     );
+    //     setPkgDependencies(
+    //         pkg,
+    //         {
+    //             "@atomico/react": {
+    //                 optional: true,
+    //             },
+    //         },
+    //         aliasDep.peerDepMeta
+    //     );
+    // }
 
     /**
      * @type {import("esbuild").BuildOptions}
@@ -219,7 +206,8 @@ export async function prepare(config) {
         external: config.bundle ? [] : externalDependenciesKeys,
         watch: config.watch
             ? {
-                  onRebuild(error) {
+                  onRebuild(error, { metafile: { outputs } }) {
+                      setPackageExports(outputs);
                       logger(
                           error
                               ? "watch build failed:"
@@ -241,6 +229,19 @@ export async function prepare(config) {
     /**@type {string[]} */
     let outputs = entryPoints;
 
+    /**
+     *
+     * @param {string[]} outpus
+     */
+    const setPackageExports = async (outpus) => {
+        const outputsFromEntries = Object.keys(outpus).filter(
+            (output) => !/chunk-(\S+)\.js$/.test(output)
+        );
+        if (config.external) {
+            await packageService.set("externals", outputsFromEntries);
+        }
+    };
+
     if (!config.ignoreBuild) {
         logger("Generating outputs with esbuild...");
 
@@ -248,67 +249,65 @@ export async function prepare(config) {
             config.preload ? config.preload(build) : build
         );
 
-        outputs = Object.keys(metafile.outputs).filter(
-            (output) => !/chunk-(\S+)\.js$/.test(output)
-        );
+        setPackageExports(metafile.outputs);
 
         logger("Esbuild completed...");
     }
 
-    if (config.watch) {
-        logger("waiting for changes...");
-    }
+    // if (config.watch) {
+    //     logger("waiting for changes...");
+    // }
 
-    if (config.exports || config.workspace || config.types) {
-        config.exports && setPkgExports(pkg, outputs, config.main);
-        if (config.workspace) {
-            setPkgDependencies(pkg, externalDependencies);
-            setPkgDependencies(pkg, externalPeerDependencies, aliasDep.peerDep);
-            setPkgDependencies(
-                pkg,
-                externalPeerDependenciesMeta,
-                aliasDep.peerDepMeta
-            );
-        }
+    // if (config.exports || config.workspace || config.types) {
+    //     config.exports && setPkgExports(pkg, outputs, config.main);
+    //     if (config.workspace) {
+    //         setPkgDependencies(pkg, externalDependencies);
+    //         setPkgDependencies(pkg, externalPeerDependencies, aliasDep.peerDep);
+    //         setPkgDependencies(
+    //             pkg,
+    //             externalPeerDependenciesMeta,
+    //             aliasDep.peerDepMeta
+    //         );
+    //     }
 
-        logger("Preparing package.json...");
+    //     logger("Preparing package.json...");
 
-        const entriesJs = entryPoints.filter(isJs);
+    //     const entriesJs = entryPoints.filter(isJs);
 
-        if (config.types && entriesJs.length) {
-            logger(`${config.watch ? "Waiting" : "Preparing"} types...`);
-            try {
-                await generateTypes(
-                    entriesJs,
-                    pkg,
-                    config.main,
-                    tsconfig?.compilerOptions,
-                    config.watch
-                );
-            } catch (e) {
-                logger("Type generation error:\n\n" + e.stdout);
-                logger("Type generation failed");
-                process.exit(1);
-            }
+    //     if (config.types && entriesJs.length) {
+    //         logger(`${config.watch ? "Waiting" : "Preparing"} types...`);
+    //         try {
+    //             await generateTypes(
+    //                 entriesJs,
+    //                 pkg,
+    //                 config.main,
+    //                 tsconfig?.compilerOptions,
+    //                 config.watch
+    //             );
+    //         } catch (e) {
+    //             logger("Type generation error:\n\n" + e.stdout);
+    //             logger("Type generation failed");
+    //             process.exit(1);
+    //         }
 
-            logger("Finished types!");
-        }
+    //         logger("Finished types!");
+    //     }
 
-        logger("Finished package.json!");
-    }
+    //     logger("Finished package.json!");
+    // }
 
-    logger("completed!");
+    // logger("completed!");
 
-    const [, space] = pkgText.match(/^(\s+)"/m);
+    // const [, space] = pkgText.match(/^(\s+)"/m);
 
-    await writeFile(
-        pkgRootSrc,
-        JSON.stringify(
-            pkg,
-            null,
-            getValueIndentation(space) / getValueIndentation(" ")
-        )
-    );
+    // await writeFile(
+    //     pkgRootSrc,
+    //     JSON.stringify(
+    //         pkg,
+    //         null,
+    //         getValueIndentation(space) / getValueIndentation(" ")
+    //     )
+    // );
 }
 
 /**
