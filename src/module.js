@@ -207,7 +207,7 @@ export async function prepare(config) {
         watch: config.watch
             ? {
                   onRebuild(error, { metafile: { outputs } }) {
-                      setPackageExports(outputs);
+                      processExports(outputs);
                       logger(
                           error
                               ? "watch build failed:"
@@ -228,17 +228,41 @@ export async function prepare(config) {
 
     /**@type {string[]} */
     let outputs = entryPoints;
-
+    /**
+     * @type {Promise<ReturnType<import("./typescript-service").createService>>}
+     */
+    let typescriptService;
     /**
      *
      * @param {string[]} outpus
      */
-    const setPackageExports = async (outpus) => {
+    const processExports = async (outpus) => {
         const outputsFromEntries = Object.keys(outpus).filter(
             (output) => !/chunk-(\S+)\.js$/.test(output)
         );
         if (config.exports) {
             await packageService.set("exports", outputsFromEntries);
+        }
+    };
+    /**
+     *
+     * @param {string[]} entries
+     */
+    const processTypes = async (entries) => {
+        if (config.types) {
+            if (!typescriptService) {
+                typescriptService = import("./typescript-service.js").then(
+                    ({ createService }) => createService(entryPoints)
+                );
+            }
+
+            const service = await typescriptService;
+
+            const outfilesDTs = service.output(entries);
+
+            if (outfilesDTs.length) {
+                packageService.set("types", outfilesDTs);
+            }
         }
     };
 
@@ -249,7 +273,8 @@ export async function prepare(config) {
             config.preload ? config.preload(build) : build
         );
 
-        setPackageExports(metafile.outputs);
+        await processExports(metafile.outputs);
+        await processTypes(build.entryPoints);
 
         logger("Esbuild completed...");
     }

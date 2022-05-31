@@ -100,6 +100,11 @@ export function createService(entries) {
 
     return {
         service,
+        /**
+         *
+         * @param {string[]} change
+         * @return {string[]}
+         */
         output(change = []) {
             change.forEach((file) => files[file] && files[file].version++);
 

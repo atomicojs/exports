@@ -74,7 +74,13 @@ export async function getPackage(file) {
     ];
 }
 
-export function setPkgTypesVersions(pkg, outputs, main) {
+/**
+ *
+ * @param {Object<string,any>} pkg
+ * @param {string[]} outputs
+ * @param {string} main
+ */
+export function setPackageTypesVersions(pkg, outputs, main) {
     const { typesVersions = {} } = pkg;
 
     const prevAll = typesVersions["*"] || {};

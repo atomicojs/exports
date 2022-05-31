@@ -1,5 +1,9 @@
 import { writeFile } from "fs/promises";
-import { getPackage, setPackageExports } from "./utils.js";
+import {
+    getPackage,
+    setPackageExports,
+    setPackageTypesVersions,
+} from "./utils.js";
 /**
  *
  * @param {string} src
@@ -43,6 +47,9 @@ export async function createPackageService(src, main) {
             switch (type) {
                 case "exports":
                     setPackageExports(pkg, value, main);
+                    break;
+                case "types":
+                    setPackageTypesVersions(pkg, value, main);
                     break;
                 default:
                     pkg[mode] = Object.entries(value).reduce(
