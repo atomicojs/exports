@@ -205,13 +205,14 @@ export async function prepare(config) {
             ? {
                   onRebuild(error, { metafile: { outputs } }) {
                       processExports(Object.keys(outputs).map(addDotRelative));
-                      processTypes(
-                          Object.values(outputs)
-                              .map(({ entryPoint }) =>
-                                  addDotRelative(entryPoint)
-                              )
-                              .flat(2)
-                      );
+
+                      const entries = Object.values(outputs)
+                          .map(({ entryPoint }) => addDotRelative(entryPoint))
+                          .flat(2);
+
+                      processTypes(entries);
+                      processAnalyzer(entries);
+
                       logger(
                           error
                               ? "watch build failed:"
