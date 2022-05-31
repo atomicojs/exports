@@ -4,7 +4,7 @@ import path from "path";
 import esbuild from "esbuild";
 import { readFile } from "fs/promises";
 import { isJs, write } from "./utils.js";
-import { TS_CONFIG_FIXED } from "./constants.js";
+import { TSCONFIG } from "./constants.js";
 
 /**
  * @param {Object} options
@@ -104,7 +104,7 @@ export async function analyzer({ pkgName, dist, entryPoints, ...options }) {
 
                             const exportTs =
                                 options.types &&
-                                `types/${name}.${wrapper}.d.ts`;
+                                `${TSCONFIG.outDir}/${name}.${wrapper}.d.ts`;
 
                             if (exportJs)
                                 await write(exportJs, codeJs.join("\n"));
@@ -144,7 +144,7 @@ export async function analyzer({ pkgName, dist, entryPoints, ...options }) {
                                 .replace(/\.js$/, "")}";`
                     );
                 const distAll = `${dist}/${wrapper}.js`;
-                const distTypes = `${TS_CONFIG_FIXED.outDir}/${wrapper}.d.ts`;
+                const distTypes = `${TSCONFIG.outDir}/${wrapper}.d.ts`;
                 await write(distAll, item.join("\n"));
                 exportsJs.push(distAll);
                 if (options.types) {

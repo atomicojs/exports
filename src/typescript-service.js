@@ -1,5 +1,5 @@
 import ts from "typescript";
-
+import { TSCONFIG } from "./constants.js";
 /**
  * @param {string[]} entries
  * @param {Files} files
@@ -61,8 +61,7 @@ export function createService(entries) {
 
     const options = {
         ...getOptions(),
-        emitDeclarationOnly: true,
-        outDir: "types",
+        ...TSCONFIG,
     };
 
     const serviceHost = createServiceHost(entries, files, options);
