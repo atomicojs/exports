@@ -10,5 +10,5 @@ export const TEXT = {
     waitingError: "watch build failed:",
     waiting: "waiting for changes...",
     startEsbuild: "Generating outputs with esbuild...",
-    esbuildDone: "Esbuild completed...",
+    finishEsbuild: "Esbuild completed...",
 };
