@@ -154,37 +154,6 @@ export async function prepare(config) {
         await packageService.getExternals()
     );
 
-    // if (config.analyzer && (config.exports || config.types)) {
-    //     const [exportsJs, exportsTs] = await analyzer({
-    //         pkgName: pkg.name,
-    //         dist: config.dist,
-    //         main: config.main,
-    //         customElements: config.customElements,
-    //         entryPoints,
-    //         types: config.types,
-    //         exports: config.exports,
-    //     });
-
-    //     setPkgExports(pkg, exportsJs, config.main);
-    //     setPkgTypesVersions(pkg, exportsTs, config.main);
-    //     setPkgDependencies(
-    //         pkg,
-    //         {
-    //             "@atomico/react": "latest",
-    //         },
-    //         aliasDep.peerDep
-    //     );
-    //     setPkgDependencies(
-    //         pkg,
-    //         {
-    //             "@atomico/react": {
-    //                 optional: true,
-    //             },
-    //         },
-    //         aliasDep.peerDepMeta
-    //     );
-    // }
-
     /**
      * @type {import("esbuild").BuildOptions}
      */
@@ -284,8 +253,12 @@ export async function prepare(config) {
             dist: config.dist,
             entryPoints: entries,
         });
-        processExports(exportsJs.map(addDotRelative));
-        processTypes(exportsTs.map(addDotRelative));
+
+        await processExports(exportsJs.map(addDotRelative));
+
+        if (config.types && outfilesDTs.length) {
+            packageService.set("types", outfilesDTs);
+        }
     };
 
     if (!config.ignoreBuild) {
