@@ -81,7 +81,7 @@ export async function prepare(config) {
     config.format = config.format || "esm";
 
     logger("Initializing...");
-    //@ts-ignore
+
     let entryPoints = await glob(config.src, {
         ignore: [
             "**/_*/*",
@@ -91,7 +91,6 @@ export async function prepare(config) {
     });
 
     const packageSrc = process.cwd() + "/package.json";
-    // const tsconfigSrc = process.cwd() + "/tsconfig.json";
 
     if (entryPoints.length === 1 && !config.main) {
         const [first] = entryPoints;
