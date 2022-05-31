@@ -281,8 +281,8 @@ export async function prepare(config) {
             dist: config.dist,
             entryPoints: entries,
         });
-
-        console.log({ exportsJs, exportsTs });
+        processExports(exportsJs);
+        processTypes(exportsTs);
     };
 
     if (!config.ignoreBuild) {
