@@ -17,6 +17,8 @@ export async function createPackageService(src, main) {
     const writePackage = (pkg) =>
         writeFile(src, JSON.stringify(pkg, null, indent));
 
+    let currentTask = Promise.resolve();
+
     return {
         async get() {
             const [pkg] = await getPackage(src);
@@ -99,6 +101,8 @@ export async function createPackageService(src, main) {
         async set(type, value) {
             if (!value) return;
 
+            await currentTask();
+
             const [pkg] = await getPackage(src);
 
             const { [type]: currentValue = {} } = pkg;
@@ -120,7 +124,9 @@ export async function createPackageService(src, main) {
                     );
             }
 
-            writePackage(pkg);
+            currentTask = writePackage(pkg);
+
+            return currentTask;
         },
     };
 }

@@ -100,37 +100,6 @@ export async function prepare(config) {
 
     const packageService = await createPackageService(packageSrc, config.main);
 
-    // const [pkg, pkgText] = await getJson(pkgRootSrc);
-    // const [tsconfig] = await getJson(tsconfigSrc).catch(() => [{}, ""]);
-
-    // const externalDependencies = getExternal(pkg);
-    // const externalPeerDependencies = {};
-    // const externalPeerDependenciesMeta = {};
-
-    // if (config.workspace) {
-    //     (
-    //         await Promise.all(
-    //             (
-    //                 await glob(
-    //                     config.workspace +
-    //                         (config.workspace.endsWith("package.json")
-    //                             ? ""
-    //                             : (config.workspace.endsWith("/") ? "" : "/") +
-    //                               "package.json")
-    //                 )
-    //             ).map((file) => getJson(file))
-    //         )
-    //     ).forEach(([pkg]) => {
-    //         getExternal(pkg, externalDependencies);
-    //         getExternal(pkg, externalPeerDependencies, aliasDep.peerDep);
-    //         getExternal(
-    //             pkg,
-    //             externalPeerDependenciesMeta,
-    //             aliasDep.peerDepMeta
-    //         );
-    //     });
-    // }
-
     const metaUrl = (config.metaUrl || [])
         .concat(assets)
         .reduce((metaUrl, key) => {
@@ -152,9 +121,13 @@ export async function prepare(config) {
     // generate a copy to get the external dependencies
     const [externals, subpackages] = await packageService.getExternals();
 
-    console.log(subpackages);
-
     const externalDependenciesKeys = Object.keys(externals);
+
+    Promise.all(
+        Object.entries(subpackages).map((externalProps, value) =>
+            packageService.set(externalProps, value)
+        )
+    );
 
     /**
      * @type {import("esbuild").BuildOptions}
