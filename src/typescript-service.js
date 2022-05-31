@@ -57,6 +57,8 @@ export function createService(entries) {
      */
     const files = {};
 
+    entries.forEach((file) => (files[file] = { version: 0 }));
+
     const options = {
         ...getOptions(),
         emitDeclarationOnly: true,
@@ -98,8 +100,11 @@ export function createService(entries) {
 
     return {
         service,
-        output() {
+        output(change = []) {
+            change.forEach((file) => files[file] && files[file].version++);
+
             const errors = entries.map(getErros).flat(2);
+
             if (errors.length) {
                 console.log(errors.map((error) => ` ${error}`).join("\n"));
                 return [];
