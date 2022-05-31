@@ -114,7 +114,7 @@ export async function createPackageService(src, main) {
                     setPackageTypesVersions(pkg, value, main);
                     break;
                 default:
-                    pkg[mode] = Object.entries(value).reduce(
+                    pkg[type] = Object.entries(value).reduce(
                         (currentValue, [prop, value]) => ({
                             ...currentValue,
                             [prop]: value,
