@@ -104,7 +104,7 @@ export async function analyzer({ pkgName, dist, entryPoints, ...options }) {
 
                             const exportTs =
                                 options.types &&
-                                `${TS_CONFIG_FIXED.outDir}/${name}.${wrapper}.d.ts`;
+                                `types/${name}.${wrapper}.d.ts`;
 
                             if (exportJs)
                                 await write(exportJs, codeJs.join("\n"));
