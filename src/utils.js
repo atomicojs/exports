@@ -1,6 +1,9 @@
 import { getValueIndentation } from "@uppercod/indentation";
 import { readFile, writeFile, mkdir } from "fs/promises";
 import path from "path";
+import { createRequire } from "module";
+
+export const require = createRequire(import.meta.url);
 
 export const isJs = (file) => /\.(js|jsx|mjs|ts|tsx)$/.test(file);
 

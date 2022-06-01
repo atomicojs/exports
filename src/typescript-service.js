@@ -1,5 +1,6 @@
 import ts from "typescript";
 import { TSCONFIG } from "./constants.js";
+import { require } from "./utils.js";
 /**
  * @param {string[]} entries
  * @param {Files} files
@@ -33,16 +34,28 @@ const createServiceHost = (entries, files, options) => ({
     getDirectories: ts.sys.getDirectories,
 });
 
-const getOptions = () => {
-    const file = ts.findConfigFile("./", ts.sys.fileExists);
+/**
+ *
+ * @param {string} [file]
+ * @returns
+ */
+const getOptions = (file) => {
+    file = file || ts.findConfigFile("./", ts.sys.fileExists);
 
     const configFile = ts.readJsonConfigFile(file, ts.sys.readFile);
 
-    const { options } = ts.parseJsonSourceFileConfigFileContent(
+    let { options, raw } = ts.parseJsonSourceFileConfigFileContent(
         configFile,
         ts.sys,
         "./"
     );
+
+    if (raw?.extends) {
+        options = {
+            ...getOptions(require.resolve(raw.extends)),
+            ...options,
+        };
+    }
 
     return options;
 };
