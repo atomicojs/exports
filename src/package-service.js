@@ -12,7 +12,7 @@ import {
  */
 export async function createPackageService(src, main) {
     const firstPackage = await getPackage(src);
-    const [, , indent] = firstPackage;
+    const [backgupPkg, , indent] = firstPackage;
 
     const writePackage = (pkg) =>
         writeFile(src, JSON.stringify(pkg, null, indent));
@@ -23,6 +23,9 @@ export async function createPackageService(src, main) {
         async get() {
             const [pkg] = await getPackage(src);
             return pkg;
+        },
+        restore() {
+            return writePackage(backgupPkg);
         },
         async getExternals() {
             const [{ workspaces = [], ...pkg }] = await getPackage(src);
