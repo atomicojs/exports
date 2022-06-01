@@ -50,8 +50,9 @@ const getOptions = () => {
 /**
  *
  * @param {string[]} entries
+ * @param {boolean} useExit
  */
-export function createService(entries) {
+export function createService(entries, useExit) {
     /**
      * @type {Files}
      */
@@ -111,6 +112,7 @@ export function createService(entries) {
 
             if (errors.length) {
                 console.log(errors.map((error) => ` ${error}`).join("\n"));
+                if (useExit) process.exit();
                 return [];
             } else {
                 const outputDts = entries

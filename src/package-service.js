@@ -1,5 +1,6 @@
 import glob from "fast-glob";
 import { writeFile } from "fs/promises";
+import { writeFileSync } from "fs";
 import {
     getPackage,
     setPackageExports,
@@ -25,7 +26,7 @@ export async function createPackageService(src, main) {
             return pkg;
         },
         restore() {
-            return writeFile(src, backupPackage);
+            return writeFileSync(src, backupPackage);
         },
         async getExternals() {
             const [{ workspaces = [], ...pkg }] = await getPackage(src);

@@ -1,6 +1,7 @@
 /node_modules
 /*.cjs
 /*.cjs.map
+/local
 dest
 dist
 types

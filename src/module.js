@@ -9,7 +9,6 @@ import { loadCss } from "./load-css.js";
 import { analyzer } from "./analyzer.js";
 import { createPackageService } from "./package-service.js";
 import { TEXT } from "./constants.js";
-import process from "process";
 
 const assets = [
     "jpg",
@@ -143,18 +142,25 @@ export async function prepare(config) {
         external: config.bundle ? [] : externalDependenciesKeys,
         watch: config.watch
             ? {
-                  async onRebuild(error, { metafile: { outputs } }) {
-                      await processExports(
-                          Object.keys(outputs).map(addDotRelative)
-                      );
+                  async onRebuild(error, result) {
+                      if (result) {
+                          const {
+                              metafile: { outputs },
+                          } = result;
+                          await processExports(
+                              Object.keys(outputs).map(addDotRelative)
+                          );
 
-                      const entries = Object.values(outputs)
-                          .map(({ entryPoint }) => addDotRelative(entryPoint))
-                          .flat(2);
+                          const entries = Object.values(outputs)
+                              .map(({ entryPoint }) =>
+                                  addDotRelative(entryPoint)
+                              )
+                              .flat(2);
 
-                      await processTypes(entries);
+                          await processTypes(entries);
 
-                      await processAnalyzer(entries);
+                          await processAnalyzer(entries);
+                      }
 
                       logger(error ? TEXT.waitingError : TEXT.waiting);
                   },
@@ -195,7 +201,8 @@ export async function prepare(config) {
         if (config.types) {
             if (!typescriptService) {
                 typescriptService = import("./typescript-service.js").then(
-                    ({ createService }) => createService(entryPoints)
+                    ({ createService }) =>
+                        createService(entryPoints, !config.watch)
                 );
             }
 
