@@ -9,6 +9,7 @@ import { loadCss } from "./load-css.js";
 import { analyzer } from "./analyzer.js";
 import { createPackageService } from "./package-service.js";
 import { TEXT } from "./constants.js";
+import process from "process";
 
 const assets = [
     "jpg",
@@ -229,6 +230,10 @@ export async function prepare(config) {
 
     if (!config.ignoreBuild) {
         logger(TEXT.startEsbuild);
+
+        process.on("kill", () => {
+            console.log("OK");
+        });
 
         const { metafile } = await esbuild.build(
             config.preload ? config.preload(build) : build
