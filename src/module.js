@@ -59,7 +59,6 @@ function logger(message) {
  * @param {boolean} [config.bundle]
  * @param {boolean} [config.analyzer]
  * @param {string} [config.main]
- * @param {string} [config.workspace]
  * @param {string} [config.customElements]
  * @param {string[]} [config.target]
  * @param {string[]} [config.metaUrl]

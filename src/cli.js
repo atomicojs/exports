@@ -31,10 +31,6 @@ cli.command("<...files>", "Build files")
         "--target <target>",
         "Defines the target to associate for the output"
     )
-    .option(
-        "--workspace <packages>",
-        "associate the workspace dependencies to the root package.json"
-    )
     .option("--sourcemap", "generate the sourcemap")
     .option("--global-name <name>", "globalName for export in iife format")
     .example("exports components/*.jsx")
@@ -55,7 +51,6 @@ cli.command("<...files>", "Build files")
                 target,
                 format,
                 metaUrl,
-                workspace,
                 ignoreBuild,
                 reactWrapper,
                 bundle,
@@ -75,7 +70,6 @@ cli.command("<...files>", "Build files")
                 minify,
                 exports,
                 sourcemap,
-                workspace,
                 metaUrl: metaUrl ? toArray(metaUrl) : [],
                 target: target ? toArray(target) : null,
                 ignoreBuild,
