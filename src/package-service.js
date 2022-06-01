@@ -102,32 +102,35 @@ export async function createPackageService(src, main) {
          * @param {"dependencies"|"peerDependencies"} mode
          * @param {Object<string,string>} dependencies
          */
-        async set(type, value) {
+        set(type, value) {
             if (!value) return;
-            await currentTask;
 
-            const [pkg] = await getPackage(src);
+            const task = async () => {
+                const [pkg] = await getPackage(src);
 
-            const { [type]: currentValue = {} } = pkg;
+                const { [type]: currentValue = {} } = pkg;
 
-            switch (type) {
-                case "exports":
-                    setPackageExports(pkg, value, main);
-                    break;
-                case "types":
-                    setPackageTypesVersions(pkg, value, main);
-                    break;
-                default:
-                    pkg[type] = Object.entries(value).reduce(
-                        (currentValue, [prop, value]) => ({
-                            ...currentValue,
-                            [prop]: value,
-                        }),
-                        currentValue
-                    );
-            }
+                switch (type) {
+                    case "exports":
+                        setPackageExports(pkg, value, main);
+                        break;
+                    case "types":
+                        setPackageTypesVersions(pkg, value, main);
+                        break;
+                    default:
+                        pkg[type] = Object.entries(value).reduce(
+                            (currentValue, [prop, value]) => ({
+                                ...currentValue,
+                                [prop]: value,
+                            }),
+                            currentValue
+                        );
+                }
 
-            currentTask = writePackage(pkg);
+                return writePackage(pkg);
+            };
+
+            currentTask = currentTask.then(task);
 
             return currentTask;
         },

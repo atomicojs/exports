@@ -152,6 +152,7 @@ export async function prepare(config) {
                           );
 
                           const entries = Object.values(outputs)
+                              .filter(({ entryPoint }) => entryPoint)
                               .map(({ entryPoint }) =>
                                   addDotRelative(entryPoint)
                               )
