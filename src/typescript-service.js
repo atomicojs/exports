@@ -1,6 +1,6 @@
 import ts from "typescript";
 import { TSCONFIG } from "./constants.js";
-import { require } from "./utils.js";
+import { require, addDotRelative } from "./utils.js";
 /**
  * @param {string[]} entries
  * @param {Files} files
@@ -71,6 +71,8 @@ export function createService(entries, useExit) {
      */
     const files = {};
 
+    entries = entries.map(addDotRelative);
+
     entries.forEach((file) => (files[file] = { version: 0 }));
 
     const options = {
@@ -119,7 +121,9 @@ export function createService(entries, useExit) {
          * @return {string[]}
          */
         output(change = []) {
-            change.forEach((file) => files[file] && files[file].version++);
+            change
+                .map(addDotRelative)
+                .forEach((file) => files[file] && files[file].version++);
 
             const errors = entries.map(getErros).flat(2);
 
