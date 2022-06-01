@@ -254,5 +254,13 @@ export async function prepare(config) {
         await processAnalyzer(build.entryPoints);
 
         logger(TEXT.finishEsbuild);
+    } else if (!config.watch) {
+        logger(TEXT.startNoBuild);
+
+        await processExports(Object.keys(metafile.outputs));
+        await processTypes(build.entryPoints);
+        await processAnalyzer(build.entryPoints);
+
+        logger(TEXT.finishNoBuild);
     }
 }

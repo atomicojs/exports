@@ -11,4 +11,6 @@ export const TEXT = {
     waiting: "waiting for changes...",
     startEsbuild: "Generating outputs with esbuild...",
     finishEsbuild: "Esbuild completed...",
+    startNoBuild: "Generating output in the package.json...",
+    finishNoBuild: "Outputs completed...",
 };
