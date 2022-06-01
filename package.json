@@ -31,7 +31,7 @@
     },
     "homepage": "https://github.com/UpperCod/pkg_name#readme",
     "dependencies": {
-        "@atomico/pipeline": "^0.1.0",
+        "@atomico/pipeline": "^0.2.0",
         "@types/node": "^14.14.41",
         "@uppercod/esbuild-meta-url": "latest",
         "@uppercod/indentation": "latest",
@@ -65,8 +65,7 @@
         "esbuild": "^0.14.38",
         "postcss": "^8.3.5",
         "postcss-import": "^14.0.2",
-        "postcss-load-config": "^3.1.0",
-        "@atomico/pipeline": "^0.1.0"
+        "postcss-load-config": "^3.1.0"
     },
     "peerDependenciesMeta": {
         "@atomico/react": {

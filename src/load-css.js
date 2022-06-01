@@ -1,8 +1,8 @@
 import { readFile } from "fs/promises";
+import { transform } from "esbuild";
 import postcss from "postcss";
 import postcssImport from "postcss-import";
 import postcssLoadConfig from "postcss-load-config";
-import csso from "csso";
 
 let currentConfig;
 
@@ -27,7 +27,14 @@ export async function loadCss({ share, src }) {
         postcssConfig
     );
 
-    const cssText = config.minify ? csso.minify(css).css : css;
+    const cssText = config.minify
+        ? (
+              await transform(css, {
+                  loader: "css",
+                  minify: true,
+              })
+          ).code
+        : css;
 
     return {
         inline: [
