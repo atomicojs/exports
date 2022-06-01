@@ -231,9 +231,11 @@ export async function prepare(config) {
     if (!config.ignoreBuild) {
         logger(TEXT.startEsbuild);
 
-        process.on("kill", () => {
-            console.log("OK");
-        });
+        if (config.watch) {
+            ["SIGINT", "exit"].map((event) => {
+                process.on(event, packageService.restore);
+            });
+        }
 
         const { metafile } = await esbuild.build(
             config.preload ? config.preload(build) : build
