@@ -55,6 +55,7 @@ export function setPackageExports(pkg, outputs, main) {
 
 /**
  * @typedef {Object} Package
+ * @property {string} [version]
  * @property {string[]} [workspaces]
  * @property {Object<string,string>} [dependencies]
  * @property {Object<string,string>} [peerDependencies]

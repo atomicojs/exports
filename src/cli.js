@@ -19,6 +19,7 @@ cli.command("<...files>", "Build files")
     .option("--format <format>", "output type, default esm")
     .option("--css-literals-postcss", "parse css literals with postcss")
     .option("--bundle", "bundle")
+    .option("--publish", "bundle")
     .option(
         "--analyzer",
         "Automatically generates additional support for React and Css from the webcomponents"
@@ -58,6 +59,7 @@ cli.command("<...files>", "Build files")
                 customElements,
                 globalName,
                 cssLiteralsPostcss,
+                publish,
             }
         ) => {
             prepare({
@@ -79,6 +81,7 @@ cli.command("<...files>", "Build files")
                 customElements,
                 globalName,
                 cssLiteralsPostcss,
+                publish,
             });
         }
     );

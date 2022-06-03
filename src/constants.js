@@ -13,4 +13,6 @@ export const TEXT = {
     finishEsbuild: "Esbuild completed...",
     startNoBuild: "Generating output in the package.json...",
     finishNoBuild: "Outputs completed...",
+    startPublish: "Publishing package...",
+    finishPublish: "Package published!",
 };

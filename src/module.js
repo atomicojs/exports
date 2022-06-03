@@ -9,6 +9,7 @@ import { loadCss } from "./load-css.js";
 import { analyzer } from "./analyzer.js";
 import { createPackageService } from "./package-service.js";
 import { TEXT } from "./constants.js";
+import { publish } from "./publish.js";
 
 const assets = [
     "jpg",
@@ -58,6 +59,7 @@ function logger(message) {
  * @param {boolean} [config.ignoreBuild]
  * @param {boolean} [config.bundle]
  * @param {boolean} [config.analyzer]
+ * @param {boolean} [config.publish]
  * @param {string} [config.main]
  * @param {string} [config.customElements]
  * @param {string[]} [config.target]
@@ -235,32 +237,43 @@ export async function prepare(config) {
             packageService.set("types", exportsTs);
         }
     };
+    try {
+        if (!config.ignoreBuild) {
+            logger(TEXT.startEsbuild);
 
-    if (!config.ignoreBuild) {
-        logger(TEXT.startEsbuild);
+            if (config.watch) {
+                ["SIGINT", "exit"].map((event) => {
+                    process.on(event, packageService.restore);
+                });
+            }
 
-        if (config.watch) {
-            ["SIGINT", "exit"].map((event) => {
-                process.on(event, packageService.restore);
-            });
+            const { metafile } = await esbuild.build(
+                config.preload ? config.preload(build) : build
+            );
+
+            await processExports(Object.keys(metafile.outputs));
+            await processTypes(build.entryPoints);
+            await processAnalyzer(build.entryPoints);
+
+            logger(TEXT.finishEsbuild);
+        } else if (!config.watch) {
+            logger(TEXT.startNoBuild);
+
+            await processExports(Object.keys(metafile.outputs));
+            await processTypes(build.entryPoints);
+            await processAnalyzer(build.entryPoints);
+
+            logger(TEXT.finishNoBuild);
         }
-
-        const { metafile } = await esbuild.build(
-            config.preload ? config.preload(build) : build
-        );
-
-        await processExports(Object.keys(metafile.outputs));
-        await processTypes(build.entryPoints);
-        await processAnalyzer(build.entryPoints);
-
-        logger(TEXT.finishEsbuild);
-    } else if (!config.watch) {
-        logger(TEXT.startNoBuild);
-
-        await processExports(Object.keys(metafile.outputs));
-        await processTypes(build.entryPoints);
-        await processAnalyzer(build.entryPoints);
-
-        logger(TEXT.finishNoBuild);
+        if (!config.watch && config.publish) {
+            logger(TEXT.startPublish);
+            const pkg = await packageService.get();
+            await publish(pkg.version);
+            logger(TEXT.finishPublish);
+        }
+    } catch (e) {
+        console.log(`Error: \n${e}\n`);
+        packageService.restore();
+        process.exit(1);
     }
 }
