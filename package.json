@@ -1,7 +1,7 @@
 {
     "name": "@atomico/exports",
     "type": "module",
-    "version": "0.32.3",
+    "version": "0.32.4",
     "description": "It allows to generate an export to quickly publish components created with Atomico in NPM",
     "main": "./src/cli.js",
     "module": "./src/cli.js",
@@ -31,7 +31,7 @@
     },
     "homepage": "https://github.com/UpperCod/pkg_name#readme",
     "dependencies": {
-        "@atomico/pipeline": "^0.2.0",
+        "@atomico/pipeline": "latest",
         "@types/node": "^14.14.41",
         "@uppercod/esbuild-meta-url": "latest",
         "@uppercod/indentation": "latest",
@@ -39,7 +39,6 @@
         "acorn-walk": "^8.1.0",
         "atomico": "latest",
         "cac": "^6.7.2",
-        "csso": "^4.2.0",
         "esbuild": "^0.14.38",
         "fast-glob": "^3.2.5",
         "postcss": "^8.3.5",
@@ -51,7 +50,6 @@
         "@uppercod/hash": "^1.1.1",
         "ava": "^3.10.1",
         "builtin-modules": "^3.1.0",
-        "csso": "^4.2.0",
         "normalize.css": "^8.0.1",
         "postcss": "^8.3.5",
         "postcss-import": "^14.0.2",
@@ -61,11 +59,12 @@
     },
     "peerDependencies": {
         "@atomico/react": "latest",
-        "csso": "^4.2.0",
+        "@atomico/pipeline": "latest",
         "esbuild": "^0.14.38",
         "postcss": "^8.3.5",
         "postcss-import": "^14.0.2",
-        "postcss-load-config": "^3.1.0"
+        "postcss-load-config": "^3.1.0",
+        "atomico": "latest"
     },
     "peerDependenciesMeta": {
         "@atomico/react": {
