@@ -11,10 +11,8 @@ const command = promisify(exec);
 export async function publish(localVersion) {
     const versions = [];
     try {
-        const { stdout } = await command("npm dist-tag rannnnn");
-        stdout.replace(/:\s+(.+)\s+/g, (all, version) =>
-            versions.push(version)
-        );
+        const { stdout } = await command("npm dist-tag");
+        stdout.replace(/: +(.+)/gm, (all, version) => versions.push(version));
     } catch (e) {}
 
     if (!versions.includes(localVersion)) {
