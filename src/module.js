@@ -238,14 +238,12 @@ export async function prepare(config) {
         }
     };
     try {
+        ["SIGINT", "exit"].map((event) => {
+            process.on(event, packageService.restore);
+        });
+
         if (!config.ignoreBuild) {
             logger(TEXT.startEsbuild);
-
-            if (config.watch) {
-                ["SIGINT", "exit"].map((event) => {
-                    process.on(event, packageService.restore);
-                });
-            }
 
             const { metafile } = await esbuild.build(
                 config.preload ? config.preload(build) : build
@@ -268,12 +266,17 @@ export async function prepare(config) {
         if (!config.watch && config.publish) {
             logger(TEXT.startPublish);
             const pkg = await packageService.get();
-            await publish(pkg.version);
-            logger(TEXT.finishPublish);
+            const result = await publish(pkg.version);
+            if (result?.stderr) {
+                logger(`Error ${pkg.name}\n${result.stderr}\n`);
+                process.exit(1);
+            } else {
+                logger(TEXT.finishPublish);
+            }
+            packageService.restore();
         }
     } catch (e) {
         console.log(`Error: \n${e}\n`);
-        packageService.restore();
         process.exit(1);
     }
 }
