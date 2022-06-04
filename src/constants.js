@@ -15,4 +15,5 @@ export const TEXT = {
     finishNoBuild: "Outputs completed...",
     startPublish: "Publishing package...",
     finishPublish: "Package published!",
+    ignorePublish: "Package package to publish ignored!",
 };

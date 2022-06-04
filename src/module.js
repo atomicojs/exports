@@ -267,11 +267,14 @@ export async function prepare(config) {
             logger(TEXT.startPublish);
             const pkg = await packageService.get();
             const result = await publish(pkg.version);
-            if (result?.stderr) {
-                logger(`Error ${pkg.name}\n${result.stderr}\n`);
+
+            if (result.status === "publish") {
+                logger(TEXT.finishPublish);
+            } else if (result.status === "error") {
+                logger(`Error ${pkg.name}\n${result.error}\n`);
                 process.exit(1);
             } else {
-                logger(TEXT.finishPublish);
+                logger(TEXT.ignorePublish);
             }
             packageService.restore();
         }

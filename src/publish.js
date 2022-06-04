@@ -3,19 +3,36 @@ import { promisify } from "util";
 
 const command = promisify(exec);
 
+const getVersions = async (versions = []) => {
+    const { stdout } = await command("npm dist-tag");
+    stdout.replace(/: +(.+)/gm, (all, version) => versions.push(version));
+};
 /**
  *
  * @param {string} localVersion
- * @returns {Promise<ReturnType<command>|undefined>}
+ * @returns {Promise<{status:"ignore"|"publish"|"error", error?: string}>}
  */
 export async function publish(localVersion) {
     const versions = [];
+
     try {
-        const { stdout } = await command("npm dist-tag");
-        stdout.replace(/: +(.+)/gm, (all, version) => versions.push(version));
+        await getVersions(versions);
     } catch (e) {}
 
     if (!versions.includes(localVersion)) {
-        return command("npm publish");
+        const { stderr: error } = await command("npm publish");
+
+        try {
+            await getVersions(versions);
+        } catch (e) {}
+
+        return {
+            status: versions.includes(localVersion) ? "publish" : "error",
+            error,
+        };
     }
+
+    return {
+        status: "ignore",
+    };
 }
