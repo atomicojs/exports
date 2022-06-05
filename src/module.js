@@ -237,11 +237,19 @@ export async function prepare(config) {
             packageService.set("types", exportsTs);
         }
     };
-    try {
-        ["SIGINT", "exit"].map((event) => {
-            process.on(event, packageService.restore);
-        });
 
+    /**
+     * In case of any given error or process, a package.json restorer is executed
+     */
+    let withRestore = config.publish || config.watch;
+
+    ["SIGINT", "exit"].map((event) => {
+        process.on(event, () => {
+            withRestore && packageService.restore();
+        });
+    });
+
+    try {
         if (!config.ignoreBuild) {
             logger(TEXT.startEsbuild);
 
@@ -276,9 +284,9 @@ export async function prepare(config) {
             } else {
                 logger(TEXT.ignorePublish);
             }
-            packageService.restore();
         }
     } catch (e) {
+        withRestore = true;
         console.log(`Error: \n${e}\n`);
         process.exit(1);
     }
