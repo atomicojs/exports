@@ -121,9 +121,9 @@ export async function prepare(config) {
     const externalDependenciesKeys = Object.keys(externals);
 
     await Promise.all(
-        Object.entries(subpackages).map(([externalProp, value]) => {
-            packageService.set(externalProp, value);
-        })
+        Object.entries(subpackages).map(([externalProp, value]) =>
+            packageService.set(externalProp, value)
+        )
     );
 
     /**
