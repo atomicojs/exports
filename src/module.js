@@ -32,12 +32,6 @@ const assets = [
     "md",
 ];
 
-const aliasDep = {
-    dep: "dependencies",
-    peerDep: "peerDependencies",
-    peerDepMeta: "peerDependenciesMeta",
-};
-
 function logger(message) {
     const date = new Date();
     const time = [date.getHours(), date.getMinutes(), date.getSeconds()]
@@ -65,6 +59,7 @@ function logger(message) {
  * @param {string[]} [config.target]
  * @param {string[]} [config.metaUrl]
  * @param {string} [config.globalName]
+ * @param {string} [config.jsx]
  * @param {(config:import("esbuild").BuildOptions)=>import("esbuild").BuildOptions} [config.preload]
  * @param {boolean} [config.cssLiteralsPostcss]
  * @returns
@@ -171,7 +166,10 @@ export async function prepare(config) {
             : null,
         loader: {},
         plugins: [
-            pluginPipeline({ minify: config.minify }),
+            pluginPipeline({
+                minify: config.minify,
+                jsxImportSource: config.jsx || "atomico",
+            }),
             pluginMetaUrl(metaUrl),
             pluginExternals(config.bundle ? [] : externalDependenciesKeys),
         ],

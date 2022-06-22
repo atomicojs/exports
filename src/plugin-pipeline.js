@@ -2,7 +2,7 @@ import path from "path";
 import { pipeline, cssLiterals, jsxRuntime } from "@atomico/pipeline";
 import { readFile } from "fs/promises";
 /**
- * @param {{minify:boolean}} options
+ * @param {{minify:boolean,jsxImportSource:string}} options
  * @returns {import("esbuild").Plugin}
  */
 export const pluginPipeline = (options) => ({
@@ -14,7 +14,7 @@ export const pluginPipeline = (options) => ({
             const result = await pipeline(
                 { code, path: args.path },
                 cssLiterals({ minify: options.minify, postcss: true }),
-                jsxRuntime()
+                jsxRuntime(options)
             );
             const codeTransform = result.source.toString();
             if (codeTransform != code) {

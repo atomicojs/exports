@@ -18,6 +18,10 @@ cli.command("<...files>", "Build files")
     .option("--custom-elements <alias>", "define an alias for custom-elements")
     .option("--format <format>", "output type, default esm")
     .option("--css-literals-postcss", "parse css literals with postcss")
+    .option(
+        "--jsx ",
+        "allows to change the jsxImportSource of Atomico for another"
+    )
     .option("--bundle", "bundle")
     .option("--publish", "bundle")
     .option(
@@ -59,6 +63,7 @@ cli.command("<...files>", "Build files")
                 customElements,
                 globalName,
                 cssLiteralsPostcss,
+                jsx = "atomico",
                 publish,
             }
         ) => {
@@ -81,6 +86,7 @@ cli.command("<...files>", "Build files")
                 customElements,
                 globalName,
                 cssLiteralsPostcss,
+                jsx,
                 publish,
             });
         }
