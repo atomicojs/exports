@@ -19,7 +19,7 @@ cli.command("<...files>", "Build files")
     .option("--format <format>", "output type, default esm")
     .option("--css-literals-postcss", "parse css literals with postcss")
     .option(
-        "--jsx ",
+        "--jsx <package>",
         "allows to change the jsxImportSource of Atomico for another"
     )
     .option("--bundle", "bundle")
