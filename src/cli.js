@@ -17,7 +17,7 @@ cli.command("<...files>", "Build files")
     .option("--meta-url <files>", "resolve files as meta-url")
     .option("--custom-elements <alias>", "define an alias for custom-elements")
     .option("--format <format>", "output type, default esm")
-    .options("--css-inline", "The css is injected from the JS to the document")
+    .option("--css-inline", "The css is injected from the JS to the document")
     .option("--css-literals-postcss", "parse css literals with postcss")
     .option(
         "--jsx <package>",
