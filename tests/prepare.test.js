@@ -39,3 +39,29 @@ test("simple build group jsx", async (t) => {
         await readFile("./tests/expect-group.txt", "utf-8")
     );
 });
+
+test("simple build react-jsx ", async (t) => {
+    await prepare({
+        src: "tests/example-react.jsx",
+        dist: "tests/dist",
+        jsx: "react",
+        cssInline: true,
+    });
+    t.is(
+        await readFile("./tests/dist/example-react.js", "utf-8"),
+        await readFile("./tests/expect-react.txt", "utf-8")
+    );
+});
+
+test("simple build preact-jsx ", async (t) => {
+    await prepare({
+        src: "tests/example-preact.jsx",
+        dist: "tests/dist",
+        jsx: "preact",
+        cssInline: true,
+    });
+    t.is(
+        await readFile("./tests/dist/example-preact.js", "utf-8"),
+        await readFile("./tests/expect-preact.txt", "utf-8")
+    );
+});

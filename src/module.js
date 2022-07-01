@@ -54,6 +54,7 @@ function logger(message) {
  * @param {boolean} [config.bundle]
  * @param {boolean} [config.analyzer]
  * @param {boolean} [config.publish]
+ * @param {boolean} [config.cssInline]
  * @param {string} [config.main]
  * @param {string} [config.customElements]
  * @param {string[]} [config.target]
@@ -72,6 +73,7 @@ export async function prepare(config) {
     };
 
     config.format = config.format || "esm";
+    config.jsx = config.jsx || "atomico";
 
     logger(TEXT.preparing);
 
@@ -100,7 +102,9 @@ export async function prepare(config) {
         }, {});
 
     if (!metaUrl.css) {
-        metaUrl.scss = metaUrl.css = loadCss;
+        metaUrl.scss = metaUrl.css = loadCss({
+            cssInline: config.cssInline,
+        });
     } else {
         metaUrl.scss = metaUrl.css;
     }
@@ -128,7 +132,7 @@ export async function prepare(config) {
         entryPoints,
         outdir: config.dist,
         jsxFactory: "_jsx",
-        jsxFragment: "host",
+        jsxFragment: config.jsx === "atomico" ? "host" : "_Fragment",
         sourcemap: config.sourcemap,
         metafile: true,
         minify: config.minify,
@@ -168,7 +172,7 @@ export async function prepare(config) {
         plugins: [
             pluginPipeline({
                 minify: config.minify,
-                jsxImportSource: config.jsx || "atomico",
+                jsxImportSource: config.jsx,
             }),
             pluginMetaUrl(metaUrl),
             pluginExternals(config.bundle ? [] : externalDependenciesKeys),
