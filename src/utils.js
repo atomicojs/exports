@@ -32,11 +32,14 @@ export function setPackageExports(pkg, outputs, main) {
                 const relativeOutput = addDotRelative(output);
                 let prop =
                     "./" +
-                    name.replace(
-                        /(.+)\.(.+)/g,
-                        (all, before, after) =>
-                            (before == main ? "" : before + "/") + after
-                    );
+                    name.replace(/(.+)\.(.+)/g, (all, before, after) => {
+                        let next = (before == main ? "" : before + "/") + after;
+                        let reg = RegExp(`/${next}\\.[\\w]+$`);
+                        const used = outputs.find(
+                            (value) => output != value && reg.test(value)
+                        );
+                        return used ? all : next;
+                    });
                 const nextExport = { [prop]: relativeOutput };
                 if (name == main) {
                     nextExport["."] = relativeOutput;
@@ -97,11 +100,14 @@ export function setPackageTypesVersions(pkg, outputs, main) {
             const { name } = path.parse(output);
             const id = name
                 .replace(/\.d$/, "")
-                .replace(
-                    /(.+)\.(.+)/g,
-                    (all, before, after) =>
-                        (before == main ? "" : before + "/") + after
-                );
+                .replace(/(.+)\.(.+)/g, (all, before, after) => {
+                    let next = (before == main ? "" : before + "/") + after;
+                    let reg = RegExp(`/${next}\\.d\\.[\\w]+$`);
+                    const used = outputs.find(
+                        (value) => output != value && reg.test(value)
+                    );
+                    return used ? all : next;
+                });
             if (id == main) {
                 pkg.types = output;
             }
