@@ -2,7 +2,7 @@ import { css, c } from "atomico";
 import style from "./style.css";
 
 function component() {
-    return <>ea</>;
+    return <host>ea</host>;
 }
 
 component.styles = [

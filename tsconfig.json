@@ -1,6 +1,5 @@
 {
     "include": ["src/cli.js"],
-
     "compilerOptions": {
       "strict": true,
       "jsx": "react-jsx",

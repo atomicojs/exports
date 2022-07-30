@@ -19,10 +19,6 @@ cli.command("<...files>", "Build files")
     .option("--format <format>", "output type, default esm")
     .option("--css-inline", "The css is injected from the JS to the document")
     .option("--css-literals-postcss", "parse css literals with postcss")
-    .option(
-        "--jsx <package>",
-        "allows to change the jsxImportSource of Atomico for another"
-    )
     .option("--bundle", "bundle")
     .option("--publish", "bundle")
     .option(

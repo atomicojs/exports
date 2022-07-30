@@ -60,7 +60,6 @@ function logger(message) {
  * @param {string[]} [config.target]
  * @param {string[]} [config.metaUrl]
  * @param {string} [config.globalName]
- * @param {string} [config.jsx]
  * @param {(config:import("esbuild").BuildOptions)=>import("esbuild").BuildOptions} [config.preload]
  * @param {boolean} [config.cssLiteralsPostcss]
  * @returns
@@ -73,7 +72,6 @@ export async function prepare(config) {
     };
 
     config.format = config.format || "esm";
-    config.jsx = config.jsx || "atomico";
 
     logger(TEXT.preparing);
 
@@ -131,8 +129,6 @@ export async function prepare(config) {
     const build = {
         entryPoints,
         outdir: config.dist,
-        jsxFactory: "_jsx",
-        jsxFragment: config.jsx === "atomico" ? "host" : "_Fragment",
         sourcemap: config.sourcemap,
         metafile: true,
         minify: config.minify,
@@ -172,7 +168,6 @@ export async function prepare(config) {
         plugins: [
             pluginPipeline({
                 minify: config.minify,
-                jsxImportSource: config.jsx,
             }),
             pluginMetaUrl(metaUrl),
             pluginExternals(config.bundle ? [] : externalDependenciesKeys),
