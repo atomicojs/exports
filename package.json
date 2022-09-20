@@ -1,7 +1,7 @@
 {
     "name": "@atomico/exports",
     "type": "module",
-    "version": "0.36.1",
+    "version": "0.37.0",
     "description": "It allows to generate an export to quickly publish components created with Atomico in NPM",
     "main": "./src/cli.js",
     "module": "./src/cli.js",
@@ -39,7 +39,7 @@
         "acorn-walk": "^8.1.0",
         "atomico": "latest",
         "cac": "^6.7.12",
-        "esbuild": "latest",
+        "esbuild": "^0.15.8",
         "fast-glob": "latest",
         "postcss": "latest",
         "postcss-import": "latest",
@@ -50,7 +50,6 @@
         "@uppercod/hash": "^1.1.1",
         "ava": "^3.10.1",
         "builtin-modules": "^3.1.0",
-        "esbuild": "^0.14.51",
         "normalize.css": "^8.0.1",
         "postcss": "^8.3.5",
         "postcss-import": "^14.0.2",
@@ -65,7 +64,6 @@
         "@atomico/pipeline": "latest",
         "@atomico/react": "latest",
         "atomico": "latest",
-        "esbuild": "latest",
         "postcss": "latest",
         "postcss-import": "latest",
         "postcss-load-config": "latest"

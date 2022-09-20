@@ -220,6 +220,8 @@ export async function prepare(config) {
      * @param {string[]} entries
      */
     const processAnalyzer = async (entries) => {
+        if (!config.analyzer) return;
+        
         const pkg = await packageService.get();
         const [exportsJs, exportsTs] = await analyzer({
             ...config,
