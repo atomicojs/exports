@@ -1,5 +1,5 @@
 import { parse } from "path";
-import { createWrappers } from "./create-wrapper.js";
+import { createWrappers, peerDependencies } from "./create-wrapper.js";
 
 /**
  *
@@ -13,8 +13,12 @@ const createFile = (file) => [parse(file).name, file];
  * @param {string[]} options.input
  * @param {Pkg} options.pkg
  * @param {string} [options.main]
+ * @param {string} [options.dist]
+ * @param {boolean} [options.wrappers]
  */
 export async function createExports(options) {
+    const meta = {};
+
     const filesJs = options.input
         .filter((file) => file.endsWith(".js"))
         .map(createFile);
@@ -26,6 +30,7 @@ export async function createExports(options) {
     const wrappers = await createWrappers({
         input: filesJs,
         scope: options.pkg.name,
+        dist: options.dist,
     });
 
     wrappers.forEach(({ fileExport, fileDistTs, fileDistJs }) => {
@@ -33,12 +38,28 @@ export async function createExports(options) {
         fileDistTs && filesTs.push([fileExport, fileDistTs]);
     });
 
+    if (options.wrappers && wrappers.length) {
+        meta.peerDependencies = peerDependencies.reduce(
+            (current, { name, version }) => ({
+                ...current,
+                [name]: version,
+            }),
+            options.pkg?.peerDependencies || {}
+        );
+
+        meta.peerDependenciesMeta = peerDependencies.reduce(
+            (current, { name }) => ({
+                ...current,
+                [name]: { optional: true },
+            }),
+            options.pkg?.peerDependenciesMeta || {}
+        );
+    }
+
     const main = options.main || filesJs?.[0]?.[0];
 
     const fileMainJs = filesJs.find(([name]) => name === main);
     const fileMainTs = filesTs.find(([name]) => name === main);
-
-    const meta = {};
 
     if (fileMainJs) {
         const [, distJs] = fileMainJs;
@@ -52,8 +73,8 @@ export async function createExports(options) {
         meta.types = distTs;
     }
 
-    return [
-        {
+    return {
+        pkg: {
             ...meta,
             exports: filesJs.reduce(
                 (current, [path, file]) => ({
@@ -74,14 +95,16 @@ export async function createExports(options) {
             },
         },
         wrappers,
-    ];
+    };
 }
 
 /**
  * @typedef {object}  Pkg
  * @property {string} Pkg.name
+ * @property {string[]} Pkg.workspaces
  * @property {{[src:string]:string}}  [Pkg.exports]
  * @property {{[src:string]:string}}  [Pkg.dependencies]
  * @property {{[src:string]:string}}  [Pkg.peerDependencies]
+ * @property {{[src:string]:{optional:boolean}}}  [Pkg.peerDependenciesMeta]
  * @property {{[src:string]:{[src:string]:string[]}}}  [Pkg.typesVersions]
  */

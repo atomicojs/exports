@@ -1,93 +1,61 @@
 #!/usr/bin/env node
 import cac from "cac";
-import { prepare } from "./module.js";
-export { prepare } from "./module.js";
+import chokidar from "chokidar";
+import { mergeExports } from "./merge-exports.js";
+import { read, logger } from "./utils.js";
 
-const toArray = (value) => value.split(/ *, */);
+const cwd = process.cwd();
 
 const cli = cac("devserver").version("0.6.0");
 
 cli.command("<...files>", "Build files")
     .option("--dist <dist>", "Choose a project type")
-    .option("--types", "Generate the .d.ts files in root using typescript")
-    .option("--exports", "Add the output files to package.json#exports")
-    .option("--minify", "minify the code output")
-    .option("--ignore-build", "ignore the use of esbuild")
-    .option("--watch", "Enable the use of watch in esbuild")
-    .option("--meta-url <files>", "resolve files as meta-url")
-    .option("--custom-elements <alias>", "define an alias for custom-elements")
-    .option("--format <format>", "output type, default esm")
-    .option("--css-inline", "The css is injected from the JS to the document")
-    .option("--css-literals-postcss", "parse css literals with postcss")
-    .option("--bundle", "bundle")
-    .option("--publish", "bundle")
-    .option(
-        "--analyzer",
-        "Automatically generates additional support for React and Css from the webcomponents"
-    )
-    .option(
-        "--main <export>",
-        "define si una exportacion debe ser asociada como root del package"
-    )
-    .option(
-        "--target <target>",
-        "Defines the target to associate for the output"
-    )
-    .option("--sourcemap", "generate the sourcemap")
-    .option("--global-name <name>", "globalName for export in iife format")
-    .example("exports components/*.jsx")
-    .example("exports components/*.jsx --types")
-    .example("exports components/*.jsx --exports")
-    .example("exports components/*.jsx --types --exports")
+    .option("--main <dist>", "Choose a project type")
+    .option("--watch", "Choose a project type")
+    .option("--wrappers", "Choose a project type")
+    .option("--workspaces", "Choose a project type")
+    .option("--tmp", "Choose a project type")
     .action(
-        (
-            src,
-            {
-                dist = "dist",
-                main,
-                types,
-                exports,
-                minify,
-                sourcemap,
-                watch,
-                target,
-                format,
-                metaUrl,
-                ignoreBuild,
-                reactWrapper,
-                bundle,
-                analyzer,
-                customElements,
-                globalName,
-                cssLiteralsPostcss,
-                jsx = "atomico",
-                publish,
-                cssInline,
+        /**
+         *
+         * @param {string} src
+         * @param {object} flags
+         * @param {boolean} flags.watch
+         * @param {string} flags.main
+         * @param {string} flags.wrappers
+         * @param {boolean} flags.tmp
+         * @param {boolean} flags.workspaces
+         */
+        async (src, { watch, main, wrappers, dist, tmp, workspaces }) => {
+            const srcPkg = cwd + "/package.json";
+            const snapPkg = await read(srcPkg);
+
+            const send = () =>
+                mergeExports({
+                    src,
+                    main,
+                    wrappers,
+                    dist,
+                    pkg: {
+                        src: tmp
+                            ? srcPkg.replace(/\.json$/, ".tmp.json")
+                            : srcPkg,
+                        snap: snapPkg,
+                    },
+                    workspaces,
+                });
+
+            await send();
+
+            if (watch) {
+                logger("waiting for changes...\n");
+
+                chokidar.watch(src).on("change", async () => {
+                    logger("updating...");
+                    await send();
+                    logger("waiting for changes...\n");
+                });
             }
-        ) => {
-            prepare({
-                src,
-                dist,
-                main,
-                types,
-                watch,
-                format,
-                minify,
-                exports,
-                sourcemap,
-                metaUrl: metaUrl ? toArray(metaUrl) : [],
-                target: target ? toArray(target) : null,
-                ignoreBuild,
-                reactWrapper,
-                bundle,
-                analyzer,
-                customElements,
-                globalName,
-                cssLiteralsPostcss,
-                jsx,
-                publish,
-                cssInline,
-            });
         }
     );
 

@@ -2,12 +2,18 @@ import * as acorn from "acorn";
 import * as acornWalk from "acorn-walk";
 import { readFile } from "fs/promises";
 
+export const peerDependencies = [
+    { name: "@atomico/react", path: "react", version: "latest" },
+    { name: "@atomico/react/preact", path: "preact", version: "latest" },
+    { name: "@atomico/vue", path: "vue", version: "latest" },
+];
+
 /**
  * @param {object} options
  * @param {string} options.scope
  * @param {[string,string][]} options.input
  * @param {string} [options.dist]
- * @returns
+ * @returns {ReturnType<typeof createWrapper>}
  */
 export async function createWrappers(options) {
     return (
@@ -17,11 +23,13 @@ export async function createWrappers(options) {
                     input,
                     path,
                     scope: options.scope,
-                    dist: options.dist || "exports",
+                    dist: options.dist || "wrappers",
                 })
             )
         )
-    ).flat(2);
+    )
+        .flat(2)
+        .filter((value) => value);
 }
 
 /***
@@ -100,11 +108,7 @@ export async function createWrapper(options) {
      * Task wrappers
      */
     return await Promise.all(
-        [
-            { name: "@atomico/react", path: "react" },
-            { name: "@atomico/react/preact", path: "preact" },
-            { name: "@atomico/vue", path: "vue" },
-        ].map(async ({ name, path }) => {
+        peerDependencies.map(async ({ name, path }) => {
             const codeJs = [
                 originModule,
                 `import { auto } from "${name}";`,
