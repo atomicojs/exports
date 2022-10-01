@@ -78,6 +78,7 @@ export async function mergeExports(options) {
         main: options.main,
         pkg,
         input: input,
+        dist: options.dist,
         wrappers: options.wrappers,
     });
 

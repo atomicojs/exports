@@ -127,7 +127,7 @@ export async function createWrapper(options) {
                 originModule,
                 `import { Auto, Component } from "${name}";`,
                 elements.map(
-                    ([name]) => `export const ${name}: Auto(_${name});`
+                    ([name]) => `export const ${name}: Auto<_${name}>;`
                 ),
             ]
                 .flat(10)

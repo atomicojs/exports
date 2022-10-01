@@ -33,12 +33,12 @@ export async function createExports(options) {
         dist: options.dist,
     });
 
-    wrappers.forEach(({ fileExport, fileDistTs, fileDistJs }) => {
-        fileDistJs && filesJs.push([fileExport, fileDistJs]);
-        fileDistTs && filesTs.push([fileExport, fileDistTs]);
-    });
-
     if (options.wrappers && wrappers.length) {
+        wrappers.forEach(({ fileExport, fileDistTs, fileDistJs }) => {
+            fileDistJs && filesJs.push([fileExport, fileDistJs]);
+            fileDistTs && filesTs.push([fileExport, fileDistTs]);
+        });
+
         meta.peerDependencies = peerDependencies.reduce(
             (current, { name, version }) => ({
                 ...current,
@@ -79,7 +79,8 @@ export async function createExports(options) {
             exports: filesJs.reduce(
                 (current, [path, file]) => ({
                     ...current,
-                    [path.startsWith(".") ? path : `./${path}`]: file,
+                    [path.startsWith(".") ? path : `./${path}`]:
+                        file.startsWith(".") ? file : `./${path}`,
                 }),
                 options.pkg?.exports || {}
             ),

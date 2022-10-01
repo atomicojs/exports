@@ -16,8 +16,7 @@
         "access": "public"
     },
     "scripts": {
-        "types": "tsc",
-        "test": "ava",
+        "test": "rm -rf tests/dist && ava",
         "prepare": "npm run test && npm run types"
     },
     "repository": {
@@ -31,7 +30,6 @@
     },
     "homepage": "https://github.com/atomicojs/exports#readme",
     "dependencies": {
-        "@types/node": "^14.14.41",
         "@uppercod/indentation": "latest",
         "acorn": "^8.8.0",
         "acorn-walk": "^8.1.0",
@@ -41,6 +39,7 @@
     },
     "devDependencies": {
         "@atomico/react": "latest",
+        "@types/node": "^14.14.41",
         "ava": "^4.3.3"
     },
     "ava": {
