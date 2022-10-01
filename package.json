@@ -17,7 +17,7 @@
     },
     "scripts": {
         "test": "rm -rf tests/dist && ava",
-        "prepare": "npm run test && npm run types"
+        "prepare": "npm run test"
     },
     "repository": {
         "type": "git",
