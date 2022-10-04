@@ -16,7 +16,9 @@ export function createExports(options: {
     pkg: {
         exports: any;
         typesVersions: {
-            "*": any;
+            "*": {
+                [src: string]: string[];
+            };
         };
         peerDependencies: {
             [src: string]: string;

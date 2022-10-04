@@ -3,9 +3,9 @@
     "type": "module",
     "version": "1.0.0-beta.2",
     "description": "It allows to generate an export to quickly publish components created with Atomico in NPM",
-    "main": "src/merge-exports.js",
-    "module": "src/merge-exports.js",
-    "types": "types/merge-exports.d.ts",
+    "main": "./src/merge-exports.js",
+    "module": "./src/merge-exports.js",
+    "types": "./types/merge-exports.d.ts",
     "workspaces": [
         "tests"
     ],
@@ -23,7 +23,7 @@
     "scripts": {
         "types": "tsc",
         "test": "rm -rf tests/dist && ava",
-        "prepare": "npm run test"
+        "prepare": "npm run types && npm run test && node ./src/cli.js ./src/** ./types/** --main merge-exports"
     },
     "repository": {
         "type": "git",
@@ -74,19 +74,19 @@
     "typesVersions": {
         "*": {
             "cli": [
-                "types/cli.d.ts"
+                "./types/cli.d.ts"
             ],
             "create-exports": [
-                "types/create-exports.d.ts"
+                "./types/create-exports.d.ts"
             ],
             "create-wrapper": [
-                "types/create-wrapper.d.ts"
+                "./types/create-wrapper.d.ts"
             ],
             "merge-exports": [
-                "types/merge-exports.d.ts"
+                "./types/merge-exports.d.ts"
             ],
             "utils": [
-                "types/utils.d.ts"
+                "./types/utils.d.ts"
             ]
         }
     }
