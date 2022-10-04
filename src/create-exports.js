@@ -1,6 +1,6 @@
 import { parse } from "path";
 import { createWrappers, peerDependencies } from "./create-wrapper.js";
-
+import { getModules } from "./utils.js";
 /**
  *
  * @param {string} file
@@ -19,13 +19,13 @@ const createFile = (file) => [parse(file).name, file];
 export async function createExports(options) {
     const meta = {};
 
-    const filesJs = options.input
-        .filter((file) => file.endsWith(".js"))
-        .map(createFile);
+    const filesJs = getModules(
+        options.input.filter((file) => file.endsWith(".js"))
+    );
 
-    const filesTs = options.input
-        .filter((file) => file.endsWith(".d.ts"))
-        .map(createFile);
+    const filesTs = getModules(
+        options.input.filter((file) => file.endsWith(".d.ts"))
+    );
 
     const wrappers = await createWrappers({
         input: filesJs,
