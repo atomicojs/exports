@@ -3,19 +3,25 @@
     "type": "module",
     "version": "1.0.0-beta.1",
     "description": "It allows to generate an export to quickly publish components created with Atomico in NPM",
-    "main": "./src/cli.js",
-    "module": "./src/cli.js",
-    "types": "./types/cli.d.ts",
+    "main": "src/merge-exports.js",
+    "module": "src/merge-exports.js",
+    "types": "types/merge-exports.d.ts",
     "workspaces": [
         "tests"
     ],
     "exports": {
-        ".": "./src/cli.js"
+        "./cli": "./src/cli.js",
+        "./create-exports": "./src/create-exports.js",
+        "./create-wrapper": "./src/create-wrapper.js",
+        "./merge-exports": "./src/merge-exports.js",
+        "./utils": "./src/utils.js",
+        ".": "./src/merge-exports.js"
     },
     "publishConfig": {
         "access": "public"
     },
     "scripts": {
+        "types": "tsc",
         "test": "rm -rf tests/dist && ava",
         "prepare": "npm run test"
     },
@@ -47,8 +53,10 @@
     },
     "devDependencies": {
         "@atomico/react": "latest",
+        "@atomico/tsconfig": "^1.0.0",
         "@types/node": "^14.14.41",
-        "ava": "^4.3.3"
+        "ava": "^4.3.3",
+        "typescript": "^4.8.4"
     },
     "ava": {
         "files": [
@@ -62,5 +70,24 @@
     },
     "bin": {
         "exports": "./src/cli.js"
+    },
+    "typesVersions": {
+        "*": {
+            "cli": [
+                "types/cli.d.ts"
+            ],
+            "create-exports": [
+                "types/create-exports.d.ts"
+            ],
+            "create-wrapper": [
+                "types/create-wrapper.d.ts"
+            ],
+            "merge-exports": [
+                "types/merge-exports.d.ts"
+            ],
+            "utils": [
+                "types/utils.d.ts"
+            ]
+        }
     }
 }

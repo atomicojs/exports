@@ -29,7 +29,6 @@ cli.command("<...files>", "Build files")
         async (src, { watch, main, wrappers, dist, tmp, workspaces }) => {
             const srcPkg = cwd + "/package.json";
             const snapPkg = await read(srcPkg);
-
             const send = () =>
                 mergeExports({
                     src,

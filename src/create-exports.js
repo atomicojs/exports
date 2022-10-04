@@ -18,7 +18,7 @@ export async function createExports(options) {
 
     const filesTs = getModules(
         options.input.filter((file) => file.endsWith(".d.ts"))
-    );
+    ).map(([name, file]) => [name.replace(/\.d$/, ""), file]);
 
     const wrappers = await createWrappers({
         input: filesJs,
@@ -51,8 +51,8 @@ export async function createExports(options) {
 
     const main = options.main || filesJs?.[0]?.[0];
 
-    const fileMainJs = filesJs.find(([name]) => name === main);
-    const fileMainTs = filesTs.find(([name]) => name === main);
+    const fileMainJs = main && filesJs.find(([name]) => name === main);
+    const fileMainTs = main && filesTs.find(([name]) => name === main);
 
     if (fileMainJs) {
         const [, distJs] = fileMainJs;
@@ -73,7 +73,7 @@ export async function createExports(options) {
                 (current, [path, file]) => ({
                     ...current,
                     [path.startsWith(".") ? path : `./${path}`]:
-                        file.startsWith(".") ? file : `./${path}`,
+                        file.startsWith(".") ? file : `./${file}`,
                 }),
                 options.pkg?.exports || {}
             ),

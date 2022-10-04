@@ -1,13 +1,7 @@
 {
-    "include": ["src/cli.js"],
-    "compilerOptions": {
-      "strict": true,
-      "jsx": "react-jsx",
-      "jsxImportSource": "atomico",
-      "allowJs": true,
-      "declaration": true,
-      "esModuleInterop": true,
-      "emitDeclarationOnly": true,
-      "outDir": "./types"
-    }
+  "extends": "@atomico/tsconfig/base.json",
+  "include": ["src/**/*"],
+  "compilerOptions": {
+    "outDir": "types"
+  }
 }
