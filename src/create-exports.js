@@ -1,12 +1,5 @@
-import { parse } from "path";
 import { createWrappers, peerDependencies } from "./create-wrapper.js";
 import { getModules } from "./utils.js";
-/**
- *
- * @param {string} file
- * @returns {[string, string]}
- */
-const createFile = (file) => [parse(file).name, file];
 
 /**
  * @param {object} options
@@ -89,7 +82,7 @@ export async function createExports(options) {
                 "*": filesTs.reduce(
                     (current, [path, file]) => ({
                         ...current,
-                        [path]: file,
+                        [path]: [file],
                     }),
                     options.pkg?.typesVersions?.["*"] || {}
                 ),

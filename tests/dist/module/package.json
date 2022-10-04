@@ -23,6 +23,9 @@
     "module": "./tests/module/atomico.js",
     "exports": {
         "./atomico": "./tests/module/atomico.js",
+        "./components/a": "./tests/module/components/a/a.js",
+        "./components/b": "./tests/module/components/b/b.js",
+        "./components/c": "./tests/module/components/c/c.js",
         "./atomico/react": "./tests/dist/module/atomico/react.js",
         "./atomico/preact": "./tests/dist/module/atomico/preact.js",
         "./atomico/vue": "./tests/dist/module/atomico/vue.js",
@@ -30,9 +33,15 @@
     },
     "typesVersions": {
         "*": {
-            "atomico/react": "./tests/dist/module/atomico/react.d.ts",
-            "atomico/preact": "./tests/dist/module/atomico/preact.d.ts",
-            "atomico/vue": "./tests/dist/module/atomico/vue.d.ts"
+            "atomico/react": [
+                "./tests/dist/module/atomico/react.d.ts"
+            ],
+            "atomico/preact": [
+                "./tests/dist/module/atomico/preact.d.ts"
+            ],
+            "atomico/vue": [
+                "./tests/dist/module/atomico/vue.d.ts"
+            ]
         }
     }
 }

@@ -59,33 +59,37 @@ export const getModules = (files) => {
 
     const modules = [];
 
+    const ids = new Set();
+
     const getPath = (tree, parent = [], branch) => {
-        const { ["/"]: children, ...index } = tree;
+        const { ["/"]: children, ...subtree } = tree;
 
-        const entries = Object.entries(index);
+        const entries = Object.entries(subtree);
 
-        if (
-            (!branch && !children?.length && entries.length) ||
-            (!entries.length && !branch)
-        ) {
-            parent = [];
-        }
+        if (!branch) parent = parent.slice(0, -1);
+
+        branch = branch || !!children?.length;
 
         if (children) {
             modules.push(
-                ...children.map(({ name, file }) => [
-                    (name === "index" ? parent : [...parent, name]).join("/"),
-                    file,
-                ])
+                ...children.map(({ name, file }) => {
+                    let id = (
+                        name === "index" || parent.at(-1) === name
+                            ? parent
+                            : [...parent, name]
+                    ).join("/");
+
+                    id = ids.has(id) ? [...parent, name].join("/") : id;
+
+                    ids.add(id);
+
+                    return [id, file];
+                })
             );
         }
 
         entries.forEach(([index, value]) =>
-            getPath(
-                value,
-                [...parent, index],
-                entries.length > 1 ? true : branch
-            )
+            getPath(value, [...parent, index], branch)
         );
     };
 

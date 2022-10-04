@@ -15,7 +15,7 @@ import { write, getJsonIndent, logger, read } from "./utils.js";
 export async function mergeExports(options) {
     logger(`Getting files...`);
 
-    const input = await glob(options.src, {
+    const input = await glob(options.src.split(/;/), {
         ignore: [
             "**/_*/*",
             "**/*.*.{js,jsx,ts,tsx,mjs}",
