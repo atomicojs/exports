@@ -6,15 +6,15 @@ import { read, logger } from "./utils.js";
 
 const cwd = process.cwd();
 
-const cli = cac("devserver").version("0.6.0");
+const cli = cac("devserver").version("1.0.0");
 
 cli.command("<...files>", "Build files")
-    .option("--dist <dist>", "Choose a project type")
-    .option("--main <dist>", "Choose a project type")
-    .option("--watch", "Choose a project type")
-    .option("--wrappers", "Choose a project type")
-    .option("--workspaces", "Choose a project type")
-    .option("--tmp", "Choose a project type")
+    .option("--dist <dist>", "Destination directory")
+    .option("--main <dist>", "Nain file")
+    .option("--watch", "watch mode")
+    .option("--wrappers", "enable the wrapper generator")
+    .option("--workspaces", "enable dependency merging")
+    .option("--tmp", "allows to generate a temporary package.json")
     .action(
         /**
          *
