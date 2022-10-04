@@ -21,6 +21,7 @@
     },
     "main": "./tests/module/atomico.js",
     "module": "./tests/module/atomico.js",
+    "types": "./tests/module/atomico.d.ts",
     "exports": {
         "./atomico": "./tests/module/atomico.js",
         "./components/a": "./tests/module/components/a/a.js",
@@ -33,6 +34,9 @@
     },
     "typesVersions": {
         "*": {
+            "atomico": [
+                "./tests/module/atomico.d.ts"
+            ],
             "atomico/react": [
                 "./tests/dist/module/atomico/react.d.ts"
             ],
