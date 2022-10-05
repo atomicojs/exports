@@ -51,22 +51,28 @@ export async function createWrapper(options) {
 
     acornWalk.ancestor(ast, {
         ExportNamedDeclaration(node) {
-            const { type } = node.declaration;
             /**
-             * @type {string}
+             * @type {string[]}
              */
-            let id;
+            let ids = [];
+            if (!node.declaration && node.specifiers) {
+                ids = node.specifiers.map(({ exported }) => exported.name);
+            } else {
+                const { type } = node.declaration;
 
-            if (type === "ClassDeclaration") {
-                id = node?.declaration?.id?.name;
-            } else if (type === "VariableDeclaration") {
-                id = node?.declaration?.declarations?.[0]?.id?.name;
+                if (type === "ClassDeclaration") {
+                    ids.push(node?.declaration?.id?.name);
+                } else if (type === "VariableDeclaration") {
+                    ids.push(node?.declaration?.declarations?.[0]?.id?.name);
+                }
             }
 
-            customElements[id] = {
-                ...customElements[id],
-                export: true,
-            };
+            ids.forEach((id) => {
+                customElements[id] = {
+                    ...customElements[id],
+                    export: true,
+                };
+            });
         },
         CallExpression(node) {
             const { object } = node.callee;
