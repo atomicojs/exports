@@ -131,9 +131,10 @@ export async function createWrapper(options) {
 
             const codeTs = [
                 originModule,
-                `import { AutoWrapper } from "${name}";`,
+                `import { Component } from "${name}";`,
                 elements.map(
-                    ([name]) => `export const ${name}: AutoWrapper<_${name}>;`
+                    ([name]) =>
+                        `export const ${name}: Component<typeof _${name}>;`
                 ),
             ]
                 .flat(10)
