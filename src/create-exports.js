@@ -95,6 +95,7 @@ export async function createExports(options) {
 /**
  * @typedef {object}  Pkg
  * @property {string} Pkg.name
+ * @property {string} Pkg.version
  * @property {string[]} Pkg.workspaces
  * @property {{[src:string]:string}}  [Pkg.exports]
  * @property {{[src:string]:string}}  [Pkg.dependencies]

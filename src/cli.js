@@ -14,6 +14,10 @@ cli.command("<...files>", "Build files")
     .option("--watch", "watch mode")
     .option("--wrappers", "enable the wrapper generator")
     .option("--workspaces", "enable dependency merging")
+    .option(
+        "--publish",
+        "publish the package if the version is different from the previous one from npm"
+    )
     .option("--tmp", "allows to generate a temporary package.json")
     .action(
         /**
@@ -25,8 +29,12 @@ cli.command("<...files>", "Build files")
          * @param {string} flags.wrappers
          * @param {boolean} flags.tmp
          * @param {boolean} flags.workspaces
+         * @param {boolean} flags.publish
          */
-        async (src, { watch, main, wrappers, dist, tmp, workspaces }) => {
+        async (
+            src,
+            { watch, main, wrappers, dist, tmp, workspaces, publish }
+        ) => {
             const srcPkg = cwd + "/package.json";
             const snapPkg = await read(srcPkg);
             const send = () =>
@@ -42,6 +50,7 @@ cli.command("<...files>", "Build files")
                         snap: snapPkg,
                     },
                     workspaces,
+                    publish: watch ? false : publish,
                 });
 
             await send();

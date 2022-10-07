@@ -2,6 +2,7 @@ import { createExports } from "./create-exports.js";
 import { parse } from "path";
 import glob from "fast-glob";
 import { write, getJsonIndent, logger, read } from "./utils.js";
+import { createPublish } from "./create-publish.js";
 
 /**
  * @param {object} options
@@ -10,6 +11,7 @@ import { write, getJsonIndent, logger, read } from "./utils.js";
  * @param {string} options.dist
  * @param {boolean} options.wrappers
  * @param {boolean} options.workspaces
+ * @param {boolean} [options.publish]
  * @param {{src: string, snap: import("./create-exports").Pkg}} options.pkg
  */
 export async function mergeExports(options) {
@@ -110,5 +112,19 @@ export async function mergeExports(options) {
             )
         );
         logger(`${pkgName} updated`);
+    }
+
+    if (options.publish && pkg.version) {
+        logger(`${pkgName} filtering release...`);
+        const { status } = await createPublish(pkg.version);
+        logger(
+            `${pkgName} ${
+                status === "ignore"
+                    ? "no release"
+                    : status === "publish"
+                    ? "published"
+                    : "error"
+            }`
+        );
     }
 }
