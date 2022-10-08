@@ -1,3 +1,3 @@
-import { Component as _Component } from "demo/atomico";
+import { MyComponent as _MyComponent } from "demo/atomico";
 import { auto } from "@atomico/react";
-export const Component = auto(_Component);
+export const MyComponent = auto(_MyComponent);

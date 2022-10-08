@@ -1,7 +1,7 @@
 import { html, css, c } from "atomico";
 
-function component() {}
+function myComponent() {}
 
-export const Component = c(component);
+export const MyComponent = c(myComponent);
 
-customElements.define("my-component", Component);
+customElements.define("my-component", MyComponent);

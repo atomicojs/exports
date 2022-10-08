@@ -5,6 +5,7 @@
  * @param {string} options.dist
  * @param {boolean} options.wrappers
  * @param {boolean} options.workspaces
+ * @param {boolean} [options.publish]
  * @param {{src: string, snap: import("./create-exports").Pkg}} options.pkg
  */
 export function mergeExports(options: {
@@ -13,6 +14,7 @@ export function mergeExports(options: {
     dist: string;
     wrappers: boolean;
     workspaces: boolean;
+    publish?: boolean;
     pkg: {
         src: string;
         snap: import("./create-exports").Pkg;

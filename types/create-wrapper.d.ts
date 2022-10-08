@@ -29,8 +29,14 @@ export function createWrapper(options: {
     codeJs: string;
     codeTs: string;
 }[]>;
-export const peerDependencies: {
+export const peerDependencies: ({
     name: string;
     path: string;
     version: string;
-}[];
+    jsx: boolean;
+} | {
+    name: string;
+    path: string;
+    version: string;
+    jsx?: undefined;
+})[];

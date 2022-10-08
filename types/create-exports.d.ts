@@ -42,6 +42,7 @@ export function createExports(options: {
 }>;
 export type Pkg = {
     name: string;
+    version: string;
     workspaces: string[];
     exports?: {
         [src: string]: string;

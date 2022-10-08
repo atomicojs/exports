@@ -3,8 +3,13 @@ import * as acornWalk from "acorn-walk";
 import { readFile } from "fs/promises";
 
 export const peerDependencies = [
-    { name: "@atomico/react", path: "react", version: "latest" },
-    { name: "@atomico/react/preact", path: "preact", version: "latest" },
+    { name: "@atomico/react", path: "react", version: "latest", jsx: true },
+    {
+        name: "@atomico/react/preact",
+        path: "preact",
+        version: "latest",
+        jsx: true,
+    },
     { name: "@atomico/vue", path: "vue", version: "latest" },
 ];
 
@@ -47,6 +52,9 @@ export async function createWrapper(options) {
         sourceType: "module",
     });
 
+    /**
+     * @type {{[const:string]:{export:boolean,tagName:string,is:string}}}
+     */
     const customElements = {};
 
     acornWalk.ancestor(ast, {
@@ -110,11 +118,26 @@ export async function createWrapper(options) {
         options.scope
     }/${origin}";`;
 
+    const tagNames = elements.map(
+        ([name, { tagName }]) =>
+            `      "${tagName}": Component<typeof _${name}>;`
+    );
+
+    const interfaceTsJsx = tagNames.length
+        ? [
+              `declare namespace JSX {`,
+              `   interface IntrinsicElements{`,
+              tagNames,
+              `   }`,
+              `}`,
+          ].join("\n")
+        : "";
+
     /**
      * Task wrappers
      */
     return await Promise.all(
-        peerDependencies.map(async ({ name, path }) => {
+        peerDependencies.map(async ({ name, path, jsx }) => {
             const codeJs = [
                 originModule,
                 `import { auto } from "${name}";`,
@@ -136,6 +159,7 @@ export async function createWrapper(options) {
                     ([name]) =>
                         `export const ${name}: Component<typeof _${name}>;`
                 ),
+                jsx ? [interfaceTsJsx] : [],
             ]
                 .flat(10)
                 .join("\n");
