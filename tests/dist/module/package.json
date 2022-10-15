@@ -4,15 +4,11 @@
         "atomico": "latest"
     },
     "peerDependencies": {
-        "@atomico/react": "latest",
-        "@atomico/react/preact": "latest",
-        "@atomico/vue": "latest"
+        "@atomico/react": "*",
+        "@atomico/vue": "*"
     },
     "peerDependenciesMeta": {
         "@atomico/react": {
-            "optional": true
-        },
-        "@atomico/react/preact": {
             "optional": true
         },
         "@atomico/vue": {
@@ -27,9 +23,9 @@
         "./components/a": "./tests/module/components/a/a.js",
         "./components/b": "./tests/module/components/b/b.js",
         "./components/c": "./tests/module/components/c/c.js",
-        "./atomico/react": "./tests/dist/module/atomico/react.js",
-        "./atomico/preact": "./tests/dist/module/atomico/preact.js",
-        "./atomico/vue": "./tests/dist/module/atomico/vue.js",
+        "./react": "./tests/dist/module/react.js",
+        "./preact": "./tests/dist/module/preact.js",
+        "./vue": "./tests/dist/module/vue.js",
         ".": "./tests/module/atomico.js"
     },
     "typesVersions": {
@@ -37,14 +33,14 @@
             "atomico": [
                 "./tests/module/atomico.d.ts"
             ],
-            "atomico/react": [
-                "./tests/dist/module/atomico/react.d.ts"
+            "react": [
+                "./tests/dist/module/react.d.ts"
             ],
-            "atomico/preact": [
-                "./tests/dist/module/atomico/preact.d.ts"
+            "preact": [
+                "./tests/dist/module/preact.d.ts"
             ],
-            "atomico/vue": [
-                "./tests/dist/module/atomico/vue.d.ts"
+            "vue": [
+                "./tests/dist/module/vue.d.ts"
             ]
         }
     }

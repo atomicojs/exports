@@ -20,10 +20,16 @@ export async function createExports(options) {
         options.input.filter((file) => file.endsWith(".d.ts"))
     ).map(([name, file]) => [name.replace(/\.d$/, ""), file]);
 
+    const main = options.main || filesJs?.[0]?.[0];
+
+    const fileMainJs = main && filesJs.find(([name]) => name === main);
+    const fileMainTs = main && filesTs.find(([name]) => name === main);
+
     const wrappers = await createWrappers({
         input: filesJs,
         scope: options.pkg.name,
         dist: options.dist,
+        main,
     });
 
     if (options.wrappers && wrappers.length) {
@@ -48,11 +54,6 @@ export async function createExports(options) {
             options.pkg?.peerDependenciesMeta || {}
         );
     }
-
-    const main = options.main || filesJs?.[0]?.[0];
-
-    const fileMainJs = main && filesJs.find(([name]) => name === main);
-    const fileMainTs = main && filesTs.find(([name]) => name === main);
 
     if (fileMainJs) {
         const [, distJs] = fileMainJs;

@@ -3,14 +3,15 @@ import * as acornWalk from "acorn-walk";
 import { readFile } from "fs/promises";
 
 export const peerDependencies = [
-    { name: "@atomico/react", path: "react", version: "latest", jsx: true },
+    { name: "@atomico/react", path: "react", version: "*", jsx: true },
     {
-        name: "@atomico/react/preact",
+        name: "@atomico/react",
+        submodule: "/preact",
         path: "preact",
-        version: "latest",
+        version: "*",
         jsx: true,
     },
-    { name: "@atomico/vue", path: "vue", version: "latest" },
+    { name: "@atomico/vue", path: "vue", version: "*" },
 ];
 
 /**
@@ -18,6 +19,7 @@ export const peerDependencies = [
  * @param {string} options.scope
  * @param {[string,string][]} options.input
  * @param {string} [options.dist]
+ * @param {string} [options.main]
  * @returns {ReturnType<typeof createWrapper>}
  */
 export async function createWrappers(options) {
@@ -29,6 +31,7 @@ export async function createWrappers(options) {
                     path,
                     scope: options.scope,
                     dist: options.dist || "wrappers",
+                    main: options.main,
                 })
             )
         )
@@ -43,6 +46,7 @@ export async function createWrappers(options) {
  * @param {string} options.scope
  * @param {string} options.path
  * @param {string} options.dist
+ * @param {string} options.main
  */
 export async function createWrapper(options) {
     const code = await readFile(options.input, "utf8");
@@ -137,10 +141,10 @@ export async function createWrapper(options) {
      * Task wrappers
      */
     return await Promise.all(
-        peerDependencies.map(async ({ name, path, jsx }) => {
+        peerDependencies.map(async ({ name, path, jsx, submodule = "" }) => {
             const codeJs = [
                 originModule,
-                `import { auto } from "${name}";`,
+                `import { auto } from "${name}${submodule}";`,
                 elements.map(
                     ([name]) => `export const ${name} = auto(_${name});`
                 ),
@@ -148,13 +152,14 @@ export async function createWrapper(options) {
                 .flat(10)
                 .join("\n");
 
-            const fileExport = `${origin}/${path}`;
+            const fileExport =
+                origin === options.main ? path : `${origin}/${path}`;
 
             const fileDistJs = `${options.dist}/${fileExport}.js`;
 
             const codeTs = [
                 originModule,
-                `import { Component } from "${name}";`,
+                `import { Component } from "${name}${submodule}";`,
                 elements.map(
                     ([name]) =>
                         `export const ${name}: Component<typeof _${name}>;`
