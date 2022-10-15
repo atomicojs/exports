@@ -35,21 +35,13 @@
         "url": "https://github.com/atomicojs/exports/issues"
     },
     "homepage": "https://github.com/atomicojs/exports#readme",
-    "dependencies": {
-        "@uppercod/indentation": "latest",
-        "acorn": "^8.8.0",
-        "acorn-walk": "^8.1.0",
-        "cac": "^6.7.12",
-        "chokidar": "^3.5.3",
-        "fast-glob": "latest"
-    },
     "peerDependencies": {
-        "@uppercod/indentation": "latest",
+        "@uppercod/indentation": "*",
         "acorn": "^8.8.0",
         "acorn-walk": "^8.1.0",
         "cac": "^6.7.12",
         "chokidar": "^3.5.3",
-        "fast-glob": "latest"
+        "fast-glob": "*"
     },
     "devDependencies": {
         "@atomico/react": "latest",
