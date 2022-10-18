@@ -90,7 +90,7 @@ export const getModules = (files) => {
             modules.push(
                 ...children.map(({ name, file }) => {
                     let id = (
-                        name === "index" || parent.at(-1) === name
+                        name === "index" || parent[parent.length - 1] === name
                             ? parent
                             : [...parent, name]
                     ).join("/");
