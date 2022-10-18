@@ -1,6 +1,7 @@
 import * as acorn from "acorn";
 import * as acornWalk from "acorn-walk";
 import { readFile } from "fs/promises";
+import { cleanPath } from "./utils.js";
 
 export const peerDependencies = [
     { name: "@atomico/react", path: "react", version: "*", jsx: true },
@@ -155,7 +156,7 @@ export async function createWrapper(options) {
             const fileExport =
                 origin === options.main ? path : `${origin}/${path}`;
 
-            const fileDistJs = `${options.dist}/${fileExport}.js`;
+            const fileDistJs = cleanPath(`${options.dist}/${fileExport}.js`);
 
             const codeTs = [
                 originModule,
@@ -169,7 +170,7 @@ export async function createWrapper(options) {
                 .flat(10)
                 .join("\n");
 
-            const fileDistTs = `${options.dist}/${fileExport}.d.ts`;
+            const fileDistTs = cleanPath(`${options.dist}/${fileExport}.d.ts`);
 
             return {
                 fileExport,

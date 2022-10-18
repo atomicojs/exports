@@ -33,10 +33,21 @@ export function getJsonIndent(text) {
     return indent ? getValueIndentation(indent) / getValueIndentation(" ") : 4;
 }
 
+/**
+ *
+ * @param {string} message
+ */
 export const logger = (message) => {
     const date = new Date();
     console.log(`exports: ${date.toLocaleTimeString()} - ${message}`);
 };
+
+/**
+ *
+ * @param {string} path
+ * @returns string
+ */
+export const cleanPath = (path) => path.replace(/\/+/g, "/");
 
 /**
  * @param {string[]} files
