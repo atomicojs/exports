@@ -67,13 +67,20 @@ export async function createExports(options) {
         meta.types = distTs;
     }
 
+    /**
+     *
+     * @param {string} path
+     * @returns string
+     */
+    const checkPath = (path) => (path === "./" ? "." : path);
+
     return {
         pkg: {
             ...meta,
             exports: filesJs.reduce(
                 (current, [path, file]) => ({
                     ...current,
-                    [path.startsWith(".") ? path : `./${path}`]:
+                    [checkPath(path.startsWith(".") ? path : `./${path}`)]:
                         file.startsWith(".") ? file : `./${file}`,
                 }),
                 options.pkg?.exports || {}
