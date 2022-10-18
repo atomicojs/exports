@@ -45,9 +45,14 @@ export const logger = (message) => {
 /**
  *
  * @param {string} path
+ * @param {{relative:boolean}} [options]
  * @returns string
  */
-export const cleanPath = (path) => path.replace(/\/+/g, "/");
+export const cleanPath = (path, options) => {
+    path = path.replace(/\/+/g, "/");
+    path = path === "./" ? "." : path;
+    return options?.relative ? path.replace(/^\//, "") : path;
+};
 
 /**
  * @param {string[]} files

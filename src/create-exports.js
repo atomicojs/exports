@@ -1,5 +1,5 @@
 import { createWrappers, peerDependencies } from "./create-wrapper.js";
-import { getModules } from "./utils.js";
+import { cleanPath, getModules } from "./utils.js";
 
 /**
  * @param {object} options
@@ -67,20 +67,13 @@ export async function createExports(options) {
         meta.types = distTs;
     }
 
-    /**
-     *
-     * @param {string} path
-     * @returns string
-     */
-    const checkPath = (path) => (path === "./" ? "." : path);
-
     return {
         pkg: {
             ...meta,
             exports: filesJs.reduce(
                 (current, [path, file]) => ({
                     ...current,
-                    [checkPath(path.startsWith(".") ? path : `./${path}`)]:
+                    [cleanPath(path.startsWith(".") ? path : `./${path}`)]:
                         file.startsWith(".") ? file : `./${file}`,
                 }),
                 options.pkg?.exports || {}
@@ -90,7 +83,7 @@ export async function createExports(options) {
                 "*": filesTs.reduce(
                     (current, [path, file]) => ({
                         ...current,
-                        [path]: [file],
+                        [cleanPath(path, { relative: true })]: [file],
                     }),
                     options.pkg?.typesVersions?.["*"] || {}
                 ),
