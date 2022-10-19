@@ -60,6 +60,7 @@ function logger(message) {
  * @param {string[]} [config.target]
  * @param {string[]} [config.metaUrl]
  * @param {string} [config.globalName]
+ * @param {boolean} [config.transform]
  * @param {(config:import("esbuild").BuildOptions)=>import("esbuild").BuildOptions} [config.preload]
  * @param {boolean} [config.cssLiteralsPostcss]
  * @returns
@@ -132,11 +133,12 @@ export async function prepare(config) {
         sourcemap: config.sourcemap,
         metafile: true,
         minify: config.minify,
-        bundle: true,
+        bundle: !config.transform,
         format: config.format,
         splitting: config.format !== "esm" ? false : true,
         globalName: config.globalName,
-        external: config.bundle ? [] : externalDependenciesKeys,
+        external:
+            config.bundle || config.transform ? [] : externalDependenciesKeys,
         watch: config.watch
             ? {
                   async onRebuild(error, result) {
@@ -221,7 +223,7 @@ export async function prepare(config) {
      */
     const processAnalyzer = async (entries) => {
         if (!config.analyzer) return;
-        
+
         const pkg = await packageService.get();
         const [exportsJs, exportsTs] = await analyzer({
             ...config,

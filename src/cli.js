@@ -20,6 +20,7 @@ cli.command("<...files>", "Build files")
     .option("--css-inline", "The css is injected from the JS to the document")
     .option("--css-literals-postcss", "parse css literals with postcss")
     .option("--bundle", "bundle")
+    .option("--transform", "just transform the code")
     .option("--publish", "bundle")
     .option(
         "--analyzer",
@@ -63,6 +64,7 @@ cli.command("<...files>", "Build files")
                 jsx = "atomico",
                 publish,
                 cssInline,
+                transform,
             }
         ) => {
             prepare({
@@ -87,6 +89,7 @@ cli.command("<...files>", "Build files")
                 jsx,
                 publish,
                 cssInline,
+                transform,
             });
         }
     );
