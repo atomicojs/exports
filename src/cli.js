@@ -33,7 +33,7 @@ cli.command("<...files>", "Build files")
          */
         async (
             src,
-            { watch, main, wrappers, dist, tmp, workspaces, publish }
+            { watch, main = "index", wrappers, dist, tmp, workspaces, publish }
         ) => {
             const srcPkg = cwd + "/package.json";
             const snapPkg = await read(srcPkg);
