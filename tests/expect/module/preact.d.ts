@@ -1,4 +1,4 @@
-import { MyComponent as _MyComponent } from "demo/atomico";
+import { MyComponent as _MyComponent } from "demo";
 import { Component } from "@atomico/react/preact";
 export const MyComponent: Component<typeof _MyComponent>;
 declare namespace JSX {
