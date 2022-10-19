@@ -25,12 +25,14 @@ export async function createExports(options) {
     const fileMainJs = main && filesJs.find(([name]) => name === main);
     const fileMainTs = main && filesTs.find(([name]) => name === main);
 
-    const wrappers = await createWrappers({
-        input: filesJs,
-        scope: options.pkg.name,
-        dist: options.dist,
-        main,
-    });
+    const wrappers = options.wrappers
+        ? await createWrappers({
+              input: filesJs,
+              scope: options.pkg.name,
+              dist: options.dist,
+              main,
+          })
+        : [];
 
     if (options.wrappers && wrappers.length) {
         wrappers.forEach(({ fileExport, fileDistTs, fileDistJs }) => {

@@ -15,7 +15,7 @@ import { createPublish } from "./create-publish.js";
  * @param {{src: string, snap: import("./create-exports").Pkg}} options.pkg
  */
 export async function mergeExports(options) {
-    logger(`Getting files...`);
+    logger(`getting files...`);
 
     const input = await glob(options.src, {
         ignore: [
@@ -74,7 +74,7 @@ export async function mergeExports(options) {
         );
     }
 
-    logger(`Creading exports${options.wrappers ? ` and wrappers` : ""}`);
+    logger(`creating exports${options.wrappers ? ` and wrappers...` : ""}`);
 
     const result = await createExports({
         main: options.main,
@@ -98,8 +98,7 @@ export async function mergeExports(options) {
     }
 
     if (options.pkg?.src) {
-        const pkgName = parse(options.pkg.src).base;
-        logger(`${pkgName} updating`);
+        logger(`${pkg.name} updating...`);
         await write(
             options.pkg.src,
             JSON.stringify(
@@ -111,14 +110,14 @@ export async function mergeExports(options) {
                 getJsonIndent(options.pkg?.snap)
             )
         );
-        logger(`${pkgName} updated`);
+        logger(`${pkg.name} updated`);
     }
 
     if (options.publish && pkg.version) {
-        logger(`${pkgName} filtering release...`);
+        logger(`${pkg.name} filtering release...`);
         const { status } = await createPublish(pkg.version);
         logger(
-            `${pkgName} ${
+            `${pkg.name} ${
                 status === "ignore"
                     ? "no release"
                     : status === "publish"
