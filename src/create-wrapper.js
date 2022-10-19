@@ -121,7 +121,7 @@ export async function createWrapper(options) {
 
     const originModule = `import { ${imports.join(", ")} } from "${
         options.scope
-    }/${origin}";`;
+    }${origin === options.main ? "" : "/" + origin}";`;
 
     const tagNames = elements.map(
         ([name, { tagName }]) =>
