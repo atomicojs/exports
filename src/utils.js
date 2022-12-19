@@ -88,7 +88,9 @@ export const getModules = (files) => {
 
         if (children) {
             modules.push(
-                ...children.map(({ name, file }) => {
+                ...children.map(({ name, file, ext }) => {
+                    name = ext === ".ts" ? name.replace(/\.d$/, "") : name;
+
                     let id = (
                         name === "index" || parent[parent.length - 1] === name
                             ? parent
