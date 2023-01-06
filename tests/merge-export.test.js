@@ -18,9 +18,11 @@ test("module/atomico", async (t) => {
     });
 
     const baseExpect = "./tests/expect";
+
     const baseDist = "./tests/dist";
 
     const filesExpect = await glob(`${baseExpect}/**`);
+
     const filesDist = (await glob(`${baseDist}/**`)).reduce(
         (files, file) => ({
             ...files,
