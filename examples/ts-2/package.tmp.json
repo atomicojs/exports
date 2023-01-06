@@ -31,8 +31,10 @@
     },
     "types": "dist/index.d.ts",
     "exports": {
+        "./components": "./dist/components.js",
         ".": "./dist/index.js",
         "./a": "./dist/a/index.js",
+        "./a/option": "./dist/a/option/index.js",
         "./b": "./dist/b/b.js",
         "./react": "./wrappers/react.js",
         "./preact": "./wrappers/preact.js",
@@ -40,14 +42,23 @@
         "./a/react": "./wrappers/a/react.js",
         "./a/preact": "./wrappers/a/preact.js",
         "./a/vue": "./wrappers/a/vue.js",
+        "./a/option/react": "./wrappers/a/option/react.js",
+        "./a/option/preact": "./wrappers/a/option/preact.js",
+        "./a/option/vue": "./wrappers/a/option/vue.js",
         "./b/react": "./wrappers/b/react.js",
         "./b/preact": "./wrappers/b/preact.js",
         "./b/vue": "./wrappers/b/vue.js"
     },
     "typesVersions": {
         "*": {
+            "components": [
+                "dist/components.d.ts"
+            ],
             "a": [
                 "dist/a/index.d.ts"
+            ],
+            "a/option": [
+                "dist/a/option/index.d.ts"
             ],
             "b": [
                 "dist/b/b.d.ts"
@@ -69,6 +80,15 @@
             ],
             "a/vue": [
                 "wrappers/a/vue.d.ts"
+            ],
+            "a/option/react": [
+                "wrappers/a/option/react.d.ts"
+            ],
+            "a/option/preact": [
+                "wrappers/a/option/preact.d.ts"
+            ],
+            "a/option/vue": [
+                "wrappers/a/option/vue.d.ts"
             ],
             "b/react": [
                 "wrappers/b/react.d.ts"
