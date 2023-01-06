@@ -1,4 +1,4 @@
-export declare const Component1: import("atomico/types/dom").Atomico<{
+export declare const Component2: import("atomico/types/dom").Atomico<{
     message?: string;
 }, {
     new (): HTMLElement;

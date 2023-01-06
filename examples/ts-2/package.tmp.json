@@ -1,5 +1,5 @@
 {
-    "name": "ts-1",
+    "name": "ts-2",
     "version": "1.0.0",
     "description": "",
     "main": "index.js",
@@ -29,18 +29,56 @@
             "optional": true
         }
     },
+    "types": "dist/index.d.ts",
     "exports": {
         ".": "./dist/index.js",
+        "./a": "./dist/a/index.js",
+        "./b": "./dist/b/b.js",
         "./react": "./wrappers/react.js",
         "./preact": "./wrappers/preact.js",
-        "./vue": "./wrappers/vue.js"
+        "./vue": "./wrappers/vue.js",
+        "./a/react": "./wrappers/a/react.js",
+        "./a/preact": "./wrappers/a/preact.js",
+        "./a/vue": "./wrappers/a/vue.js",
+        "./b/react": "./wrappers/b/react.js",
+        "./b/preact": "./wrappers/b/preact.js",
+        "./b/vue": "./wrappers/b/vue.js"
     },
     "typesVersions": {
         "*": {
-            "": ["dist/index.d.ts"],
-            "react": ["wrappers/react.d.ts"],
-            "preact": ["wrappers/preact.d.ts"],
-            "vue": ["wrappers/vue.d.ts"]
+            "a": [
+                "dist/a/index.d.ts"
+            ],
+            "b": [
+                "dist/b/b.d.ts"
+            ],
+            "react": [
+                "wrappers/react.d.ts"
+            ],
+            "preact": [
+                "wrappers/preact.d.ts"
+            ],
+            "vue": [
+                "wrappers/vue.d.ts"
+            ],
+            "a/react": [
+                "wrappers/a/react.d.ts"
+            ],
+            "a/preact": [
+                "wrappers/a/preact.d.ts"
+            ],
+            "a/vue": [
+                "wrappers/a/vue.d.ts"
+            ],
+            "b/react": [
+                "wrappers/b/react.d.ts"
+            ],
+            "b/preact": [
+                "wrappers/b/preact.d.ts"
+            ],
+            "b/vue": [
+                "wrappers/b/vue.d.ts"
+            ]
         }
     }
 }

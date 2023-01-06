@@ -1,11 +1,11 @@
 import { c } from "atomico";
 
-function component() {
+function component1() {
     return <host shadowDom>...</host>;
 }
 
-component.props = { message: String };
+component1.props = { message: String };
 
-export const Component = c(component);
+export const Component1 = c(component1);
 
-customElements.define("my-component", Component);
+customElements.define("my-component-1", Component1);

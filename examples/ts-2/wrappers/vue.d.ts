@@ -1,3 +1,3 @@
-import { Component as _Component } from "with-ts/";
+import { Component1 as _Component1 } from "ts-2/";
 import { Component } from "@atomico/vue";
-export const Component: Component<typeof _Component>;
+export const Component1: Component<typeof _Component1>;
