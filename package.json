@@ -7,7 +7,8 @@
     "module": "./src/merge-exports.js",
     "types": "./types/merge-exports.d.ts",
     "workspaces": [
-        "tests"
+        "tests",
+        "examples/**/*"
     ],
     "exports": {
         "./cli": "./src/cli.js",
