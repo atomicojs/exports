@@ -17,7 +17,7 @@ export function createExports(options: {
         exports: any;
         typesVersions: {
             "*": {
-                [src: string]: string[];
+                [x: string]: any[] | string[];
             };
         };
         peerDependencies: {
