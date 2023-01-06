@@ -5,7 +5,7 @@
     "main": "index.js",
     "scripts": {
         "build": "tsc",
-        "exports": "node ../../src/cli.js"
+        "exports": "node \"../../src/cli.js\" \"dist/**/*\" --tmp --wrappers"
     },
     "keywords": [],
     "author": "",

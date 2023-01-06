@@ -1,0 +1,46 @@
+{
+    "name": "ts-1",
+    "version": "1.0.0",
+    "description": "",
+    "main": "index.js",
+    "scripts": {
+        "build": "tsc",
+        "exports": "node \"../../src/cli.js\" \"dist/**/*\" --tmp --wrappers"
+    },
+    "keywords": [],
+    "author": "",
+    "license": "ISC",
+    "dependencies": {
+        "atomico": "^1.68.0"
+    },
+    "devDependencies": {
+        "@atomico/tsconfig": "^1.1.2",
+        "typescript": "^4.8.4"
+    },
+    "peerDependencies": {
+        "@atomico/react": "*",
+        "@atomico/vue": "*"
+    },
+    "peerDependenciesMeta": {
+        "@atomico/react": {
+            "optional": true
+        },
+        "@atomico/vue": {
+            "optional": true
+        }
+    },
+    "exports": {
+        ".": "./dist/index.js",
+        "./react": "./wrappers/react.js",
+        "./preact": "./wrappers/preact.js",
+        "./vue": "./wrappers/vue.js"
+    },
+    "typesVersions": {
+        "*": {
+            "": ["dist/index.d.ts"],
+            "react": ["wrappers/react.d.ts"],
+            "preact": ["wrappers/preact.d.ts"],
+            "vue": ["wrappers/vue.d.ts"]
+        }
+    }
+}
