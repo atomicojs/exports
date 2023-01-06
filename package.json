@@ -59,7 +59,7 @@
     "prettier": {
         "tabWidth": 4,
         "singleQuote": false,
-        "endOfLine": "auto"
+        "endOfLine": "lf"
     },
     "bin": {
         "exports": "./src/cli.js"
