@@ -29,7 +29,6 @@
             "optional": true
         }
     },
-    "types": "dist/index.d.ts",
     "exports": {
         ".": "./dist/index.js",
         "./react": "./wrappers/react.js",
@@ -38,15 +37,10 @@
     },
     "typesVersions": {
         "*": {
-            "react": [
-                "wrappers/react.d.ts"
-            ],
-            "preact": [
-                "wrappers/preact.d.ts"
-            ],
-            "vue": [
-                "wrappers/vue.d.ts"
-            ]
+            "": ["dist/index.d.ts"],
+            "react": ["wrappers/react.d.ts"],
+            "preact": ["wrappers/preact.d.ts"],
+            "vue": ["wrappers/vue.d.ts"]
         }
     }
 }

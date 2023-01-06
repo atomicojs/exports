@@ -18,12 +18,16 @@ export async function createExports(options) {
 
     const filesTs = getModules(
         options.input.filter((file) => file.endsWith(".d.ts"))
-    ).map(([name, file]) => [name.replace(/\.d$/, ""), file]);
+    ).map(([name, file]) => [name.replace(/\.d\.ts$/, ""), file]);
 
     const main = options.main || filesJs?.[0]?.[0];
 
     const fileMainJs = main && filesJs.find(([name]) => name === main);
-    const fileMainTs = main && filesTs.find(([name]) => name === main);
+    const fileMainTs =
+        main &&
+        filesTs.find(([name]) =>
+            name === "" ? "index" === main : name === main
+        );
 
     const wrappers = options.wrappers
         ? await createWrappers({
@@ -82,13 +86,15 @@ export async function createExports(options) {
             ),
             typesVersions: {
                 ...options.pkg?.typesVersions,
-                "*": filesTs.reduce(
-                    (current, [path, file]) => ({
-                        ...current,
-                        [cleanPath(path, { relative: true })]: [file],
-                    }),
-                    options.pkg?.typesVersions?.["*"] || {}
-                ),
+                "*": filesTs
+                    .filter(([name]) => name)
+                    .reduce(
+                        (current, [path, file]) => ({
+                            ...current,
+                            [cleanPath(path, { relative: true })]: [file],
+                        }),
+                        options.pkg?.typesVersions?.["*"] || {}
+                    ),
             },
         },
         wrappers,
