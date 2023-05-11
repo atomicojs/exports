@@ -74,11 +74,11 @@ cli.command("<...files>", "Build files")
                     }
                 };
 
-                chokidar
-                    .watch(src)
-                    .on("change", handler)
-                    .on("add", handler)
-                    .on("unlink", handler);
+                const watch = chokidar.watch(src);
+
+                watch.on("change", handler);
+                watch.on("add", handler);
+                watch.on("unlink", handler);
             }
         }
     );
