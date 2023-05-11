@@ -12,6 +12,7 @@ import { createPublish } from "./create-publish.js";
  * @param {boolean} options.wrappers
  * @param {boolean} options.workspaces
  * @param {boolean} [options.publish]
+ * @param {boolean} [options.watch]
  * @param {{src: string, snap: import("./create-exports").Pkg}} options.pkg
  */
 export async function mergeExports(options) {
@@ -26,7 +27,7 @@ export async function mergeExports(options) {
         ],
     });
 
-    if (!input.length) {
+    if (!input.length && !options.watch) {
         logger(`no files found`);
         process.exit(1);
     }

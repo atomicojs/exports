@@ -51,6 +51,7 @@ cli.command("<...files>", "Build files")
                     },
                     workspaces,
                     publish: watch ? false : publish,
+                    watch,
                 });
 
             await send();
@@ -58,11 +59,26 @@ cli.command("<...files>", "Build files")
             if (watch) {
                 logger("waiting for changes...\n");
 
-                chokidar.watch(src).on("change", async () => {
-                    logger("updating...");
-                    await send();
-                    logger("waiting for changes...\n");
-                });
+                /**  @type {boolean} */
+                let prevent;
+
+                const handler = () => {
+                    if (!prevent) {
+                        prevent = true;
+                        setTimeout(async () => {
+                            prevent = false;
+                            logger("updating...");
+                            await send();
+                            logger("waiting for changes...\n");
+                        }, 100);
+                    }
+                };
+
+                chokidar
+                    .watch(src)
+                    .on("change", handler)
+                    .on("add", handler)
+                    .on("unlink", handler);
             }
         }
     );
