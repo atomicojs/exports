@@ -13,7 +13,11 @@ export async function createExports(options) {
     const meta = {};
 
     const filesJs = getModules(
-        options.input.filter((file) => file.endsWith(".js"))
+        options.input.filter(
+            (file) =>
+                /\.(ts(x){0,1}|js(x){0,1}|mjs)$/.test(file) &&
+                !file.endsWith(".d.ts")
+        )
     );
 
     const filesTs = getModules(
