@@ -145,7 +145,9 @@ export async function createWrapper(options) {
         peerDependencies.map(async ({ name, path, jsx, submodule = "" }) => {
             const codeJs = [
                 originModule,
-                `import { auto } from "${name}${submodule}";`,
+                `
+                "use client";
+                import { auto } from "${name}${submodule}";`,
                 elements.map(
                     ([name]) => `export const ${name} = auto(_${name});`
                 ),
