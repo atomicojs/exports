@@ -8,6 +8,8 @@ const cwd = process.cwd();
 
 const cli = cac("devserver").version("1.0.0");
 
+const task = [];
+
 cli.command("<...files>", "Build files")
     .option("--dist <dist>", "Destination directory")
     .option("--main <dist>", "Nain file")
@@ -65,12 +67,14 @@ cli.command("<...files>", "Build files")
                 const handler = () => {
                     if (!prevent) {
                         prevent = true;
-                        setTimeout(async () => {
-                            prevent = false;
-                            logger("updating...");
-                            await send();
-                            logger("waiting for changes...\n");
-                        }, 100);
+                        task.push(
+                            setTimeout(async () => {
+                                prevent = false;
+                                logger("updating...");
+                                await send();
+                                logger("waiting for changes...\n");
+                            }, 200)
+                        );
                     }
                 };
 
@@ -86,3 +90,8 @@ cli.command("<...files>", "Build files")
 cli.help();
 
 cli.parse();
+
+// clean up asynchronous tasks
+["SIGINT", "exit"].map((event) => {
+    process.on(event, () => task.map(clearTimeout));
+});
