@@ -3,12 +3,11 @@ import cac from "cac";
 import chokidar from "chokidar";
 import { mergeExports } from "./merge-exports.js";
 import { read, logger } from "./utils.js";
+import { subscribe } from "@uppercod/clean-terminal";
 
 const cwd = process.cwd();
 
 const cli = cac("devserver").version("1.0.0");
-
-const task = [];
 
 cli.command("<...files>", "Build files")
     .option("--dist <dist>", "Destination directory")
@@ -67,14 +66,15 @@ cli.command("<...files>", "Build files")
                 const handler = () => {
                     if (!prevent) {
                         prevent = true;
-                        task.push(
-                            setTimeout(async () => {
-                                prevent = false;
-                                logger("updating...");
-                                await send();
-                                logger("waiting for changes...\n");
-                            }, 200)
-                        );
+
+                        const id = setTimeout(async () => {
+                            prevent = false;
+                            logger("updating...");
+                            await send();
+                            logger("waiting for changes...\n");
+                        }, 200);
+
+                        subscribe(() => clearTimeout(id));
                     }
                 };
 
@@ -83,6 +83,8 @@ cli.command("<...files>", "Build files")
                 watch.on("change", handler);
                 watch.on("add", handler);
                 watch.on("unlink", handler);
+
+                subscribe(() => watch.close());
             }
         }
     );
@@ -90,8 +92,3 @@ cli.command("<...files>", "Build files")
 cli.help();
 
 cli.parse();
-
-// clean up asynchronous tasks
-["SIGINT", "exit"].map((event) => {
-    process.on(event, () => task.map(clearTimeout));
-});

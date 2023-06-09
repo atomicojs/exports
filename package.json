@@ -1,7 +1,7 @@
 {
     "name": "@atomico/exports",
     "type": "module",
-    "version": "1.6.1",
+    "version": "1.6.2",
     "description": "It allows to generate an export to quickly publish components created with Atomico in NPM",
     "main": "./src/merge-exports.js",
     "module": "./src/merge-exports.js",
@@ -37,6 +37,7 @@
     },
     "homepage": "https://github.com/atomicojs/exports#readme",
     "dependencies": {
+        "@uppercod/clean-terminal": "^1.0.0",
         "@uppercod/indentation": "^1.0.1",
         "acorn": "^8.8.0",
         "acorn-walk": "^8.1.0",
