@@ -8,6 +8,7 @@ import { cleanPath, getModules } from "./utils.js";
  * @param {string} [options.main]
  * @param {string} [options.dist]
  * @param {boolean} [options.wrappers]
+ * @param {boolean} [options.ignoreTypes]
  */
 export async function createExports(options) {
     const meta = {};
@@ -24,7 +25,11 @@ export async function createExports(options) {
         options.input.filter((file) => file.endsWith(".d.ts"))
     ).map(([name, file]) => [name.replace(/\.d\.ts$/, ""), file]);
 
-    const filesTs = filesDTs.length ? filesDTs : filesJs;
+    const filesTs = options.ignoreTypes
+        ? []
+        : filesDTs.length
+        ? filesDTs
+        : filesJs;
 
     const main = options.main || filesJs?.[0]?.[0];
 

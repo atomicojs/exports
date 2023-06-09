@@ -14,6 +14,7 @@ cli.command("<...files>", "Build files")
     .option("--main <dist>", "Nain file")
     .option("--watch", "watch mode")
     .option("--wrappers", "enable the wrapper generator")
+    .option("--ignore-types", "enable the wrapper generator")
     .option("--workspaces", "enable dependency merging")
     .option(
         "--publish",
@@ -31,10 +32,20 @@ cli.command("<...files>", "Build files")
          * @param {boolean} flags.tmp
          * @param {boolean} flags.workspaces
          * @param {boolean} flags.publish
+         * @param {boolean} flags.ignoreTypes
          */
         async (
             src,
-            { watch, main = "index", wrappers, dist, tmp, workspaces, publish }
+            {
+                watch,
+                main = "index",
+                wrappers,
+                dist,
+                tmp,
+                workspaces,
+                publish,
+                ignoreTypes,
+            }
         ) => {
             const srcPkg = cwd + "/package.json";
             const snapPkg = await read(srcPkg);
@@ -53,6 +64,7 @@ cli.command("<...files>", "Build files")
                     workspaces,
                     publish: watch ? false : publish,
                     watch,
+                    ignoreTypes,
                 });
 
             await send();

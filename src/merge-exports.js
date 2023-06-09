@@ -13,6 +13,7 @@ import { createPublish } from "./create-publish.js";
  * @param {boolean} options.workspaces
  * @param {boolean} [options.publish]
  * @param {boolean} [options.watch]
+ * @param {boolean} [options.ignoreTypes]
  * @param {{src: string, snap: import("./create-exports").Pkg}} options.pkg
  */
 export async function mergeExports(options) {
@@ -83,6 +84,7 @@ export async function mergeExports(options) {
         input: input,
         dist: options.dist,
         wrappers: options.wrappers,
+        ignoreTypes: options.ignoreTypes,
     });
 
     if (options.wrappers && result.wrappers) {
