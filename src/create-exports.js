@@ -20,9 +20,11 @@ export async function createExports(options) {
         )
     );
 
-    const filesTs = getModules(
+    const filesDTs = getModules(
         options.input.filter((file) => file.endsWith(".d.ts"))
     ).map(([name, file]) => [name.replace(/\.d\.ts$/, ""), file]);
+
+    const filesTs = filesDTs.length ? filesDTs : filesJs;
 
     const main = options.main || filesJs?.[0]?.[0];
 
