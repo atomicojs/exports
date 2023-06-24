@@ -17,6 +17,10 @@ cli.command("<...files>", "Build files")
     .option("--ignore-types", "enable the wrapper generator")
     .option("--workspaces", "enable dependency merging")
     .option(
+        "--centralize-packages",
+        "centralizes all packages found in the given directory into a single package"
+    )
+    .option(
         "--publish",
         "publish the package if the version is different from the previous one from npm"
     )
@@ -33,6 +37,7 @@ cli.command("<...files>", "Build files")
          * @param {boolean} flags.workspaces
          * @param {boolean} flags.publish
          * @param {boolean} flags.ignoreTypes
+         * @param {boolean} flags.centralizePackages
          */
         async (
             src,
@@ -45,6 +50,7 @@ cli.command("<...files>", "Build files")
                 workspaces,
                 publish,
                 ignoreTypes,
+                centralizePackages,
             }
         ) => {
             const srcPkg = cwd + "/package.json";
@@ -65,6 +71,7 @@ cli.command("<...files>", "Build files")
                     publish: watch ? false : publish,
                     watch,
                     ignoreTypes,
+                    centralizePackages,
                 });
 
             await send();

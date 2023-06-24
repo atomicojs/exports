@@ -14,19 +14,24 @@ import { createPublish } from "./create-publish.js";
  * @param {boolean} [options.publish]
  * @param {boolean} [options.watch]
  * @param {boolean} [options.ignoreTypes]
+ * @param {boolean} [options.centralizePackages]
  * @param {{src: string, snap: import("./create-exports").Pkg}} options.pkg
  */
 export async function mergeExports(options) {
     logger(`getting files...`);
 
-    const input = await glob(options.src, {
-        ignore: [
-            "node_modules",
-            "**/_*/*",
-            "**/*.{test,spec}.{js,jsx,ts,tsx,mjs}",
-            "**/_*.{js,jsx,ts,tsx,mjs}",
-        ],
-    });
+    const input = await glob(
+        options.src + (options.centralizePackages ? "/package.json" : ""),
+        {
+            ignore: [
+                "node_modules",
+                "**/node_modules/**",
+                "**/_*/*",
+                "**/*.{test,spec,stories}.{js,jsx,ts,tsx,mjs}",
+                "**/_*.{js,jsx,ts,tsx,mjs}",
+            ],
+        }
+    );
 
     if (!input.length && !options.watch) {
         logger(`no files found`);
@@ -85,6 +90,7 @@ export async function mergeExports(options) {
         dist: options.dist,
         wrappers: options.wrappers,
         ignoreTypes: options.ignoreTypes,
+        centralizePackages: options.centralizePackages,
     });
 
     if (options.wrappers && result.wrappers) {

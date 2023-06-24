@@ -1,4 +1,5 @@
 import { createWrappers, peerDependencies } from "./create-wrapper.js";
+import { createCentralizePackages } from "./create-centralize-packages.js";
 import { cleanPath, getModules } from "./utils.js";
 
 /**
@@ -9,6 +10,7 @@ import { cleanPath, getModules } from "./utils.js";
  * @param {string} [options.dist]
  * @param {boolean} [options.wrappers]
  * @param {boolean} [options.ignoreTypes]
+ * @param {boolean} [options.centralizePackages]
  */
 export async function createExports(options) {
     const meta = {};
@@ -48,6 +50,13 @@ export async function createExports(options) {
               main,
           })
         : [];
+
+    if (options.centralizePackages) {
+        const sub = await createCentralizePackages({
+            input: options.input,
+        });
+        wrappers.push(sub);
+    }
 
     if (options.wrappers && wrappers.length) {
         wrappers.forEach(({ fileExport, fileDistTs, fileDistJs }) => {
