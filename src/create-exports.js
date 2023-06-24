@@ -54,11 +54,12 @@ export async function createExports(options) {
     if (options.centralizePackages) {
         const sub = await createCentralizePackages({
             input: options.input,
+            scope: options.pkg.name,
         });
         wrappers.push(sub);
     }
 
-    if (options.wrappers && wrappers.length) {
+    if ((options.wrappers || options.centralizePackages) && wrappers.length) {
         wrappers.forEach(({ fileExport, fileDistTs, fileDistJs }) => {
             fileDistJs && filesJs.push([fileExport, fileDistJs]);
             fileDistTs && filesTs.push([fileExport, fileDistTs]);

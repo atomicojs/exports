@@ -83,5 +83,17 @@
                 "./types/utils.d.ts"
             ]
         }
+    },
+    "peerDependencies": {
+        "@atomico/react": "*",
+        "@atomico/vue": "*"
+    },
+    "peerDependenciesMeta": {
+        "@atomico/react": {
+            "optional": true
+        },
+        "@atomico/vue": {
+            "optional": true
+        }
     }
 }
