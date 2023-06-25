@@ -35,8 +35,8 @@ export async function createExports(options) {
 
     const main = options.main || filesJs?.[0]?.[0];
 
-    const fileMainJs = main && filesJs.find(([name]) => name === main);
-    const fileMainTs =
+    let fileMainJs = main && filesJs.find(([name]) => name === main);
+    let fileMainTs =
         main &&
         filesTs.find(([name]) =>
             name === "" ? "index" === main : name === main
@@ -68,6 +68,11 @@ export async function createExports(options) {
             }),
             options.pkg?.dependencies || {}
         );
+
+        const [{ fileDistTs, fileDistJs }] = _wrappers;
+
+        fileMainJs = ["", fileDistJs];
+        fileMainTs = ["", fileDistTs];
     }
 
     if ((options.wrappers || options.centralizePackages) && wrappers.length) {
