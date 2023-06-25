@@ -30,7 +30,7 @@ export async function createCentralizePackages(options) {
 
     const code = (suffix = "") =>
         dependencies
-            .map(({ name }) => `export * from "${{ name }}${suffix}";`)
+            .map(({ name }) => `export * from "${name}${suffix}";`)
             .join("\n");
 
     const wrappers = [
