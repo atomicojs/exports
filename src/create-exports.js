@@ -51,13 +51,21 @@ export async function createExports(options) {
           })
         : [];
     if (options.centralizePackages) {
-        wrappers.push(
-            ...(await createCentralizePackages({
-                input: options.input,
-                scope: options.pkg.name,
-                dist: options.dist,
-                wrappers: options.wrappers,
-            }))
+        const { dependencies, wrappers } = await createCentralizePackages({
+            input: options.input,
+            scope: options.pkg.name,
+            dist: options.dist,
+            wrappers: options.wrappers,
+        });
+
+        wrappers.push(...wrappers);
+
+        meta.dependencies = dependencies.reduce(
+            (current, { name, version }) => ({
+                ...current,
+                [name]: `^${version}`,
+            }),
+            options.pkg?.dependencies || {}
         );
     }
 

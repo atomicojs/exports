@@ -10,17 +10,28 @@ import { peerDependencies, distWrapper } from "./create-wrapper.js";
  */
 export async function createCentralizePackages(options) {
     const dist = options.dist || distWrapper;
-    const pkgs = (
+    /**
+     * @type {{name:string, version:string}[]}
+     */
+    const dependencies = (
         await Promise.all(
             options.input.map(async (file) => {
                 const pkg = JSON.parse(await read(file));
-                return pkg.name;
+                if (pkg.private) return;
+                return {
+                    name: pkg.name,
+                    version: pkg.version,
+                };
             })
         )
-    ).filter((name) => name !== options.scope);
+    )
+        .filter((dependency) => dependency)
+        .filter(({ name }) => name !== options.scope);
 
     const code = (suffix = "") =>
-        pkgs.map((pkg) => `export * from "${pkg}${suffix}";`).join("\n");
+        dependencies
+            .map(({ name }) => `export * from "${{ name }}${suffix}";`)
+            .join("\n");
 
     const wrappers = [
         {
@@ -44,5 +55,5 @@ export async function createCentralizePackages(options) {
         );
     }
 
-    return wrappers;
+    return { wrappers, dependencies };
 }
