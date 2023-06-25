@@ -8,7 +8,7 @@ test("module/atomico", async (t) => {
 
     await mergeExports({
         main: "atomico",
-        src: "./tests/module/**",
+        src: ["./tests/module/**"],
         dist: "./tests/dist/module",
         wrappers: true,
         pkg: {
