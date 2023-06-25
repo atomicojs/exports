@@ -31,7 +31,7 @@ export async function createExports(options) {
         ? []
         : filesDTs.length
         ? filesDTs
-        : filesJs;
+        : [...filesJs];
 
     const main = options.main || filesJs?.[0]?.[0];
 
