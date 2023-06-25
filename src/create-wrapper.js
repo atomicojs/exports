@@ -3,6 +3,8 @@ import * as acornWalk from "acorn-walk";
 import { readFile } from "fs/promises";
 import { cleanPath } from "./utils.js";
 
+export const distWrapper = "wrapper";
+
 export const peerDependencies = [
     { name: "@atomico/react", path: "react", version: "*", jsx: true },
     {
@@ -31,7 +33,7 @@ export async function createWrappers(options) {
                     input,
                     path,
                     scope: options.scope,
-                    dist: options.dist || "wrappers",
+                    dist: options.dist || distWrapper,
                     main: options.main,
                 })
             )

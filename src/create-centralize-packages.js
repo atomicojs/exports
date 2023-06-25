@@ -1,5 +1,5 @@
 import { read, cleanPath } from "./utils.js";
-import { peerDependencies } from "./create-wrapper.js";
+import { peerDependencies, distWrapper } from "./create-wrapper.js";
 /**
  *
  * @param {Object} options
@@ -9,7 +9,7 @@ import { peerDependencies } from "./create-wrapper.js";
  * @param {boolean} options.wrappers
  */
 export async function createCentralizePackages(options) {
-    const dist = options.dist || "wrappers";
+    const dist = options.dist || distWrapper;
     const pkgs = (
         await Promise.all(
             options.input.map(async (file) => {
