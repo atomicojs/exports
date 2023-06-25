@@ -1,12 +1,15 @@
 import { read, cleanPath } from "./utils.js";
+import { peerDependencies } from "./create-wrapper.js";
 /**
  *
  * @param {Object} options
  * @param {string} [options.dist]
  * @param {string} [options.scope]
  * @param {string[]} options.input
+ * @param {boolean} options.wrappers
  */
 export async function createCentralizePackages(options) {
+    const dist = options.dist || "wrappers";
     const pkgs = (
         await Promise.all(
             options.input.map(async (file) => {
@@ -14,18 +17,32 @@ export async function createCentralizePackages(options) {
                 return pkg.name;
             })
         )
-    ).filter((name) => name === options.scope);
+    ).filter((name) => name !== options.scope);
 
     const code = (suffix = "") =>
         pkgs.map((pkg) => `export * from "${pkg}${suffix}";`).join("\n");
 
-    return [
+    const wrappers = [
         {
             fileExport: "",
-            fileExportDistJs: cleanPath(`${options.dist}/index.js`),
-            fileExportDistTs: cleanPath(`${options.dist}/index.d.ts`),
+            fileExportDistJs: cleanPath(`${dist}/index.js`),
+            fileExportDistTs: cleanPath(`${dist}/index.d.ts`),
             codeJs: code(),
             codeTs: code(),
         },
     ];
+
+    if (options.wrappers) {
+        wrappers.push(
+            ...peerDependencies.map(({ path }) => ({
+                fileExport: path,
+                fileExportDistJs: cleanPath(`${dist}/${path}.js`),
+                fileExportDistTs: cleanPath(`${dist}/${path}.d.ts`),
+                codeJs: code("/" + path),
+                codeTs: code("/" + path),
+            }))
+        );
+    }
+
+    return wrappers;
 }

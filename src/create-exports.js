@@ -50,11 +50,12 @@ export async function createExports(options) {
               main,
           })
         : [];
-
     if (options.centralizePackages) {
         const sub = await createCentralizePackages({
             input: options.input,
             scope: options.pkg.name,
+            dist: options.dist,
+            wrappers: options.wrappers,
         });
         wrappers.push(sub);
     }
@@ -81,6 +82,8 @@ export async function createExports(options) {
             options.pkg?.peerDependenciesMeta || {}
         );
     }
+
+    console.log(wrappers);
 
     if (fileMainJs) {
         const [, distJs] = fileMainJs;

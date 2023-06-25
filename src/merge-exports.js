@@ -1,8 +1,7 @@
-import { createExports } from "./create-exports.js";
-import { parse } from "path";
 import glob from "fast-glob";
-import { write, getJsonIndent, logger, read } from "./utils.js";
+import { createExports } from "./create-exports.js";
 import { createPublish } from "./create-publish.js";
+import { getJsonIndent, logger, read, write } from "./utils.js";
 
 /**
  * @param {object} options
