@@ -5,7 +5,7 @@
     "description": "It allows to generate an export to quickly publish components created with Atomico in NPM",
     "main": "./src/merge-exports.js",
     "module": "./src/merge-exports.js",
-    "types": "./types/merge-exports.d.ts",
+    "types": "./src/merge-exports.js",
     "workspaces": [
         "tests",
         "examples/**/*"
@@ -16,7 +16,9 @@
         "./create-wrapper": "./src/create-wrapper.js",
         "./merge-exports": "./src/merge-exports.js",
         "./utils": "./src/utils.js",
-        ".": "./src/merge-exports.js"
+        ".": "./src/merge-exports.js",
+        "./create-centralize-packages": "./src/create-centralize-packages.js",
+        "./create-publish": "./src/create-publish.js"
     },
     "publishConfig": {
         "access": "public"
@@ -68,19 +70,28 @@
     "typesVersions": {
         "*": {
             "cli": [
-                "./types/cli.d.ts"
+                "./src/cli.js"
             ],
             "create-exports": [
-                "./types/create-exports.d.ts"
+                "./src/create-exports.js"
             ],
             "create-wrapper": [
-                "./types/create-wrapper.d.ts"
+                "./src/create-wrapper.js"
             ],
             "merge-exports": [
-                "./types/merge-exports.d.ts"
+                "./src/merge-exports.js"
             ],
             "utils": [
-                "./types/utils.d.ts"
+                "./src/utils.js"
+            ],
+            "create-centralize-packages": [
+                "./src/create-centralize-packages.js"
+            ],
+            "create-publish": [
+                "./src/create-publish.js"
+            ],
+            ".": [
+                "./src/merge-exports.js"
             ]
         }
     },

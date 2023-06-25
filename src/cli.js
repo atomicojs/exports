@@ -28,7 +28,7 @@ cli.command("<...files>", "Build files")
     .action(
         /**
          *
-         * @param {string} src
+         * @param {string[]} src
          * @param {object} flags
          * @param {boolean} flags.watch
          * @param {string} flags.main

@@ -5,7 +5,7 @@ import { getJsonIndent, logger, read, write } from "./utils.js";
 
 /**
  * @param {object} options
- * @param {string} options.src
+ * @param {string[]} options.src
  * @param {string} options.main
  * @param {string} options.dist
  * @param {boolean} options.wrappers
@@ -20,7 +20,9 @@ export async function mergeExports(options) {
     logger(`getting files...`);
 
     const input = await glob(
-        options.src + (options.centralizePackages ? "/package.json" : ""),
+        options.src.map(
+            (src) => src + (options.centralizePackages ? "/package.json" : "")
+        ),
         {
             ignore: [
                 "node_modules",
