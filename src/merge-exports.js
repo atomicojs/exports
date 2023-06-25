@@ -92,7 +92,7 @@ export async function mergeExports(options) {
         centralizePackages: options.centralizePackages,
     });
 
-    if (options.wrappers && result.wrappers) {
+    if (result.wrappers.length) {
         await Promise.all(
             result.wrappers.map(({ fileDistJs, fileDistTs, codeJs, codeTs }) =>
                 Promise.all([

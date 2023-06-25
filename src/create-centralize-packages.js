@@ -25,8 +25,8 @@ export async function createCentralizePackages(options) {
     const wrappers = [
         {
             fileExport: "",
-            fileExportDistJs: cleanPath(`${dist}/index.js`),
-            fileExportDistTs: cleanPath(`${dist}/index.d.ts`),
+            fileDistJs: cleanPath(`${dist}/index.js`),
+            fileDistTs: cleanPath(`${dist}/index.d.ts`),
             codeJs: code(),
             codeTs: code(),
         },
@@ -35,9 +35,9 @@ export async function createCentralizePackages(options) {
     if (options.wrappers) {
         wrappers.push(
             ...peerDependencies.map(({ path }) => ({
-                fileExport: path,
-                fileExportDistJs: cleanPath(`${dist}/${path}.js`),
-                fileExportDistTs: cleanPath(`${dist}/${path}.d.ts`),
+                fileExport: "/" + path,
+                fileDistJs: cleanPath(`${dist}/${path}.js`),
+                fileDistTs: cleanPath(`${dist}/${path}.d.ts`),
                 codeJs: code("/" + path),
                 codeTs: code("/" + path),
             }))

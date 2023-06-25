@@ -51,13 +51,14 @@ export async function createExports(options) {
           })
         : [];
     if (options.centralizePackages) {
-        const sub = await createCentralizePackages({
-            input: options.input,
-            scope: options.pkg.name,
-            dist: options.dist,
-            wrappers: options.wrappers,
-        });
-        wrappers.push(sub);
+        wrappers.push(
+            ...(await createCentralizePackages({
+                input: options.input,
+                scope: options.pkg.name,
+                dist: options.dist,
+                wrappers: options.wrappers,
+            }))
+        );
     }
 
     if ((options.wrappers || options.centralizePackages) && wrappers.length) {
@@ -82,8 +83,6 @@ export async function createExports(options) {
             options.pkg?.peerDependenciesMeta || {}
         );
     }
-
-    console.log(wrappers);
 
     if (fileMainJs) {
         const [, distJs] = fileMainJs;
