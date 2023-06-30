@@ -32,7 +32,7 @@ export async function mergeExports(options) {
                 "**/_*.{js,jsx,ts,tsx,mjs}",
             ],
         }
-    );
+    ).filter((file) => !/\/node_modules\//.test(file));
 
     if (!input.length && !options.watch) {
         logger(`no files found`);
