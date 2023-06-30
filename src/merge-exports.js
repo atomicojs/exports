@@ -19,19 +19,22 @@ import { getJsonIndent, logger, read, write } from "./utils.js";
 export async function mergeExports(options) {
     logger(`getting files...`);
 
-    const input = await glob(
-        options.src.map(
-            (src) => src + (options.centralizePackages ? "/package.json" : "")
-        ),
-        {
-            ignore: [
-                "node_modules",
-                "**/node_modules/**",
-                "**/_*/*",
-                "**/*.{test,spec,stories}.{js,jsx,ts,tsx,mjs}",
-                "**/_*.{js,jsx,ts,tsx,mjs}",
-            ],
-        }
+    const input = (
+        await glob(
+            options.src.map(
+                (src) =>
+                    src + (options.centralizePackages ? "/package.json" : "")
+            ),
+            {
+                ignore: [
+                    "node_modules",
+                    "**/node_modules/**",
+                    "**/_*/*",
+                    "**/*.{test,spec,stories}.{js,jsx,ts,tsx,mjs}",
+                    "**/_*.{js,jsx,ts,tsx,mjs}",
+                ],
+            }
+        )
     ).filter((file) => !/\/node_modules\//.test(file));
 
     if (!input.length && !options.watch) {
