@@ -146,10 +146,9 @@ export async function createWrapper(options) {
     return await Promise.all(
         peerDependencies.map(async ({ name, path, jsx, submodule = "" }) => {
             const codeJs = [
+                `"use client";`,
                 originModule,
-                `
-                "use client";
-                import { auto } from "${name}${submodule}";`,
+                `import { auto } from "${name}${submodule}";`,
                 elements.map(
                     ([name]) => `export const ${name} = auto(_${name});`
                 ),
