@@ -1,6 +1,6 @@
 /**
  * @param {object} options
- * @param {string} options.src
+ * @param {string[]} options.src
  * @param {string} options.main
  * @param {string} options.dist
  * @param {boolean} options.wrappers
@@ -12,7 +12,7 @@
  * @param {{src: string, snap: import("./create-exports").Pkg}} options.pkg
  */
 export function mergeExports(options: {
-    src: string;
+    src: string[];
     main: string;
     dist: string;
     wrappers: boolean;
