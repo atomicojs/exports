@@ -1,4 +1,4 @@
-/node_modules
+node_modules
 /tests
 /jsconfig.json
 /package-lock.json
