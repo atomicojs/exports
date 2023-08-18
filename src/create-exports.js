@@ -105,9 +105,21 @@ export async function createExports(options) {
         filesJs.push([".", distJs]);
     }
 
+    /**
+     * @type {Object<string,string>}
+     */
+    const filesTsByPath = filesTs.reduce(
+        (current, [path, file]) => ({
+            ...current,
+            [path]: file,
+        }),
+        {}
+    );
+
     if (fileMainTs) {
         const [, distTs] = fileMainTs;
         meta.types = distTs;
+        filesTsByPath["."] = distTs;
     }
 
     return {
@@ -116,8 +128,16 @@ export async function createExports(options) {
             exports: filesJs.reduce(
                 (current, [path, file]) => ({
                     ...current,
-                    [cleanPath(path.startsWith(".") ? path : `./${path}`)]:
-                        file.startsWith(".") ? file : `./${file}`,
+                    [cleanPath(
+                        formatFirstDot(
+                            path.startsWith(".") ? path : `./${path}`
+                        )
+                    )]: {
+                        default: formatFirstDot(file),
+                        ...(filesTsByPath[path]
+                            ? { types: formatFirstDot(filesTsByPath[path]) }
+                            : {}),
+                    },
                 }),
                 options.pkg?.exports || {}
             ),
@@ -137,6 +157,12 @@ export async function createExports(options) {
         wrappers,
     };
 }
+
+/**
+ * @param {string} path
+ * @returns {string}
+ */
+const formatFirstDot = (path) => (path.startsWith(".") ? path : `./${path}`);
 
 /**
  * @typedef {object}  Pkg
