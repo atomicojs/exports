@@ -11,6 +11,7 @@ import { cleanPath, getModules } from "./utils.js";
  * @param {boolean} [options.wrappers]
  * @param {boolean} [options.ignoreTypes]
  * @param {boolean} [options.centralizePackages]
+ * @param {boolean} [options.centralizeWrappers]
  */
 export async function createExports(options) {
     const meta = {};
@@ -47,6 +48,7 @@ export async function createExports(options) {
               input: filesJs,
               scope: options.pkg.name,
               dist: options.dist,
+              centralizeWrappers: options.centralizeWrappers,
               main,
           })
         : [];
