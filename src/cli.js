@@ -7,7 +7,7 @@ import { subscribe } from "@uppercod/clean-terminal";
 
 const cwd = process.cwd();
 
-const cli = cac("devserver").version("1.0.0");
+const cli = cac("@atomico/exports").version("1.11.0");
 
 cli.command("<...files>", "Build files")
     .option("--dist <dist>", "Destination directory")
@@ -19,6 +19,10 @@ cli.command("<...files>", "Build files")
     .option(
         "--centralize-packages",
         "centralizes all packages found in the given directory into a single package"
+    )
+    .option(
+        "--centralize-wrappers",
+        "centralizes all wrappers found in the given directory into a single file"
     )
     .option(
         "--publish",
@@ -38,6 +42,7 @@ cli.command("<...files>", "Build files")
          * @param {boolean} flags.publish
          * @param {boolean} flags.ignoreTypes
          * @param {boolean} flags.centralizePackages
+         * @param {boolean} flags.centralizeWrappers
          */
         async (
             src,
@@ -51,6 +56,7 @@ cli.command("<...files>", "Build files")
                 publish,
                 ignoreTypes,
                 centralizePackages,
+                centralizeWrappers,
             }
         ) => {
             const srcPkg = cwd + "/package.json";
@@ -72,6 +78,7 @@ cli.command("<...files>", "Build files")
                     watch,
                     ignoreTypes,
                     centralizePackages,
+                    centralizeWrappers,
                 });
 
             await send();

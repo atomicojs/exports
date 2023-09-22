@@ -23,24 +23,52 @@ export const peerDependencies = [
  * @param {[string,string][]} options.input
  * @param {string} [options.dist]
  * @param {string} [options.main]
+ * @param {boolean} [options.centralizeWrappers]
  * @returns {ReturnType<typeof createWrapper>}
  */
 export async function createWrappers(options) {
-    return (
+    const dist = options.dist || distWrapper;
+
+    const wrappers = (
         await Promise.all(
             options.input.map(([path, input]) =>
                 createWrapper({
+                    scope: options.scope,
+                    main: options.main,
                     input,
                     path,
-                    scope: options.scope,
-                    dist: options.dist || distWrapper,
-                    main: options.main,
+                    dist,
                 })
             )
         )
     )
         .flat(2)
         .filter((value) => value);
+
+    if (options.centralizeWrappers) {
+        const files = wrappers
+            .map(({ fileExport }) => [
+                fileExport.replace(/.+\/(\w+)/, "$1"),
+                `export * from "${fileExport}";`,
+            ])
+            .reduce((group, [category, code]) => {
+                group[category] = group[category] || "";
+                group[category] += code + "\n";
+                return group;
+            }, {});
+
+        wrappers.push(
+            ...Object.entries(files).map(([category, code]) => ({
+                fileExport: category,
+                fileDistJs: `${dist}/${category}.js`,
+                fileDistTs: `${dist}/${category}.d.ts`,
+                codeJs: code,
+                codeTs: code,
+            }))
+        );
+    }
+
+    return wrappers;
 }
 
 /***
