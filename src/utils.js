@@ -30,7 +30,9 @@ export function read(file) {
  */
 export function getJsonIndent(text) {
     const [, indent] = text.match(/^(\s+)"/m);
-    return indent ? getValueIndentation(indent) / getValueIndentation(" ") : 4;
+    return indent && indent != "\t"
+        ? getValueIndentation(indent) / getValueIndentation(" ")
+        : 4;
 }
 
 /**

@@ -1,8 +1,7 @@
 node_modules
-/tests
-/jsconfig.json
-/package-lock.json
-/rollup.config.js
+.vscode
+.github
+tests
+package-lock.json
 /dest
 /examples
-/.github
