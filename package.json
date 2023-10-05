@@ -40,7 +40,6 @@
     "homepage": "https://github.com/atomicojs/exports#readme",
     "dependencies": {
         "@uppercod/clean-terminal": "^1.0.0",
-        "@uppercod/indentation": "^1.0.1",
         "acorn": "^8.8.0",
         "acorn-walk": "^8.1.0",
         "cac": "^6.7.12",

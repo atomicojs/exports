@@ -1,7 +1,7 @@
 import glob from "fast-glob";
 import { createExports } from "./create-exports.js";
 import { createPublish } from "./create-publish.js";
-import { getJsonIndent, logger, read, write } from "./utils.js";
+import { getJsonFormat, logger, read, write } from "./utils.js";
 
 /**
  * @param {object} options
@@ -114,16 +114,17 @@ export async function mergeExports(options) {
 
     if (options.pkg?.src) {
         logger(`${pkg.name} updating...`);
+        const format = getJsonFormat(options.pkg?.snap);
         await write(
             options.pkg.src,
-            JSON.stringify(
+            `${JSON.stringify(
                 {
                     ...pkg,
                     ...result.pkg,
                 },
                 null,
-                getJsonIndent(options.pkg?.snap)
-            )
+                format.indent
+            )}${format.endLine}`
         );
         logger(`${pkg.name} updated`);
     }

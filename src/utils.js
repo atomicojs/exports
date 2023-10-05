@@ -1,6 +1,5 @@
+import { mkdir, readFile, writeFile } from "fs/promises";
 import { parse } from "path";
-import { readFile, writeFile, mkdir } from "fs/promises";
-import { getValueIndentation } from "@uppercod/indentation";
 
 /**
  *
@@ -28,11 +27,22 @@ export function read(file) {
  *
  * @param {string} text
  */
-export function getJsonIndent(text) {
-    const [, indent] = text.match(/^(\s+)"/m);
-    return indent && indent != "\t"
-        ? getValueIndentation(indent) / getValueIndentation(" ")
-        : 4;
+export function getJsonFormat(text) {
+    const test = text
+        .replace(/(\n|\r)/g, "")
+        .trim()
+        .match(/^\{(\s+)\"/);
+    let length = text.length;
+    let endLine = "";
+    while (length--) {
+        if (text[length] === "}") break;
+        endLine += text[length];
+    }
+
+    return {
+        indent: test ? test[1] : 4,
+        endLine,
+    };
 }
 
 /**
