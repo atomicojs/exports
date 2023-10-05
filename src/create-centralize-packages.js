@@ -43,6 +43,18 @@ export async function createCentralizePackages(options) {
         },
     ];
 
+    wrappers.push(
+        ...dependencies
+            .filter(({ name }) => name.startsWith("@"))
+            .map(({ name }) => ({
+                fileExport: name.replace(/@\w+\//, ""),
+                fileDistJs: cleanPath(`${dist}/${name}`) + ".js",
+                fileDistTs: cleanPath(`${dist}/${name}`) + ".d.ts",
+                codeJs: `export * from "${name}";`,
+                codeTs: `export * from "${name}";`,
+            }))
+    );
+
     if (options.wrappers) {
         wrappers.push(
             ...peerDependencies.map(({ path }) => ({
