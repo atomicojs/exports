@@ -7,6 +7,7 @@
  * @param {boolean} [options.wrappers]
  * @param {boolean} [options.ignoreTypes]
  * @param {boolean} [options.centralizePackages]
+ * @param {boolean} [options.centralizeWrappers]
  */
 export function createExports(options: {
     input: string[];
@@ -16,6 +17,7 @@ export function createExports(options: {
     wrappers?: boolean;
     ignoreTypes?: boolean;
     centralizePackages?: boolean;
+    centralizeWrappers?: boolean;
 }): Promise<{
     pkg: {
         exports: any;

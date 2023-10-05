@@ -5,20 +5,44 @@
     "description": "It allows to generate an export to quickly publish components created with Atomico in NPM",
     "main": "./src/merge-exports.js",
     "module": "./src/merge-exports.js",
-    "types": "./src/merge-exports.js",
+    "types": "./types/merge-exports.d.ts",
     "workspaces": [
         "tests",
         "examples/**/*"
     ],
     "exports": {
-        "./cli": "./src/cli.js",
-        "./create-exports": "./src/create-exports.js",
-        "./create-wrapper": "./src/create-wrapper.js",
-        "./merge-exports": "./src/merge-exports.js",
-        "./utils": "./src/utils.js",
-        ".": "./src/merge-exports.js",
-        "./create-centralize-packages": "./src/create-centralize-packages.js",
-        "./create-publish": "./src/create-publish.js"
+        "./cli": {
+            "default": "./src/cli.js",
+            "types": "./types/cli.d.ts"
+        },
+        "./create-exports": {
+            "default": "./src/create-exports.js",
+            "types": "./types/create-exports.d.ts"
+        },
+        "./create-wrapper": {
+            "default": "./src/create-wrapper.js",
+            "types": "./types/create-wrapper.d.ts"
+        },
+        "./merge-exports": {
+            "default": "./src/merge-exports.js",
+            "types": "./types/merge-exports.d.ts"
+        },
+        "./utils": {
+            "default": "./src/utils.js",
+            "types": "./types/utils.d.ts"
+        },
+        ".": {
+            "default": "./src/merge-exports.js",
+            "types": "./types/merge-exports.d.ts"
+        },
+        "./create-centralize-packages": {
+            "default": "./src/create-centralize-packages.js",
+            "types": "./types/create-centralize-packages.d.ts"
+        },
+        "./create-publish": {
+            "default": "./src/create-publish.js",
+            "types": "./types/create-publish.d.ts"
+        }
     },
     "publishConfig": {
         "access": "public"
@@ -26,7 +50,7 @@
     "scripts": {
         "types": "tsc",
         "test": "rm -rf tests/dist && ava",
-        "prepare": "npm run types && npm run test && node ./src/cli.js ./src/** ./types/** --main merge-exports"
+        "prepare": "npm run types && npm run test && node ./src/cli.js \"./src/**\" \"./types/**\" --main merge-exports"
     },
     "repository": {
         "type": "git",
@@ -69,25 +93,25 @@
     "typesVersions": {
         "*": {
             "cli": [
-                "./src/cli.js"
+                "./types/cli.d.ts"
             ],
             "create-exports": [
-                "./src/create-exports.js"
+                "./types/create-exports.d.ts"
             ],
             "create-wrapper": [
-                "./src/create-wrapper.js"
+                "./types/create-wrapper.d.ts"
             ],
             "merge-exports": [
-                "./src/merge-exports.js"
+                "./types/merge-exports.d.ts"
             ],
             "utils": [
-                "./src/utils.js"
+                "./types/utils.d.ts"
             ],
             "create-centralize-packages": [
-                "./src/create-centralize-packages.js"
+                "./types/create-centralize-packages.d.ts"
             ],
             "create-publish": [
-                "./src/create-publish.js"
+                "./types/create-publish.d.ts"
             ],
             ".": [
                 "./src/merge-exports.js"

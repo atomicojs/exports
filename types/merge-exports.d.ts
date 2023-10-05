@@ -9,6 +9,7 @@
  * @param {boolean} [options.watch]
  * @param {boolean} [options.ignoreTypes]
  * @param {boolean} [options.centralizePackages]
+ * @param {boolean} [options.centralizeWrappers]
  * @param {{src: string, snap: import("./create-exports").Pkg}} options.pkg
  */
 export function mergeExports(options: {
@@ -21,6 +22,7 @@ export function mergeExports(options: {
     watch?: boolean;
     ignoreTypes?: boolean;
     centralizePackages?: boolean;
+    centralizeWrappers?: boolean;
     pkg: {
         src: string;
         snap: import("./create-exports").Pkg;

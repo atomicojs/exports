@@ -4,6 +4,7 @@
  * @param {[string,string][]} options.input
  * @param {string} [options.dist]
  * @param {string} [options.main]
+ * @param {boolean} [options.centralizeWrappers]
  * @returns {ReturnType<typeof createWrapper>}
  */
 export function createWrappers(options: {
@@ -11,6 +12,7 @@ export function createWrappers(options: {
     input: [string, string][];
     dist?: string;
     main?: string;
+    centralizeWrappers?: boolean;
 }): ReturnType<typeof createWrapper>;
 /***
  * @param {object} options
