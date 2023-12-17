@@ -21,4 +21,6 @@ export function logger(message: string): void;
 export function cleanPath(path: string, options?: {
     relative: boolean;
 }): string;
-export function getModules(files: string[]): any[];
+export function getModules(files: string[], assets?: boolean): any[];
+export function isTsDeclaration(file: any): any;
+export function isJs(file: any): boolean;
