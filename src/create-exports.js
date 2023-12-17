@@ -1,6 +1,6 @@
 import { createWrappers, peerDependencies } from "./create-wrapper.js";
 import { createCentralizePackages } from "./create-centralize-packages.js";
-import { cleanPath, getModules } from "./utils.js";
+import { cleanPath, getModules, isJs, isTsDeclaration } from "./utils.js";
 
 /**
  * @param {object} options
@@ -12,16 +12,16 @@ import { cleanPath, getModules } from "./utils.js";
  * @param {boolean} [options.ignoreTypes]
  * @param {boolean} [options.centralizePackages]
  * @param {boolean} [options.centralizeWrappers]
+ * @param {boolean} [options.assets]
  */
 export async function createExports(options) {
     const meta = {};
 
-    const filesJs = getModules(
-        options.input.filter(
-            (file) =>
-                /\.(ts(x){0,1}|js(x){0,1}|mjs)$/.test(file) &&
-                !file.endsWith(".d.ts")
-        )
+    const filesJs = getModules(options.input.filter(isJs));
+
+    const filesAssets = getModules(
+        options.input.filter((file) => !isJs(file) && !isTsDeclaration(file)),
+        true
     );
 
     const filesDTs = getModules(
@@ -123,6 +123,8 @@ export async function createExports(options) {
         meta.types = distTs;
         filesTsByPath["."] = distTs;
     }
+
+    if (filesAssets.length) filesJs.push(...filesAssets);
 
     return {
         pkg: {
