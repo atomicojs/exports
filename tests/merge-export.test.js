@@ -3,6 +3,8 @@ import { mergeExports } from "../src/merge-exports.js";
 import { readFile } from "fs/promises";
 import glob from "fast-glob";
 
+const replaceLine = (value) => value.replace(/\r\n/g, "\n");
+
 test("module/atomico", async (t) => {
     const snapPkg = await readFile("./tests/module/package.json", "utf8");
 
@@ -34,8 +36,13 @@ test("module/atomico", async (t) => {
     await Promise.all(
         filesExpect.map(async (file) =>
             t.is(
-                await readFile(file, "utf8"),
-                await readFile(filesDist[file.replace(baseExpect, "")], "utf8")
+                replaceLine(await readFile(file, "utf8")),
+                replaceLine(
+                    await readFile(
+                        filesDist[file.replace(baseExpect, "")],
+                        "utf8"
+                    )
+                )
             )
         )
     );

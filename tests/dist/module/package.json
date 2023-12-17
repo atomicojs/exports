@@ -26,12 +26,12 @@
         "./components/a": {
             "default": "./tests/module/components/a/a.js"
         },
+        "./components/b": {
+            "default": "./tests/module/components/b/b.js"
+        },
         "./components/c": {
             "default": "./tests/module/components/c/c.js",
             "types": "./tests/module/components/c/c.d.ts"
-        },
-        "./components/b": {
-            "default": "./tests/module/components/b/b.js"
         },
         "./react": {
             "default": "./tests/dist/module/react.js",
