@@ -68,9 +68,8 @@ export const cleanPath = (path, options) => {
 
 /**
  * @param {string[]} files
- * @param {boolean} [assets]
  */
-export const getModules = (files, assets) => {
+export const getModules = (files) => {
     const metaFiles = files.map((file) => ({ ...parse(file), file }));
 
     const tree = metaFiles.reduce((tree, file) => {
@@ -104,6 +103,8 @@ export const getModules = (files, assets) => {
                 ...children.map(({ name, file, ext }) => {
                     name = ext === ".ts" ? name.replace(/\.d$/, "") : name;
 
+                    const assets = !isJs(ext);
+
                     let id =
                         (name === "index" || parent[parent.length - 1] === name
                             ? parent
@@ -131,5 +132,4 @@ export const getModules = (files, assets) => {
 
 export const isTsDeclaration = (file) => file.endsWith(".d.ts");
 
-export const isJs = (file) =>
-    /\.(ts(x){0,1}|js(x){0,1}|mjs)$/.test(file) && !isTsDeclaration(file);
+export const isJs = (file) => /\.(ts(x){0,1}|js(x){0,1}|mjs)$/.test(file);

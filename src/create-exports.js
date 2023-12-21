@@ -17,16 +17,17 @@ import { cleanPath, getModules, isJs, isTsDeclaration } from "./utils.js";
 export async function createExports(options) {
     const meta = {};
 
-    const filesJs = getModules(options.input.filter(isJs));
-
-    const filesAssets = getModules(
-        options.input.filter((file) => !isJs(file) && !isTsDeclaration(file)),
-        true
+    const filesJs = getModules(
+        options.input.filter((file) => isJs(file) && !isTsDeclaration(file))
     );
 
-    const filesDTs = getModules(
-        options.input.filter((file) => file.endsWith(".d.ts"))
-    ).map(([name, file]) => [name.replace(/\.d\.ts$/, ""), file]);
+    const filesAssets = getModules(
+        options.input.filter((file) => !isJs(file) && !isTsDeclaration(file))
+    );
+
+    const filesDTs = getModules(options.input.filter(isTsDeclaration)).map(
+        ([name, file]) => [name.replace(/\.d\.ts$/, ""), file]
+    );
 
     const filesTs = options.ignoreTypes
         ? []
