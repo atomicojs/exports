@@ -63,6 +63,7 @@
     },
     "homepage": "https://github.com/atomicojs/exports#readme",
     "dependencies": {
+        "@atomico/exports": "^1.13.1",
         "@uppercod/clean-terminal": "^1.0.0",
         "acorn": "^8.8.0",
         "acorn-walk": "^8.1.0",
@@ -73,6 +74,7 @@
     "devDependencies": {
         "@atomico/react": "latest",
         "@atomico/tsconfig": "^1.1.2",
+        "@atomico/vite": "^2.16.3",
         "@types/node": "^14.14.41",
         "ava": "^4.3.3",
         "typescript": "^5.1.3"
