@@ -20,8 +20,8 @@
     "types": "./tests/module/atomico.d.ts",
     "exports": {
         "./atomico": {
-            "default": "./tests/module/atomico.js",
-            "types": "./tests/module/atomico.d.ts"
+            "types": "./tests/module/atomico.d.ts",
+            "default": "./tests/module/atomico.js"
         },
         "./components/a": {
             "default": "./tests/module/components/a/a.js"
@@ -30,24 +30,24 @@
             "default": "./tests/module/components/b/b.js"
         },
         "./components/c": {
-            "default": "./tests/module/components/c/c.js",
-            "types": "./tests/module/components/c/c.d.ts"
+            "types": "./tests/module/components/c/c.d.ts",
+            "default": "./tests/module/components/c/c.js"
         },
         "./react": {
-            "default": "./tests/dist/module/react.js",
-            "types": "./tests/dist/module/react.d.ts"
+            "types": "./tests/dist/module/react.d.ts",
+            "default": "./tests/dist/module/react.js"
         },
         "./preact": {
-            "default": "./tests/dist/module/preact.js",
-            "types": "./tests/dist/module/preact.d.ts"
+            "types": "./tests/dist/module/preact.d.ts",
+            "default": "./tests/dist/module/preact.js"
         },
         "./vue": {
-            "default": "./tests/dist/module/vue.js",
-            "types": "./tests/dist/module/vue.d.ts"
+            "types": "./tests/dist/module/vue.d.ts",
+            "default": "./tests/dist/module/vue.js"
         },
         ".": {
-            "default": "./tests/module/atomico.js",
-            "types": "./tests/module/atomico.d.ts"
+            "types": "./tests/module/atomico.d.ts",
+            "default": "./tests/module/atomico.js"
         },
         "./package.json": {
             "default": "./tests/module/package.json"
