@@ -12,36 +12,36 @@
     ],
     "exports": {
         "./cli": {
-            "default": "./src/cli.js",
-            "types": "./types/cli.d.ts"
+            "types": "./types/cli.d.ts",
+            "default": "./src/cli.js"
         },
         "./create-exports": {
-            "default": "./src/create-exports.js",
-            "types": "./types/create-exports.d.ts"
+            "types": "./types/create-exports.d.ts",
+            "default": "./src/create-exports.js"
         },
         "./create-wrapper": {
-            "default": "./src/create-wrapper.js",
-            "types": "./types/create-wrapper.d.ts"
+            "types": "./types/create-wrapper.d.ts",
+            "default": "./src/create-wrapper.js"
         },
         "./merge-exports": {
-            "default": "./src/merge-exports.js",
-            "types": "./types/merge-exports.d.ts"
+            "types": "./types/merge-exports.d.ts",
+            "default": "./src/merge-exports.js"
         },
         "./utils": {
-            "default": "./src/utils.js",
-            "types": "./types/utils.d.ts"
+            "types": "./types/utils.d.ts",
+            "default": "./src/utils.js"
         },
         ".": {
-            "default": "./src/merge-exports.js",
-            "types": "./types/merge-exports.d.ts"
+            "types": "./types/merge-exports.d.ts",
+            "default": "./src/merge-exports.js"
         },
         "./create-centralize-packages": {
-            "default": "./src/create-centralize-packages.js",
-            "types": "./types/create-centralize-packages.d.ts"
+            "types": "./types/create-centralize-packages.d.ts",
+            "default": "./src/create-centralize-packages.js"
         },
         "./create-publish": {
-            "default": "./src/create-publish.js",
-            "types": "./types/create-publish.d.ts"
+            "types": "./types/create-publish.d.ts",
+            "default": "./src/create-publish.js"
         }
     },
     "publishConfig": {
@@ -131,3 +131,4 @@
         }
     }
 }
+
