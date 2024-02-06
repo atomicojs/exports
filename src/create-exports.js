@@ -138,10 +138,10 @@ export async function createExports(options) {
                             path.startsWith(".") ? path : `./${path}`
                         )
                     )]: {
-                        default: formatFirstDot(file),
                         ...(filesTsByPath[path]
                             ? { types: formatFirstDot(filesTsByPath[path]) }
                             : {}),
+                        default: formatFirstDot(file),
                     },
                 }),
                 options.pkg?.exports || {}
