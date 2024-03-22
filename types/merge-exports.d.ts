@@ -11,7 +11,7 @@
  * @param {boolean} [options.ignoreTypes]
  * @param {boolean} [options.centralizePackages]
  * @param {boolean} [options.centralizeWrappers]
- * @param {{src: string, snap: import("./create-exports").Pkg}} options.pkg
+ * @param {{src: string, snap: string}} options.pkg
  */
 export function mergeExports(options: {
     src: string[];
@@ -27,6 +27,6 @@ export function mergeExports(options: {
     centralizeWrappers?: boolean;
     pkg: {
         src: string;
-        snap: import("./create-exports").Pkg;
+        snap: string;
     };
 }): Promise<void>;

@@ -115,30 +115,6 @@ export async function mergeExports(options) {
         logger(`${result.wrappers.length} wrappers created`);
     }
 
-    if (options.preserveExtensions) {
-        const mappedExports = {};
-        const mappedTypes = {};
-
-        for (const key in result.pkg.exports) {
-            const value = result.pkg.exports[key];
-            const k =
-                extname(value.default) === ".js" && key !== "."
-                    ? `${key}.js`
-                    : key;
-
-            mappedExports[k] = value;
-        }
-
-        for (const key in result.pkg.typesVersions["*"]) {
-            mappedTypes[`${key}.js`] = result.pkg.typesVersions["*"][key];
-        }
-
-        result.pkg.exports = mappedExports;
-        result.pkg.typesVersions["*"] = mappedTypes;
-
-        logger(`extensions preserved`);
-    }
-
     if (options.pkg?.src) {
         logger(`${pkg.name} updating...`);
         const format = getJsonFormat(options.pkg?.snap);
