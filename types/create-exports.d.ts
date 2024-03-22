@@ -4,6 +4,7 @@
  * @param {Pkg} options.pkg
  * @param {string} [options.main]
  * @param {string} [options.dist]
+ * @param {boolean} [options.preserveExtensions]
  * @param {boolean} [options.wrappers]
  * @param {boolean} [options.ignoreTypes]
  * @param {boolean} [options.centralizePackages]
@@ -15,6 +16,7 @@ export function createExports(options: {
     pkg: Pkg;
     main?: string;
     dist?: string;
+    preserveExtensions?: boolean;
     wrappers?: boolean;
     ignoreTypes?: boolean;
     centralizePackages?: boolean;

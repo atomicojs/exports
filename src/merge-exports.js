@@ -2,12 +2,14 @@ import glob from "fast-glob";
 import { createExports } from "./create-exports.js";
 import { createPublish } from "./create-publish.js";
 import { getJsonFormat, logger, read, write } from "./utils.js";
+import { extname } from "path";
 
 /**
  * @param {object} options
  * @param {string[]} options.src
  * @param {string} options.main
  * @param {string} options.dist
+ * @param {boolean} options.preserveExtensions
  * @param {boolean} options.wrappers
  * @param {boolean} options.workspaces
  * @param {boolean} [options.publish]
@@ -15,7 +17,7 @@ import { getJsonFormat, logger, read, write } from "./utils.js";
  * @param {boolean} [options.ignoreTypes]
  * @param {boolean} [options.centralizePackages]
  * @param {boolean} [options.centralizeWrappers]
- * @param {{src: string, snap: import("./create-exports").Pkg}} options.pkg
+ * @param {{src: string, snap: string}} options.pkg
  */
 export async function mergeExports(options) {
     logger(`getting files...`);
@@ -95,6 +97,7 @@ export async function mergeExports(options) {
         dist: options.dist,
         wrappers: options.wrappers,
         ignoreTypes: options.ignoreTypes,
+        preserveExtensions: options.preserveExtensions,
         centralizePackages: options.centralizePackages,
         centralizeWrappers: options.centralizeWrappers,
     });
@@ -110,6 +113,30 @@ export async function mergeExports(options) {
         );
 
         logger(`${result.wrappers.length} wrappers created`);
+    }
+
+    if (options.preserveExtensions) {
+        const mappedExports = {};
+        const mappedTypes = {};
+
+        for (const key in result.pkg.exports) {
+            const value = result.pkg.exports[key];
+            const k =
+                extname(value.default) === ".js" && key !== "."
+                    ? `${key}.js`
+                    : key;
+
+            mappedExports[k] = value;
+        }
+
+        for (const key in result.pkg.typesVersions["*"]) {
+            mappedTypes[`${key}.js`] = result.pkg.typesVersions["*"][key];
+        }
+
+        result.pkg.exports = mappedExports;
+        result.pkg.typesVersions["*"] = mappedTypes;
+
+        logger(`extensions preserved`);
     }
 
     if (options.pkg?.src) {

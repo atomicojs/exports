@@ -3,6 +3,7 @@
  * @param {string[]} options.src
  * @param {string} options.main
  * @param {string} options.dist
+ * @param {boolean} options.preserveExtensions
  * @param {boolean} options.wrappers
  * @param {boolean} options.workspaces
  * @param {boolean} [options.publish]
@@ -16,6 +17,7 @@ export function mergeExports(options: {
     src: string[];
     main: string;
     dist: string;
+    preserveExtensions: boolean;
     wrappers: boolean;
     workspaces: boolean;
     publish?: boolean;
