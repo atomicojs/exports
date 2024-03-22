@@ -23,6 +23,7 @@ export const peerDependencies = [
  * @param {[string,string][]} options.input
  * @param {string} [options.dist]
  * @param {string} [options.main]
+ * @param {boolean} [options.preserveExtensions]
  * @param {boolean} [options.centralizeWrappers]
  * @returns {ReturnType<typeof createWrapper>}
  */
@@ -35,6 +36,7 @@ export async function createWrappers(options) {
                 createWrapper({
                     scope: options.scope,
                     main: options.main,
+                    preserveExtensions: options.preserveExtensions,
                     input,
                     path,
                     dist,
@@ -78,6 +80,7 @@ export async function createWrappers(options) {
  * @param {string} options.path
  * @param {string} options.dist
  * @param {string} options.main
+ * @param {boolean} options.preserveExtensions
  */
 export async function createWrapper(options) {
     const code = await readFile(options.input, "utf8");
@@ -148,10 +151,16 @@ export async function createWrapper(options) {
     if (!elements.length) return;
 
     const imports = elements.map(([name]) => `${name} as _${name}`);
+    const subPath =
+        origin === options.main || !origin
+            ? ""
+            : options.preserveExtensions
+            ? `/${origin}.js`
+            : `/${origin}`;
 
     const originModule = `import { ${imports.join(", ")} } from "${
         options.scope
-    }${origin === options.main || !origin ? "" : "/" + origin}";`;
+    }${subPath}";`;
 
     const tagNames = elements.map(
         ([name, { tagName }]) =>

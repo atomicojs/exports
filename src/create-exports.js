@@ -50,6 +50,7 @@ export async function createExports(options) {
               input: filesJs,
               scope: options.pkg.name,
               dist: options.dist,
+              preserveExtensions: options.preserveExtensions,
               centralizeWrappers: options.centralizeWrappers,
               main,
           })
