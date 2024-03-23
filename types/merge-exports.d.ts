@@ -3,6 +3,7 @@
  * @param {string[]} options.src
  * @param {string} options.main
  * @param {string} options.dist
+ * @param {boolean} options.preserveExtensions
  * @param {boolean} options.wrappers
  * @param {boolean} options.workspaces
  * @param {boolean} [options.publish]
@@ -10,12 +11,13 @@
  * @param {boolean} [options.ignoreTypes]
  * @param {boolean} [options.centralizePackages]
  * @param {boolean} [options.centralizeWrappers]
- * @param {{src: string, snap: import("./create-exports").Pkg}} options.pkg
+ * @param {{src: string, snap: string}} options.pkg
  */
 export function mergeExports(options: {
     src: string[];
     main: string;
     dist: string;
+    preserveExtensions: boolean;
     wrappers: boolean;
     workspaces: boolean;
     publish?: boolean;
@@ -25,6 +27,6 @@ export function mergeExports(options: {
     centralizeWrappers?: boolean;
     pkg: {
         src: string;
-        snap: import("./create-exports").Pkg;
+        snap: string;
     };
 }): Promise<void>;

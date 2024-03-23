@@ -8,6 +8,7 @@ import { cleanPath, getModules, isJs, isTsDeclaration } from "./utils.js";
  * @param {Pkg} options.pkg
  * @param {string} [options.main]
  * @param {string} [options.dist]
+ * @param {boolean} [options.preserveExtensions]
  * @param {boolean} [options.wrappers]
  * @param {boolean} [options.ignoreTypes]
  * @param {boolean} [options.centralizePackages]
@@ -49,6 +50,7 @@ export async function createExports(options) {
               input: filesJs,
               scope: options.pkg.name,
               dist: options.dist,
+              preserveExtensions: options.preserveExtensions,
               centralizeWrappers: options.centralizeWrappers,
               main,
           })
@@ -130,12 +132,20 @@ export async function createExports(options) {
     return {
         pkg: {
             ...meta,
-            exports: filesJs.reduce(
-                (current, [path, file]) => ({
+            exports: filesJs.reduce((current, [path, file]) => {
+                let resolvedPath = path;
+
+                if (isJs(file) && path !== "." && options.preserveExtensions) {
+                    resolvedPath += ".js";
+                }
+
+                return {
                     ...current,
                     [cleanPath(
                         formatFirstDot(
-                            path.startsWith(".") ? path : `./${path}`
+                            resolvedPath.startsWith(".")
+                                ? resolvedPath
+                                : `./${resolvedPath}`
                         )
                     )]: {
                         ...(filesTsByPath[path]
@@ -143,20 +153,26 @@ export async function createExports(options) {
                             : {}),
                         default: formatFirstDot(file),
                     },
-                }),
-                options.pkg?.exports || {}
-            ),
+                };
+            }, options.pkg?.exports || {}),
             typesVersions: {
                 ...options.pkg?.typesVersions,
                 "*": filesTs
                     .filter(([name]) => name)
-                    .reduce(
-                        (current, [path, file]) => ({
+                    .reduce((current, [path, file]) => {
+                        let resolvedPath = path;
+
+                        if (options.preserveExtensions) {
+                            resolvedPath += ".js";
+                        }
+
+                        return {
                             ...current,
-                            [cleanPath(path, { relative: true })]: [file],
-                        }),
-                        options.pkg?.typesVersions?.["*"] || {}
-                    ),
+                            [cleanPath(resolvedPath, { relative: true })]: [
+                                file,
+                            ],
+                        };
+                    }, options.pkg?.typesVersions?.["*"] || {}),
             },
         },
         wrappers,

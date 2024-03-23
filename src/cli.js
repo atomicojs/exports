@@ -11,9 +11,13 @@ const cli = cac("@atomico/exports").version("1.11.0");
 
 cli.command("<...files>", "Build files")
     .option("--dist <dist>", "Destination directory")
-    .option("--main <dist>", "Nain file")
+    .option("--main <dist>", "Main file")
     .option("--watch", "watch mode")
     .option("--wrappers", "enable the wrapper generator")
+    .option(
+        "--preserve-extensions",
+        "preserve file extensions in exports, for broader ESM compatibility"
+    )
     .option("--ignore-types", "enable the wrapper generator")
     .option("--workspaces", "enable dependency merging")
     .option(
@@ -35,8 +39,10 @@ cli.command("<...files>", "Build files")
          * @param {string[]} src
          * @param {object} flags
          * @param {boolean} flags.watch
+         * @param {string} flags.dist
          * @param {string} flags.main
-         * @param {string} flags.wrappers
+         * @param {boolean} flags.wrappers
+         * @param {boolean} flags.preserveExtensions
          * @param {boolean} flags.tmp
          * @param {boolean} flags.workspaces
          * @param {boolean} flags.publish
@@ -49,6 +55,7 @@ cli.command("<...files>", "Build files")
             {
                 watch,
                 main = "index",
+                preserveExtensions,
                 wrappers,
                 dist,
                 tmp,
@@ -66,6 +73,7 @@ cli.command("<...files>", "Build files")
                     src,
                     main,
                     wrappers,
+                    preserveExtensions,
                     dist,
                     pkg: {
                         src: tmp
