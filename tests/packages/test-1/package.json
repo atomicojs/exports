@@ -1,0 +1,9 @@
+{
+    "name": "@test/1",
+    "dependencies": {
+        "atomico": "latest"
+    },
+    "scripts": {
+        "build:exports": "node ../../../src/cli.js src/**/* --tmp --wrappers"
+    }
+}
