@@ -1,0 +1,54 @@
+{
+    "name": "@test/2",
+    "dependencies": {
+        "atomico": "latest"
+    },
+    "scripts": {
+        "build:types": "tsc",
+        "build:exports": "node ../../../src/cli.js dist/**/* --tmp --wrappers --preserve-extensions"
+    },
+    "peerDependencies": {
+        "@atomico/react": "*",
+        "@atomico/vue": "*"
+    },
+    "peerDependenciesMeta": {
+        "@atomico/react": {
+            "optional": true
+        },
+        "@atomico/vue": {
+            "optional": true
+        }
+    },
+    "types": "dist/index.d.ts",
+    "exports": {
+        ".js": {
+            "types": "./dist/index.d.ts",
+            "default": "./dist/index.js"
+        },
+        "./react.js": {
+            "types": "./wrapper/react.d.ts",
+            "default": "./wrapper/react.js"
+        },
+        "./preact.js": {
+            "types": "./wrapper/preact.d.ts",
+            "default": "./wrapper/preact.js"
+        },
+        "./vue.js": {
+            "types": "./wrapper/vue.d.ts",
+            "default": "./wrapper/vue.js"
+        }
+    },
+    "typesVersions": {
+        "*": {
+            "react.js": [
+                "wrapper/react.d.ts"
+            ],
+            "preact.js": [
+                "wrapper/preact.d.ts"
+            ],
+            "vue.js": [
+                "wrapper/vue.d.ts"
+            ]
+        }
+    }
+}

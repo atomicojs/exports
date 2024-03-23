@@ -5,6 +5,6 @@
     },
     "scripts": {
         "build:types": "tsc",
-        "build:exports": "node ../../../src/cli.js src/**/* --tmp --wrappers"
+        "build:exports": "node ../../../src/cli.js dist/**/* --tmp --wrappers --preserve-extensions"
     }
 }

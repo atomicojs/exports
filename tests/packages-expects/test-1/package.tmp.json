@@ -1,0 +1,28 @@
+{
+    "name": "@test/1",
+    "dependencies": {
+        "atomico": "latest"
+    },
+    "scripts": {
+        "build:exports": "node ../../../src/cli.js src/**/* --tmp --wrappers"
+    },
+    "exports": {
+        "./a": {
+            "default": "./src/a/a.js"
+        },
+        "./b": {
+            "default": "./src/b/b.js"
+        },
+        "./c": {
+            "types": "./src/c/c.d.ts",
+            "default": "./src/c/c.js"
+        }
+    },
+    "typesVersions": {
+        "*": {
+            "c": [
+                "src/c/c.d.ts"
+            ]
+        }
+    }
+}

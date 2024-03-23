@@ -49,8 +49,9 @@
     },
     "scripts": {
         "types": "tsc",
-        "test": "rm -rf tests/dist && ava",
-        "prepare": "run build:* -w=@test/* -s"
+        "test:generate-expects": "node tests/generate-expects.js",
+        "test:build": "run build:* -w=@test/* -s",
+        "test": "node --test"
     },
     "repository": {
         "type": "git",
