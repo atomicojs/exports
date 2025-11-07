@@ -45,7 +45,7 @@ export function createExports(options: {
         fileExport: string;
         fileDistJs: string;
         fileDistTs: string;
-        codeJs: string;
+        codeJs: void;
         codeTs: string;
     }[];
 }>;
