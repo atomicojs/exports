@@ -36,22 +36,21 @@ export function createWrapper(options: {
     codeTs: string;
 }[]>;
 export const distWrapper: "wrapper";
-export const peerDependencies: ({
+/**
+ * @type {{name: string, path: string, version: string, jsx: boolean, template: (({declaration: boolean, importScope: string } , elements:[string, { export: boolean, tagName: string,  is: string; alias: string }][])=>void) }[]}
+ */
+export const peerDependencies: {
     name: string;
     path: string;
     version: string;
     jsx: boolean;
-    submodule?: undefined;
-} | {
-    name: string;
-    submodule: string;
-    path: string;
-    version: string;
-    jsx: boolean;
-} | {
-    name: string;
-    path: string;
-    version: string;
-    jsx?: undefined;
-    submodule?: undefined;
-})[];
+    template: ({ declaration: boolean, importScope: string }: {
+        declaration: any;
+        importScope: any;
+    }, elements: [string, {
+        export: boolean;
+        tagName: string;
+        is: string;
+        alias: string;
+    }][]) => void;
+}[];

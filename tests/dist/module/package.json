@@ -4,14 +4,14 @@
         "atomico": "latest"
     },
     "peerDependencies": {
-        "@atomico/react": "*",
-        "@atomico/vue": "*"
+        "undefined": "*",
+        "@atomico/react": "*"
     },
     "peerDependenciesMeta": {
-        "@atomico/react": {
+        "undefined": {
             "optional": true
         },
-        "@atomico/vue": {
+        "@atomico/react": {
             "optional": true
         }
     },
@@ -37,13 +37,9 @@
             "types": "./tests/dist/module/react.d.ts",
             "default": "./tests/dist/module/react.js"
         },
-        "./preact": {
-            "types": "./tests/dist/module/preact.d.ts",
-            "default": "./tests/dist/module/preact.js"
-        },
-        "./vue": {
-            "types": "./tests/dist/module/vue.d.ts",
-            "default": "./tests/dist/module/vue.js"
+        "./react/next": {
+            "types": "./tests/dist/module/react/next.d.ts",
+            "default": "./tests/dist/module/react/next.js"
         },
         ".": {
             "types": "./tests/module/atomico.d.ts",
@@ -64,12 +60,10 @@
             "react": [
                 "./tests/dist/module/react.d.ts"
             ],
-            "preact": [
-                "./tests/dist/module/preact.d.ts"
-            ],
-            "vue": [
-                "./tests/dist/module/vue.d.ts"
+            "react/next": [
+                "./tests/dist/module/react/next.d.ts"
             ]
         }
     }
 }
+

@@ -1,7 +1,7 @@
 {
     "name": "@atomico/exports",
     "type": "module",
-    "version": "1.13.2",
+    "version": "2.0.0",
     "description": "It allows to generate an export to quickly publish components created with Atomico in NPM",
     "main": "./src/merge-exports.js",
     "module": "./src/merge-exports.js",
@@ -50,7 +50,8 @@
     "scripts": {
         "types": "tsc",
         "test": "rm -rf tests/dist && ava",
-        "prepare": "npm run types && npm run test && node ./src/cli.js \"./src/**\" \"./types/**\" --main merge-exports"
+        "cli": "node ./src/cli.js \"./src/**\" \"./types/**\" --main merge-exports",
+        "prepare": "npm run types && npm run test && npm run cli"
     },
     "repository": {
         "type": "git",
