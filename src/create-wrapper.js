@@ -36,7 +36,7 @@ export const peerDependencies = [
         name: "@atomico/react",
         path: "react/next",
         version: "*",
-        jsx: true,
+        jsx: false,
         template: ({ declaration, importScope }, elements) =>
             declaration
                 ? `export * from "${importScope}/react";`
@@ -225,7 +225,7 @@ export async function createWrapper(options) {
 
             const codeTs = templateByLine(
                 template(
-                    { declaration: false, importScope, importComponents },
+                    { declaration: true, importScope, importComponents },
                     elements
                 ),
                 jsx ? interfaceTsJsx : ""

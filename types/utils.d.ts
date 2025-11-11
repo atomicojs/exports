@@ -24,3 +24,4 @@ export function cleanPath(path: string, options?: {
 export function getModules(files: string[]): any[];
 export function isTsDeclaration(file: any): any;
 export function isJs(file: any): boolean;
+export function templateByLine(...args: (string | number | (string | number)[])[]): string;
