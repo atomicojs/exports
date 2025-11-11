@@ -133,3 +133,10 @@ export const getModules = (files) => {
 export const isTsDeclaration = (file) => file.endsWith(".d.ts");
 
 export const isJs = (file) => /\.(ts(x){0,1}|js(x){0,1}|mjs)$/.test(file);
+
+/**
+ *
+ * @param  {...(string|number|(string|number)[])} args
+ * @returns {string}
+ */
+export const templateByLine = (...args) => args.flat(2).join("\n");

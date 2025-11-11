@@ -1,7 +1,7 @@
 import * as acorn from "acorn";
 import * as acornWalk from "acorn-walk";
 import { readFile } from "fs/promises";
-import { cleanPath } from "./utils.js";
+import { cleanPath, templateByLine } from "./utils.js";
 
 export const distWrapper = "wrapper";
 
@@ -15,21 +15,22 @@ export const peerDependencies = [
         jsx: true,
         template: ({ declaration, importComponents }, elements) =>
             declaration
-                ? `
-                ${importComponents}
-                import { Component } from "@atomico/react";
-                ${elements.map(
-                    ([name, { alias }]) =>
-                        `export const ${name}: Component<typeof ${alias}>;`
-                )}
-                `
-                : `
-                ${importComponents}
-                import { auto } from "@atomico/react";
-                ${elements.map(
-                    ([name, { alias }]) =>
-                        `export const ${name} = auto(${alias});`
-                )}`,
+                ? templateByLine(
+                      importComponents,
+                      `import { Component } from "@atomico/react";`,
+                      elements.map(
+                          ([name, { alias }]) =>
+                              `export const ${name}: Component<typeof ${alias}>;`
+                      )
+                  )
+                : templateByLine(
+                      importComponents,
+                      `import { auto } from "@atomico/react";`,
+                      elements.map(
+                          ([name, { alias }]) =>
+                              `export const ${name} = auto(${alias});`
+                      )
+                  ),
     },
     {
         name: "@atomico/react",
@@ -39,20 +40,15 @@ export const peerDependencies = [
         template: ({ declaration, importScope }, elements) =>
             declaration
                 ? `export * from "${importScope}/react";`
-                : `
-            import dynamic from "next/dynamic";
-
-            let CACHE;
-            const resolveImport = ()=>CACHE = CACHE || new Promise(resolve=>import("${importScope}/react").then(resolve));
-
-            ${elements
-                .map(
-                    ([name]) =>
-                        `export const ${name} = dynamic(async () =>(await resolveImport())["${name}"],{ ssr: false });`
-                )
-                .join("\n")}
-
-        `,
+                : templateByLine(
+                      `import dynamic from "next/dynamic";`,
+                      `let CACHE;`,
+                      `const resolveImport = () =>(CACHE = CACHE || new Promise((resolve) => import("component/react").then(resolve)));`,
+                      elements.map(
+                          ([name]) =>
+                              `export const ${name} = dynamic(async () =>(await resolveImport()).${name}, { ssr: false });`
+                      )
+                  ),
     },
 ];
 
@@ -203,13 +199,13 @@ export async function createWrapper(options) {
     );
 
     const interfaceTsJsx = tagNames.length
-        ? [
+        ? templateByLine(
               `declare namespace JSX {`,
-              `   interface IntrinsicElements{`,
+              `    interface IntrinsicElements{`,
               tagNames,
-              `   }`,
-              `}`,
-          ].join("\n")
+              `    }`,
+              `}`
+          )
         : "";
 
     /**
@@ -227,11 +223,13 @@ export async function createWrapper(options) {
 
             const fileDistJs = cleanPath(`${options.dist}/${fileExport}.js`);
 
-            const codeTs = `${template(
-                { declaration: false, importScope, importComponents },
-                elements
-            )}
-                ${jsx ? interfaceTsJsx : ""}`;
+            const codeTs = templateByLine(
+                template(
+                    { declaration: false, importScope, importComponents },
+                    elements
+                ),
+                jsx ? interfaceTsJsx : ""
+            );
 
             const fileDistTs = cleanPath(`${options.dist}/${fileExport}.d.ts`);
 
