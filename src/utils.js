@@ -101,7 +101,7 @@ export const getModules = (files) => {
         if (children) {
             modules.push(
                 ...children.map(({ name, file, ext }) => {
-                    name = ext === ".ts" ? name.replace(/\.d$/, "") : name;
+                    name = isTs(ext) ? name.replace(/\.d$/, "") : name;
 
                     const assets = !isJs(ext);
 
@@ -130,6 +130,15 @@ export const getModules = (files) => {
     return modules;
 };
 
-export const isTsDeclaration = (file) => file.endsWith(".d.ts");
+export const isTsDeclaration = (file) => /\.d\.(ts|mts)$/.test(file);
 
-export const isJs = (file) => /\.(ts(x){0,1}|js(x){0,1}|mjs)$/.test(file);
+export const isTs = (file) => /\.(ts|mts)$/.test(file);
+
+export const isJs = (file) => /\.(ts(x){0,1}|js(x){0,1}|mjs|mts)$/.test(file);
+
+/**
+ *
+ * @param  {...(string|number|(string|number)[])} args
+ * @returns {string}
+ */
+export const templateByLine = (...args) => args.flat(2).join("\n");

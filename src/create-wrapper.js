@@ -1,20 +1,55 @@
 import * as acorn from "acorn";
 import * as acornWalk from "acorn-walk";
 import { readFile } from "fs/promises";
-import { cleanPath } from "./utils.js";
+import { cleanPath, templateByLine } from "./utils.js";
 
 export const distWrapper = "wrapper";
 
+/**
+ * @type {{name: string, path: string, version: string, jsx: boolean, template: (({declaration: boolean, importScope: string, importComponents: string } , elements:[string, { export: boolean, tagName: string,  is: string; alias: string }][])=>void) }[]}
+ */
 export const peerDependencies = [
-    { name: "@atomico/react", path: "react", version: "*", jsx: true },
     {
-        name: "@atomico/react",
-        submodule: "/preact",
-        path: "preact",
+        path: "react",
         version: "*",
         jsx: true,
+        template: ({ declaration, importComponents }, elements) =>
+            declaration
+                ? templateByLine(
+                      importComponents,
+                      `import { Component } from "@atomico/react";`,
+                      elements.map(
+                          ([name, { alias }]) =>
+                              `export const ${name}: Component<typeof ${alias}>;`
+                      )
+                  )
+                : templateByLine(
+                      importComponents,
+                      `import { auto } from "@atomico/react";`,
+                      elements.map(
+                          ([name, { alias }]) =>
+                              `export const ${name} = auto(${alias});`
+                      )
+                  ),
     },
-    { name: "@atomico/vue", path: "vue", version: "*" },
+    {
+        name: "@atomico/react",
+        path: "react/next",
+        version: "*",
+        jsx: false,
+        template: ({ declaration, importScope }, elements) =>
+            declaration
+                ? `export * from "${importScope}/react";`
+                : templateByLine(
+                      `import dynamic from "next/dynamic";`,
+                      `let CACHE;`,
+                      `const resolveImport = () =>(CACHE = CACHE || new Promise((resolve) => import("component/react").then(resolve)));`,
+                      elements.map(
+                          ([name]) =>
+                              `export const ${name} = dynamic(async () =>(await resolveImport()).${name}, { ssr: false });`
+                      )
+                  ),
+    },
 ];
 
 /**
@@ -114,6 +149,7 @@ export async function createWrapper(options) {
                 customElements[id] = {
                     ...customElements[id],
                     export: true,
+                    alias: `_${id}`,
                 };
             });
         },
@@ -147,59 +183,53 @@ export async function createWrapper(options) {
 
     if (!elements.length) return;
 
-    const imports = elements.map(([name]) => `${name} as _${name}`);
+    const imports = elements.map(([name, { alias }]) => `${name} as ${alias}`);
 
-    const originModule = `import { ${imports.join(", ")} } from "${
-        options.scope
-    }${origin === options.main || !origin ? "" : "/" + origin}";`;
+    const importScope = `${options.scope}${
+        origin === options.main || !origin ? "" : "/" + origin
+    }`;
+
+    const importComponents = `import { ${imports.join(
+        ", "
+    )} } from "${importScope}";`;
 
     const tagNames = elements.map(
-        ([name, { tagName }]) =>
-            `      "${tagName}": Component<typeof _${name}>;`
+        ([, { tagName, alias }]) =>
+            `      "${tagName}": Component<typeof ${alias}>;`
     );
 
     const interfaceTsJsx = tagNames.length
-        ? [
+        ? templateByLine(
               `declare namespace JSX {`,
-              `   interface IntrinsicElements{`,
+              `    interface IntrinsicElements{`,
               tagNames,
-              `   }`,
-              `}`,
-          ].join("\n")
+              `    }`,
+              `}`
+          )
         : "";
 
     /**
      * Task wrappers
      */
     return await Promise.all(
-        peerDependencies.map(async ({ name, path, jsx, submodule = "" }) => {
-            const codeJs = [
-                `"use client";`,
-                originModule,
-                `import { auto } from "${name}${submodule}";`,
-                elements.map(
-                    ([name]) => `export const ${name} = auto(_${name});`
-                ),
-            ]
-                .flat(10)
-                .join("\n");
+        peerDependencies.map(async ({ path, jsx, template }) => {
+            const codeJs = template(
+                { declaration: false, importScope, importComponents },
+                elements
+            );
 
             const fileExport =
                 origin === options.main ? path : `${origin}/${path}`;
 
             const fileDistJs = cleanPath(`${options.dist}/${fileExport}.js`);
 
-            const codeTs = [
-                originModule,
-                `import { Component } from "${name}${submodule}";`,
-                elements.map(
-                    ([name]) =>
-                        `export const ${name}: Component<typeof _${name}>;`
+            const codeTs = templateByLine(
+                template(
+                    { declaration: true, importScope, importComponents },
+                    elements
                 ),
-                jsx ? [interfaceTsJsx] : [],
-            ]
-                .flat(10)
-                .join("\n");
+                jsx ? interfaceTsJsx : ""
+            );
 
             const fileDistTs = cleanPath(`${options.dist}/${fileExport}.d.ts`);
 
@@ -207,8 +237,8 @@ export async function createWrapper(options) {
                 fileExport,
                 fileDistJs,
                 fileDistTs,
-                codeJs,
-                codeTs,
+                codeJs: codeJs,
+                codeTs: codeTs,
             };
         })
     );

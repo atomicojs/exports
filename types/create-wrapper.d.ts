@@ -32,26 +32,26 @@ export function createWrapper(options: {
     fileExport: string;
     fileDistJs: string;
     fileDistTs: string;
-    codeJs: string;
+    codeJs: void;
     codeTs: string;
 }[]>;
 export const distWrapper: "wrapper";
-export const peerDependencies: ({
+/**
+ * @type {{name: string, path: string, version: string, jsx: boolean, template: (({declaration: boolean, importScope: string, importComponents: string } , elements:[string, { export: boolean, tagName: string,  is: string; alias: string }][])=>void) }[]}
+ */
+export const peerDependencies: {
     name: string;
     path: string;
     version: string;
     jsx: boolean;
-    submodule?: undefined;
-} | {
-    name: string;
-    submodule: string;
-    path: string;
-    version: string;
-    jsx: boolean;
-} | {
-    name: string;
-    path: string;
-    version: string;
-    jsx?: undefined;
-    submodule?: undefined;
-})[];
+    template: ({ declaration: boolean, importScope: string, importComponents: string }: {
+        declaration: any;
+        importScope: any;
+        importComponents: any;
+    }, elements: [string, {
+        export: boolean;
+        tagName: string;
+        is: string;
+        alias: string;
+    }][]) => void;
+}[];

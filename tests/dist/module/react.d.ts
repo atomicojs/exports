@@ -2,7 +2,7 @@ import { MyComponent as _MyComponent } from "demo";
 import { Component } from "@atomico/react";
 export const MyComponent: Component<typeof _MyComponent>;
 declare namespace JSX {
-   interface IntrinsicElements{
+    interface IntrinsicElements{
       "my-component": Component<typeof _MyComponent>;
-   }
+    }
 }

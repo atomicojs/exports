@@ -23,9 +23,6 @@ export function createExports(options: {
 }): Promise<{
     pkg: {
         exports: any;
-        typesVersions: {
-            "*": any;
-        };
         dependencies: {
             [src: string]: string;
         };
@@ -45,7 +42,7 @@ export function createExports(options: {
         fileExport: string;
         fileDistJs: string;
         fileDistTs: string;
-        codeJs: string;
+        codeJs: void;
         codeTs: string;
     }[];
 }>;
@@ -65,11 +62,6 @@ export type Pkg = {
     peerDependenciesMeta?: {
         [src: string]: {
             optional: boolean;
-        };
-    };
-    typesVersions?: {
-        [src: string]: {
-            [src: string]: string[];
         };
     };
 };

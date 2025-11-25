@@ -1,4 +1,4 @@
-# @atomico/exports@one
+# @atomico/exports@two
 
 Automatically generates the necessary metadata for a successful export to NPM.
 
