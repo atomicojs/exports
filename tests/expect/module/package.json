@@ -4,13 +4,9 @@
         "atomico": "latest"
     },
     "peerDependencies": {
-        "undefined": "*",
         "@atomico/react": "*"
     },
     "peerDependenciesMeta": {
-        "undefined": {
-            "optional": true
-        },
         "@atomico/react": {
             "optional": true
         }
