@@ -3,47 +3,10 @@
     "type": "module",
     "version": "2.0.1-beta",
     "description": "It allows to generate an export to quickly publish components created with Atomico in NPM",
-    "main": "./src/merge-exports.js",
-    "module": "./src/merge-exports.js",
-    "types": "./types/merge-exports.d.ts",
     "workspaces": [
         "tests",
         "examples/**/*"
     ],
-    "exports": {
-        "./cli": {
-            "types": "./types/cli.d.ts",
-            "default": "./src/cli.js"
-        },
-        "./create-exports": {
-            "types": "./types/create-exports.d.ts",
-            "default": "./src/create-exports.js"
-        },
-        "./create-wrapper": {
-            "types": "./types/create-wrapper.d.ts",
-            "default": "./src/create-wrapper.js"
-        },
-        "./merge-exports": {
-            "types": "./types/merge-exports.d.ts",
-            "default": "./src/merge-exports.js"
-        },
-        "./utils": {
-            "types": "./types/utils.d.ts",
-            "default": "./src/utils.js"
-        },
-        ".": {
-            "types": "./types/merge-exports.d.ts",
-            "default": "./src/merge-exports.js"
-        },
-        "./create-centralize-packages": {
-            "types": "./types/create-centralize-packages.d.ts",
-            "default": "./src/create-centralize-packages.js"
-        },
-        "./create-publish": {
-            "types": "./types/create-publish.d.ts",
-            "default": "./src/create-publish.js"
-        }
-    },
     "publishConfig": {
         "access": "public"
     },
@@ -91,34 +54,6 @@
     "bin": {
         "exports": "./src/cli.js"
     },
-    "typesVersions": {
-        "*": {
-            "cli": [
-                "./types/cli.d.ts"
-            ],
-            "create-exports": [
-                "./types/create-exports.d.ts"
-            ],
-            "create-wrapper": [
-                "./types/create-wrapper.d.ts"
-            ],
-            "merge-exports": [
-                "./types/merge-exports.d.ts"
-            ],
-            "utils": [
-                "./types/utils.d.ts"
-            ],
-            "create-centralize-packages": [
-                "./types/create-centralize-packages.d.ts"
-            ],
-            "create-publish": [
-                "./types/create-publish.d.ts"
-            ],
-            ".": [
-                "./src/merge-exports.js"
-            ]
-        }
-    },
     "peerDependencies": {
         "@atomico/react": "*",
         "@atomico/vue": "*"
@@ -129,6 +64,43 @@
         },
         "@atomico/vue": {
             "optional": true
+        }
+    },
+    "main": "./src/merge-exports.js",
+    "module": "./src/merge-exports.js",
+    "types": "./types/merge-exports.d.ts",
+    "exports": {
+        "./cli": {
+            "types": "./types/cli.d.ts",
+            "default": "./src/cli.js"
+        },
+        "./create-centralize-packages": {
+            "types": "./types/create-centralize-packages.d.ts",
+            "default": "./src/create-centralize-packages.js"
+        },
+        "./create-exports": {
+            "types": "./types/create-exports.d.ts",
+            "default": "./src/create-exports.js"
+        },
+        "./create-publish": {
+            "types": "./types/create-publish.d.ts",
+            "default": "./src/create-publish.js"
+        },
+        "./create-wrapper": {
+            "types": "./types/create-wrapper.d.ts",
+            "default": "./src/create-wrapper.js"
+        },
+        "./merge-exports": {
+            "types": "./types/merge-exports.d.ts",
+            "default": "./src/merge-exports.js"
+        },
+        "./utils": {
+            "types": "./types/utils.d.ts",
+            "default": "./src/utils.js"
+        },
+        ".": {
+            "types": "./types/merge-exports.d.ts",
+            "default": "./src/merge-exports.js"
         }
     }
 }

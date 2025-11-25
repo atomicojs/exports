@@ -23,9 +23,6 @@ export function createExports(options: {
 }): Promise<{
     pkg: {
         exports: any;
-        typesVersions: {
-            "*": any;
-        };
         dependencies: {
             [src: string]: string;
         };
