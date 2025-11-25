@@ -64,9 +64,4 @@ export type Pkg = {
             optional: boolean;
         };
     };
-    typesVersions?: {
-        [src: string]: {
-            [src: string]: string[];
-        };
-    };
 };

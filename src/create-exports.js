@@ -2,6 +2,8 @@ import { createWrappers, peerDependencies } from "./create-wrapper.js";
 import { createCentralizePackages } from "./create-centralize-packages.js";
 import { cleanPath, getModules, isJs, isTsDeclaration } from "./utils.js";
 
+const peerDependenciesWithNames = peerDependencies.filter(({ name }) => name);
+
 /**
  * @param {object} options
  * @param {string[]} options.input
@@ -84,7 +86,7 @@ export async function createExports(options) {
             fileDistTs && filesTs.push([fileExport, fileDistTs]);
         });
 
-        meta.peerDependencies = peerDependencies.reduce(
+        meta.peerDependencies = peerDependenciesWithNames.reduce(
             (current, { name, version }) => ({
                 ...current,
                 [name]: version,
@@ -92,7 +94,7 @@ export async function createExports(options) {
             options.pkg?.peerDependencies || {}
         );
 
-        meta.peerDependenciesMeta = peerDependencies.reduce(
+        meta.peerDependenciesMeta = peerDependenciesWithNames.reduce(
             (current, { name }) => ({
                 ...current,
                 [name]: { optional: true },
