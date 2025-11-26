@@ -44,6 +44,22 @@
         "./package.json": {
             "default": "./tests/module/package.json"
         }
+    },
+    "typesVersions": {
+        "*": {
+            "atomico": [
+                "./tests/module/atomico.d.ts"
+            ],
+            "components/c": [
+                "./tests/module/components/c/c.d.ts"
+            ],
+            "react": [
+                "./tests/dist/module/react.d.ts"
+            ],
+            "react/next": [
+                "./tests/dist/module/react/next.d.ts"
+            ]
+        }
     }
 }
 

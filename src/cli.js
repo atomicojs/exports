@@ -13,6 +13,7 @@ cli.command("<...files>", "Build files")
     .option("--dist <dist>", "Destination directory")
     .option("--main <dist>", "Nain file")
     .option("--watch", "watch mode")
+
     .option("--wrappers", "enable the wrapper generator")
     .option("--ignore-types", "enable the wrapper generator")
     .option("--workspaces", "enable dependency merging")
@@ -29,6 +30,10 @@ cli.command("<...files>", "Build files")
         "publish the package if the version is different from the previous one from npm"
     )
     .option("--tmp", "allows to generate a temporary package.json")
+    .option(
+        "--merge",
+        "allows coexistence with a concurrent package.json#exports configuration."
+    )
     .action(
         /**
          *
@@ -43,6 +48,7 @@ cli.command("<...files>", "Build files")
          * @param {boolean} flags.ignoreTypes
          * @param {boolean} flags.centralizePackages
          * @param {boolean} flags.centralizeWrappers
+         * @param {boolean} flags.merge
          */
         async (
             src,
@@ -57,6 +63,7 @@ cli.command("<...files>", "Build files")
                 ignoreTypes,
                 centralizePackages,
                 centralizeWrappers,
+                merge,
             }
         ) => {
             const srcPkg = cwd + "/package.json";
@@ -79,6 +86,7 @@ cli.command("<...files>", "Build files")
                     ignoreTypes,
                     centralizePackages,
                     centralizeWrappers,
+                    merge,
                 });
 
             await send();

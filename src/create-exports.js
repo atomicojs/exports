@@ -15,6 +15,7 @@ const peerDependenciesWithNames = peerDependencies.filter(({ name }) => name);
  * @param {boolean} [options.centralizePackages]
  * @param {boolean} [options.centralizeWrappers]
  * @param {boolean} [options.assets]
+ * @param {boolean} [options.merge]
  */
 export async function createExports(options) {
     const meta = {};
@@ -146,8 +147,22 @@ export async function createExports(options) {
                         default: formatFirstDot(file),
                     },
                 }),
-                options.pkg?.exports || {}
+                options.merge ? options.pkg?.exports || {} : {}
             ),
+            typesVersions: {
+                ...options.pkg?.typesVersions,
+                "*": filesTs
+                    .filter(([name]) => name)
+                    .reduce(
+                        (current, [path, file]) => ({
+                            ...current,
+                            [cleanPath(path, { relative: true })]: [file],
+                        }),
+                        options.merge
+                            ? options.pkg?.typesVersions?.["*"] || {}
+                            : {}
+                    ),
+            },
         },
         wrappers,
     };

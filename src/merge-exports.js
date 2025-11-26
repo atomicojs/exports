@@ -15,6 +15,7 @@ import { getJsonFormat, logger, read, write } from "./utils.js";
  * @param {boolean} [options.ignoreTypes]
  * @param {boolean} [options.centralizePackages]
  * @param {boolean} [options.centralizeWrappers]
+ * @param {boolean} [options.merge]
  * @param {{src: string, snap: import("./create-exports").Pkg}} options.pkg
  */
 export async function mergeExports(options) {
@@ -97,6 +98,7 @@ export async function mergeExports(options) {
         ignoreTypes: options.ignoreTypes,
         centralizePackages: options.centralizePackages,
         centralizeWrappers: options.centralizeWrappers,
+        merge: options.merge,
     });
 
     if (result.wrappers.length) {

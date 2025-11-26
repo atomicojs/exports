@@ -1,7 +1,7 @@
 {
     "name": "@atomico/exports",
     "type": "module",
-    "version": "2.0.0",
+    "version": "2.1.0",
     "description": "It allows to generate an export to quickly publish components created with Atomico in NPM",
     "workspaces": [
         "tests",
@@ -101,6 +101,31 @@
         ".": {
             "types": "./types/merge-exports.d.ts",
             "default": "./src/merge-exports.js"
+        }
+    },
+    "typesVersions": {
+        "*": {
+            "cli": [
+                "./types/cli.d.ts"
+            ],
+            "create-centralize-packages": [
+                "./types/create-centralize-packages.d.ts"
+            ],
+            "create-exports": [
+                "./types/create-exports.d.ts"
+            ],
+            "create-publish": [
+                "./types/create-publish.d.ts"
+            ],
+            "create-wrapper": [
+                "./types/create-wrapper.d.ts"
+            ],
+            "merge-exports": [
+                "./types/merge-exports.d.ts"
+            ],
+            "utils": [
+                "./types/utils.d.ts"
+            ]
         }
     }
 }
